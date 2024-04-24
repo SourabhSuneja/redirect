@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Quiz</title>
+<style>
+  body {
+    background-color: black;
+    color: white;
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+  }
+  .container {
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 20px;
+    border: 2px solid white;
+    border-radius: 10px;
+    text-align: center;
+  }
+  h1 {
+    text-align: center;
+    font-size: 24px;
+  }
+  .question {
+    margin-bottom: 20px;
+    font-size: 20px;
+  }
+  .buttons {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  button {
+    margin: 10px;
+    padding: 10px 20px;
+    background-color: #1E90FF; /* Dark blue shade */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    font-size: 18px;
+  }
+  button:hover {
+    background-color: #4682B4; /* Lighter shade on hover */
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h1>Quiz</h1>
+  <div class="question">
+    <p id="questionText"></p>
+    <p id="studentName"></p>
+  </div>
+  <div class="buttons">
+    <button id="correctBtn" onclick="answeredCorrectly()">Answered correctly</button>
+    <button id="incorrectBtn" onclick="answeredIncorrectly()">Couldn't answer correctly</button>
+    <button id="pickAnotherBtn" onclick="pickAnotherStudent()">Pick another student</button>
+  </div>
+</div>
+
+<script>
+  // Array of questions
+  const questions = [
+    "What are the two types of data?",
+    "Which of these is an example of qualitative data? Age, Height, Beauty, or Distance?",
+    "Tanu is writing an application in MS Word. What form of data do you think she is creating?",
+    "The data that can be represented by finite numbers is called _______ data.",
+    "What is the difference between discrete and continuous data?",
+    "What do you understand by data?",
+    "Differentiate between qualitative and quantitative data.",
+    "Explain text data with the help of an example.",
+    "Why is data important? Explain with the help of an example.",
+    "Describe quantitative data and its types with the help of an example.",
+    "Give any one real-life example that explains the use of data.",
+    "What is primary data?",
+    "In Binary representation, there are only ______ states."
+  ];
+
+  // Array of student names
+  const students = [
+    "Aanya Sharma", "Aryan Sharma", "Atharva Sharma", "Bhavya Choudhary", "Chitransh Agrawal",
+    "Devansh Ratnu", "Devanshi Sharma", "Dipanshu Choudhary", "Gourav Saini", "Harsh", "Harshita",
+    "Hemal Kanwar", "Himanshu Yadav", "Ishika Meena", "Jaanvi", "Jigyasa Sharma", "Karan Choudhary",
+    "Kartikay Sharma", "Keshav Vyas", "Krishna Meena", "Krishna Saini", "Kunal Jangid", "Kushagra Singh",
+    "Madhavi Kumawat", "Manas Jangid", "Pari Yadav", "Pradhuman Singh", "Pranjal Singh Meena",
+    "Reyansh Jangir", "Rishabh", "Ritu Rarh", "Riya Sharma", "Safal Kumawat", "Sameer",
+    "Shivam Sharma", "Sidarth", "Suhana Budania", "Supriya Yadav", "Vatsal Dhinwa", "Vihaan Choudhary",
+    "Vihan Chhabarwal", "Yashasvi Kumawat"
+  ];
+
+  // Array to store scores
+  let scores = {};
+
+  // Array to store absent students
+  let absentStudents = [];
+
+  // Index to keep track of current question
+  let currentQuestionIndex = 0;
+
+  // Function to initialize quiz
+  function initializeQuiz() {
+    scores = {};
+    absentStudents = [];
+    currentQuestionIndex = 0;
+    displayQuestion();
+  }
+
+  // Function to display question and student name
+  function displayQuestion() {
+    const questionText = document.getElementById("questionText");
+    const studentName = document.getElementById("studentName");
+    questionText.textContent = questions[currentQuestionIndex];
+    let randomStudent = pickRandomStudent();
+    studentName.textContent = "Question for " + randomStudent;
+  }
+
+  // Function to pick a random student, ensuring they are not absent
+  function pickRandomStudent() {
+    let randomStudentIndex;
+    do {
+      randomStudentIndex = Math.floor(Math.random() * students.length);
+      var randomStudent = students[randomStudentIndex];
+    } while (absentStudents.includes(randomStudent));
+    return randomStudent;
+  }
+
+  // Function to handle correct answer
+  function answeredCorrectly() {
+    const currentStudent = document.getElementById("studentName").textContent.split(" ")[2];
+    if (scores[currentStudent] === undefined) {
+      scores[currentStudent] = 1;
+    } else {
+      scores[currentStudent]++;
+    }
+    nextQuestion();
+  }
+
+  // Function to handle incorrect answer
+  function answeredIncorrectly() {
+    nextQuestion();
+  }
+
+  // Function to pick another student
+  function pickAnotherStudent() {
+    displayQuestion();
+  }
+
+  // Function to move to the next question
+  function nextQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questions.length) {
+      displayQuestion();
+    } else {
+      displayScores();
+    }
+  }
+
+  // Function to display scores
+  function displayScores() {
+    const container = document.querySelector(".container");
+    container.innerHTML = "<h1>Scores</h1>";
+    for (const student in scores) {
+      container.innerHTML += "<p>" + student + ": " + scores[student] + "</p>";
+    }
+  }
+
+  // Initialize quiz when the page loads
+  window.onload = initializeQuiz;
+</script>
+
+</body>
+</html>
