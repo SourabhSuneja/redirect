@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quiz | By Sourabh Suneja</title>
+<title>Data Science Quiz</title>
 <style>
   body {
     background-color: black;
@@ -46,6 +46,29 @@
   button:hover {
     background-color: #4682B4; /* Lighter shade on hover */
   }
+  footer {
+    margin-top: 20px;
+    font-size: 14px;
+  }
+  .chart-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 50px auto;
+    padding: 12px;
+    border: 2px solid white;
+    border-radius: 10px;
+    box-sizing: border-box;
+  }
+  .bar {
+    padding: 5px;
+    margin-bottom: 5px;
+    border-radius: 5px;
+    display: flex;
+    align-items: center;
+  }
+  .bar-text {
+    margin-right: 10px;
+  }
 </style>
 </head>
 <body>
@@ -57,103 +80,180 @@
     <p id="studentName"></p>
   </div>
   <div class="buttons">
-    <button id="correctBtn" onclick="answeredCorrectly()">Answered correctly</button>
-    <button id="incorrectBtn" onclick="answeredIncorrectly()">Couldn't answer correctly</button>
-    <button id="pickAnotherBtn" onclick="pickAnotherStudent()">Pick another student</button>
+    <button id="correctBtn">Answered correctly</button>
+    <button id="incorrectBtn">Couldn't answer correctly</button>
+    <button id="pickAnotherBtn">Pick another student</button>
+    <button id="endBtn">End Quiz</button>
   </div>
+  <footer id="footerText">Powered by Sourabh Suneja<br><br><span style = "font-size: 12px">(Student selection is randomised with weighted probability method. The chance of a student getting selected again reduces as they get more and more chances to answer)</span></footer>
 </div>
 
 <script>
-  // Array of questions
-  const questions = [
-    "What are the two types of data?",
-    "Which of these is an example of qualitative data? Age, Height, Beauty, or Distance?",
-    "Tanu is writing an application in MS Word. What form of data do you think she is creating?",
-    "The data that can be represented by finite numbers is called _______ data.",
-    "What is the difference between discrete and continuous data?",
-    "What do you understand by data?",
-    "Differentiate between qualitative and quantitative data.",
-    "Explain text data with the help of an example.",
-    "Why is data important? Explain with the help of an example.",
-    "Describe quantitative data and its types with the help of an example.",
-    "Give any one real-life example that explains the use of data.",
-    "What is primary data?",
-    "In Binary representation, there are only ______ states."
-  ];
-
-  // Array of student names
-  const students = [
-    "Aanya Sharma", "Aryan Sharma", "Atharva Sharma", "Bhavya Choudhary", "Chitransh Agrawal",
-    "Devansh Ratnu", "Devanshi Sharma", "Dipanshu Choudhary", "Gourav Saini", "Harsh", "Harshita",
-    "Hemal Kanwar", "Himanshu Yadav", "Ishika Meena", "Jaanvi", "Jigyasa Sharma", "Karan Choudhary",
-    "Kartikay Sharma", "Keshav Vyas", "Krishna Meena", "Krishna Saini", "Kunal Jangid", "Kushagra Singh",
-    "Madhavi Kumawat", "Manas Jangid", "Pari Yadav", "Pradhuman Singh", "Pranjal Singh Meena",
-    "Reyansh Jangir", "Rishabh", "Ritu Rarh", "Riya Sharma", "Safal Kumawat", "Sameer",
-    "Shivam Sharma", "Sidarth", "Suhana Budania", "Supriya Yadav", "Vatsal Dhinwa", "Vihaan Choudhary",
-    "Vihan Chhabarwal", "Yashasvi Kumawat"
-  ];
-
-  // Array to store scores
-  let scores = {};
-
-  // Array to store absent students
-  let absentStudents = [];
-
-  // Index to keep track of current question
-  let currentQuestionIndex = 0;
-
   // Function to initialize quiz
-  function initializeQuiz() {
-    scores = {};
-    absentStudents = [];
-    currentQuestionIndex = 0;
+  async function initializeQuiz() {
+  try {
+    let studentsFileName = "8A2.txt";
+    let questionsFileName = "questions.txt";
+    
+    // Add .txt extension if not already provided by the user
+    if (!studentsFileName.endsWith('.txt')) {
+      studentsFileName += '.txt';
+    }
+    if (!questionsFileName.endsWith('.txt')) {
+      questionsFileName += '.txt';
+    }
+
+    if (!studentsFileName || !questionsFileName) {
+      throw new Error("Invalid file names");
+    }
+    const studentsData = await fetchData(studentsFileName);
+    const questionsData = await fetchData(questionsFileName);
+    startQuiz(studentsData, questionsData);
+  } catch (error) {
+    console.error(error.message);
+  }
+}
+
+  // Function to fetch data from a file using AJAX and return a promise
+  function fetchData(fileName) {
+    return new Promise((resolve, reject) => {
+      const xhr = new XMLHttpRequest();
+      xhr.onreadystatechange = function() {
+        if (xhr.readyState === XMLHttpRequest.DONE) {
+          if (xhr.status === 200) {
+            const data = xhr.responseText.split('\n').map(item => item.trim()).filter(item => item !== '');
+            resolve(data);
+          } else {
+            reject(new Error("Failed to load data"));
+          }
+        }
+      };
+      xhr.open("GET", fileName, true);
+      xhr.send();
+    });
+  }
+
+  // Function to start the quiz after questions and students are loaded
+  function startQuiz(students, questions) {
+    window.students = students;
+    window.questions = questions;
     displayQuestion();
+    document.getElementById("correctBtn").addEventListener("click", answeredCorrectly);
+    document.getElementById("incorrectBtn").addEventListener("click", answeredIncorrectly);
+    document.getElementById("pickAnotherBtn").addEventListener("click", pickAnotherStudent);
+
+document.getElementById("endBtn").addEventListener("click", displayScores);
   }
 
   // Function to display question and student name
   function displayQuestion() {
+    if (!window.students || !window.questions) {
+      console.log("Students or questions data not loaded.");
+      return;
+    }
     const questionText = document.getElementById("questionText");
     const studentName = document.getElementById("studentName");
-    questionText.textContent = questions[currentQuestionIndex];
+    questionText.textContent = window.questions[currentQuestionIndex];
     let randomStudent = pickRandomStudent();
     studentName.textContent = "Question for " + randomStudent;
+    speakUp(questionText.textContent, 0.8);
   }
 
-  // Function to pick a random student, ensuring they are not absent
-  function pickRandomStudent() {
-    let randomStudentIndex;
+  
+
+
+// Function to pick a random student with reduced chances as they answer more questions
+function pickRandomStudent() {
+    let weightedStudents = [];
+    
+    // Populate the array with students based on their chances
+    for (let student of window.students) {
+        for (let i = 0; i < maxChances - (chances[student] || 0); i++) {
+            weightedStudents.push(student);
+        }
+    }
+
+    // Select a random student from the weighted array
+    let randomIndex;
+    let randomStudent;
     do {
-      randomStudentIndex = Math.floor(Math.random() * students.length);
-      var randomStudent = students[randomStudentIndex];
+        randomIndex = Math.floor(Math.random() * weightedStudents.length);
+        randomStudent = weightedStudents[randomIndex];
     } while (absentStudents.includes(randomStudent));
-    return randomStudent;
-  }
+     
+    return randomStudent || 'no one (all students have exhausted their chances). Click on "End Quiz" to display scores.';
+}
+
 
   // Function to handle correct answer
   function answeredCorrectly() {
-    const currentStudent = document.getElementById("studentName").textContent.split(" ")[2];
+    var text = document.getElementById('studentName').textContent;
+
+var index = text.indexOf('for');
+
+const currentStudent = text.substring(index + 4);
+
+
     if (scores[currentStudent] === undefined) {
       scores[currentStudent] = 1;
     } else {
       scores[currentStudent]++;
     }
+
+if (chances[currentStudent] === undefined) {
+      chances[currentStudent] = 1;
+    } else {
+      chances[currentStudent]++;
+    }
+
+
     nextQuestion();
   }
 
   // Function to handle incorrect answer
   function answeredIncorrectly() {
+
+    var text = document.getElementById('studentName').textContent;
+
+var index = text.indexOf('for');
+
+const currentStudent = text.substring(index + 4);
+
+
+    if (chances[currentStudent] === undefined) {
+      chances[currentStudent] = 1;
+    } else {
+      chances[currentStudent]++;
+    }
     nextQuestion();
   }
 
   // Function to pick another student
   function pickAnotherStudent() {
+   
+var text = document.getElementById('studentName').textContent;
+
+var index = text.indexOf('for');
+
+const currentStudent = text.substring(index + 4);
+
+
+    if (chances[currentStudent] === undefined) {
+      chances[currentStudent] = 1;
+    } else {
+      chances[currentStudent]++;
+    }
+
     displayQuestion();
   }
 
   // Function to move to the next question
   function nextQuestion() {
     currentQuestionIndex++;
-    if (currentQuestionIndex < questions.length) {
+    
+
+
+    if (currentQuestionIndex < window.questions.length) {
       displayQuestion();
     } else {
       displayScores();
@@ -165,12 +265,165 @@
     const container = document.querySelector(".container");
     container.innerHTML = "<h1>Scores</h1>";
     for (const student in scores) {
-      container.innerHTML += "<p>" + student + ": " + scores[student] + "</p>";
+      container.innerHTML += "<p>" + student + ": " + scores[student] + "/" + chances[student] + "</p>";
     }
+    displayChart();
+    container.innerHTML += "<footer id='footerText'>Powered by Sourabh Suneja</footer>";
   }
+
+  // Array to store scores
+  let scores = {};
+  let chances = {};
+
+
+// Ask the user for the maximum chances
+let maxChancesInput = prompt("How many maximum chances do you want to give to each student? (Defaults to 3)");
+// Convert the input to a number
+let maxChances = parseInt(maxChancesInput);
+
+// Check if the input is a valid number
+if (isNaN(maxChances) || maxChances <= 0) {
+    // If not a valid number, set default value to 3
+    maxChances = 3;
+}
+
+
+
+  // Array to store absent students
+  let absentStudents = [];
+
+  // Index to keep track of current question
+  let currentQuestionIndex = 0;
 
   // Initialize quiz when the page loads
   window.onload = initializeQuiz;
+
+
+
+
+
+// Function to calculate percentage and display chart
+  function displayChart() {
+    var chartContainer = document.createElement('div');
+    chartContainer.classList.add('chart-container');
+
+    var studentData = [];
+
+    // Calculate percentages and store student data
+    for (var student in scores) {
+      var percentage = (scores[student] / chances[student]) * 100;
+      studentData.push({ name: student, percentage: percentage });
+    }
+
+    // Sort students based on their percentages (highest to lowest)
+    studentData.sort(function(a, b) {
+      return b.percentage - a.percentage;
+    });
+
+    // Create bars for each student
+    studentData.forEach(function(student) {
+      var bar = document.createElement('div');
+      var shade = Math.round(205 - (student.percentage * 1.55)); // Calculate shade of green
+      shade = Math.max(shade, 50); // Ensure a minimum value for visibility
+      bar.style.backgroundColor = 'rgb(0,' + '120' + ',0)'; // Set background color
+      bar.classList.add('bar');
+      bar.style.width = student.percentage + '%';
+      
+      // Create span for text and percentage
+      var barText = document.createElement('span');
+      barText.classList.add('bar-text');
+      barText.textContent = student.name + ': ' + student.percentage.toFixed(2) + '%';
+      bar.appendChild(barText);
+      
+      chartContainer.appendChild(bar);
+    });
+
+    document.body.appendChild(chartContainer);
+
+// create download scoresheet button
+// Create a button element
+var button = document.createElement("button");
+// Set button text
+button.innerHTML = "Download Scoresheet";
+// Set button id
+button.id = "downloadBtn";
+// Center align the button
+button.style.display = "block";
+button.style.margin = "auto";
+
+// Append the button to the end of the page body
+document.body.appendChild(button);
+// Attach click event handler to the button
+document.getElementById("downloadBtn").addEventListener("click", downloadCSV);
+
+  }
+
+
+
+function speakUp(text, speed) {
+    // Replace underscores with "dash"
+    text = text.replace(/_{2,20}/g, "dash");
+
+    // Create a new SpeechSynthesisUtterance instance
+    var utterance = new SpeechSynthesisUtterance();
+    
+    // Set the modified text to be spoken
+    utterance.text = text;
+    
+    // Set the Indian English voice
+    utterance.voice = speechSynthesis.getVoices().find(function(voice) {
+        return voice.lang === 'en-IN';
+    });
+
+    // Set the speed of speaking
+    utterance.rate = speed || 1.0; // If speed is not specified, default to 1.0
+
+    // Speak the text
+    speechSynthesis.speak(utterance);
+}
+
+// Function to create CSV data
+function createCSV(scores, chances) {
+  // Create a CSV header
+  var csv = "Name, Score, Chance\n";
+
+  // Iterate through the chances object to ensure all names are included
+  Object.keys(chances).forEach(function(name) {
+    // Get the score for the current name
+    var score = scores[name] !== undefined ? scores[name] : 0;
+    // Get the chance for the current name
+    var chance = chances[name];
+    // Append data to CSV
+    csv += name + "," + score + "," + chance + "\n";
+  });
+
+  return csv;
+}
+
+// Function to download CSV file
+function downloadCSV() {
+  // Create CSV data
+  var csvData = createCSV(scores, chances);
+  // Create a Blob object from the CSV data
+  var blob = new Blob([csvData], { type: "text/csv;charset=utf-8" });
+  // Create a temporary URL for the Blob
+  var url = window.URL.createObjectURL(blob);
+  // Create a temporary anchor element
+  var a = document.createElement("a");
+  // Set the href attribute of the anchor to the temporary URL
+  a.href = url;
+  // Set the download attribute to specify the filename
+  a.download = "scoresheet.csv";
+  // Append the anchor to the body
+  document.body.appendChild(a);
+  // Click the anchor to trigger download
+  a.click();
+  // Remove the anchor from the body
+  document.body.removeChild(a);
+  // Revoke the temporary URL to free up memory
+  window.URL.revokeObjectURL(url);
+}
+
 </script>
 
 </body>
