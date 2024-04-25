@@ -1,0 +1,18 @@
+What do you understand by data?
+In Binary representation, there are only ______ states.
+Explain text data with the help of an example.
+What are the two types of data?
+Differentiate between qualitative and quantitative data.
+Give any one real life example that explains the use of data.
+Describe quantitative data and its types with the help of examples.
+Why is data important? Explain with the help of an example.
+Anupriya is typing a letter in MS Word. What form of data do you think she is creating when writing a letter in MS Word? (audio/video/image/text)
+Which of these is an example of quantitative data? Punctuality, Kindness, Intelligence, Flow of water per hour?
+The data that can be represented by finite numbers is called _______ data.
+What is the difference between discrete and continuous data?
+How do you think e-commerce websites like Amazon use data science to improve their sales?
+What is primary data?
+In what ways do you think social media platforms like Facebook use data science?
+The temperature of a city is an example of ________ data. (discrete/continuous)
+The number of chocolates in Bhavya's bag is an example of ________ data. (discrete/continuous)
+Priya recently visited an optics shop for getting her eyesight checked. Afterwards, she noticed that Google started showing her advertisements related to contact lenses. How do you think Google might have come to know that she is interested in buying lenses?
