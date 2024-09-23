@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;600&display=swap" rel="stylesheet">
+    <style>
+        * {
+            box-sizing: border-box;
+            max-height: 999999px;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background: linear-gradient(135deg, #f5f7fa, #c3cfe2);
+        }
+
+        #certificate-container {
+            position: relative;
+            width: 90%;
+            max-width: 800px;
+            border: 2px solid #ddd;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            background: white;
+            margin-bottom: 20px;
+        }
+
+        #certificate {
+            width: 100%;
+            display: block;
+        }
+
+        #name-overlay {
+            position: absolute;
+            top: 48%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 0.75em;
+            color: #333;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+            font-weight: bold;
+        }
+
+        .btn:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        #controls {
+            text-align: center;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div id="certificate-container">
+        <img id="certificate" src="certificate.jpg" alt="Certificate">
+        <div id="name-overlay"></div>
+    </div>
+
+    <div id="controls">
+        <button class="btn" onclick="generateCertificate()">Download Certificate</button>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script>
+        // Variable storing the name to be printed
+        const personName = new URLSearchParams(window.location.search).get('name') || "Name here";
+        
+        // Set the name on the certificate
+        document.getElementById('name-overlay').textContent = personName;
+
+        // decrease font size if the name string is too big
+        if(personName.length > 35) {
+              document.getElementById('name-overlay').style.fontSize = '0.46em';
+        }
+        else if(personName.length > 25) {
+              document.getElementById('name-overlay').style.fontSize = '0.6em';
+        }
+
+        // Function to capture the image and download it with higher quality
+        function generateCertificate() {
+            const certificateContainer = document.getElementById('certificate-container');
+
+            html2canvas(certificateContainer, {
+                scale: 3, // Increase the scale for higher resolution
+                useCORS: true // Ensure CORS support if the image is from a different domain
+            }).then(function(canvas) {
+                const link = document.createElement('a');
+                link.href = canvas.toDataURL('image/png', 1.0); // Highest quality
+                link.download = 'certificate.png';
+                link.click();
+            });
+        }
+    </script>
+</body>
+</html>
