@@ -63,6 +63,12 @@
             margin-top: 10px;
         }
 
+        .profile p span {
+            font-size: 50px; 
+            display: inline-block; 
+            animation: bounce 2s infinite ease-in-out;
+        }
+
         .flipbook {
             margin-top: 30px;
             display: flex;
@@ -109,6 +115,14 @@
         footer a:hover {
             text-decoration: underline;
         }
+        @keyframes bounce {
+          0%, 100% {
+            transform: translateY(0); /* Start and end at the original position */
+          }
+          50% {
+            transform: translateY(10px); /* Move down slightly */
+          }
+        }
     </style>
 </head>
 <body>
@@ -116,7 +130,7 @@
         <div class="profile">
             <img src="kavya2.jpeg" alt="Kavya Sharma">
             <h1>Kavya Sharma</h1>
-            <p>Junior Editor &#8211; A creative star shining bright!<br><br>▼</p>
+            <p>Junior Editor &#8211; A creative star shining bright!<br><br><span>▼</span></p>
         </div>
 
         <div class="flipbook">
