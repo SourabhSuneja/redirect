@@ -1,1 +1,62 @@
- 
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anomaly Detection Tool</title>
+    <meta name="description" content="A fun banking simulation that demonstrates Anomaly Detection! Send money to different people, and the app will alert you if an unusual transaction is detected. Try it out!">
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1>Anomaly Detection Tool</h1>
+        <p class="description">
+            <strong>This app lets you send money to different people in a fun way!</strong><br><br>But be careful—if you try to send a much bigger amount than usual, the app will catch it and warn you. Try it out and see how <strong>AI-Based Anomaly Detection</strong> works! <br>
+        </p>
+        
+        <ul class="user-list">
+            <li data-name="Aanya Sharma">Aanya Sharma <div class="transactions"></div></li>
+            <li data-name="Atharva Sharma">Atharva Sharma <div class="transactions"></div></li>
+            <li data-name="Bhavya Choudhary">Bhavya Choudhary <div class="transactions"></div></li>
+            <li data-name="Bhumika Rathi">Bhumika Rathi <div class="transactions"></div></li>
+            <li data-name="Chitransh Agrawal">Chitransh Agrawal <div class="transactions"></div></li>
+            <li data-name="Devanshi Sharma">Devanshi Sharma <div class="transactions"></div></li>
+            <li data-name="Dipanshu Choudhary">Dipanshu Choudhary <div class="transactions"></div></li>
+            <li data-name="Gourav Saini">Gourav Saini <div class="transactions"></div></li>
+            <li data-name="Harsh">Harsh <div class="transactions"></div></li>
+            <li data-name="Harshita">Harshita <div class="transactions"></div></li>
+            <li data-name="Ishika">Ishika <div class="transactions"></div></li>
+            <li data-name="Jaanvi">Jaanvi <div class="transactions"></div></li>
+            <li data-name="Jigyasa">Jigyasa <div class="transactions"></div></li>
+        </ul>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal" id="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Transfer Money</h2>
+            <p id="recipient-name"></p>
+            <input type="number" id="amount" placeholder="Enter amount (₹)" min="1">
+            <button id="transfer-btn">Transfer</button>
+        </div>
+    </div>
+
+    <!-- Alert Box -->
+    <div class="alert-box" id="alert-box">
+        <i class="fas fa-exclamation-triangle"></i>
+        <p id="alert-text"></p>
+    </div>
+
+    <!-- Success Box -->
+    <div class="success-box" id="success-box">
+        <i class="fas fa-check-circle"></i>
+        <p id="success-text">Transaction Successful!</p>
+    </div>
+
+</body>
+</html>
+
