@@ -1,0 +1,139 @@
+* {
+   max-height: 9999999px;
+   box-sizing: border-box
+}
+
+/* General Styles */
+body {
+    font-family: 'Arial', sans-serif;
+    background-color: #f5f7fa;
+    text-align: center;
+    padding: 26px 8px;
+    line-height: 1.4;
+}
+
+/* Container */
+.container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 400px;
+    margin: auto;
+}
+
+.description {
+    font-size: 16px;
+    color: #555;
+}
+
+/* User List */
+.user-list {
+    list-style: none;
+    padding: 0;
+}
+
+.user-list li {
+    background: linear-gradient(135deg, #6e8efb, #a777e3);
+    color: white;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.3s;
+    position: relative;
+}
+
+.user-list li:hover {
+    background: linear-gradient(135deg, #5b78f7, #9150e0);
+    transform: scale(1.05);
+}
+
+.transactions {
+    font-size: 12px;
+    margin-top: 5px;
+    color: #f0f0f0;
+}
+
+/* Modal */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    justify-content: center;
+    align-items: center;
+}
+
+.modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    width: 300px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    animation: fadeIn 0.3s;
+}
+
+.close {
+    float: right;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+input {
+    width: 80%;
+    padding: 8px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+}
+
+button {
+    background: #28a745;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+button:hover {
+    background: #218838;
+}
+
+/* Alert Box */
+.alert-box, .success-box {
+    display: none;
+    position: fixed;
+    top: 0;
+    right: 0;
+    width: 100%;
+    padding: 15px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    animation: slideIn 0.5s;
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.alert-box {
+    background: #ff4d4d;
+    color: white;
+}
+
+.success-box {
+    background: #28a745;
+    color: white;
+}
+
+.alert-box i, .success-box i {
+    margin-right: 8px;
+}
+
+@keyframes slideIn {
+    from { right: -100px; opacity: 0; }
+    to { right: 10px; opacity: 1; }
+}
