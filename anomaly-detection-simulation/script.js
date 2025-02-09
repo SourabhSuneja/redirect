@@ -41,7 +41,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // If there are at least two previous transactions, check for anomaly
         if (transactionHistory[recipient].length > 1) {
             const avg = transactionHistory[recipient].reduce((a, b) => a + b, 0) / transactionHistory[recipient].length;
-            const threshold = avg * 1.5;
+            const threshold = avg * 2.5;
 
             if (amount > threshold) {
                 showAlert(`Unusual transaction detected! Transaction failed.`);
