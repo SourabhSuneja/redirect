@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Personality Report</title>
+    <meta name="description" content="Access your Personality & Intelligence Report crafted by Sourabh Sir. Select your name to view your AI-generated report based on your responses.">
+    <style>
+        * {
+            max-height: 99999999px;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: #0d0d0d;
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .header {
+            position: absolute;
+            top: 20px;
+            text-align: center;
+        }
+        .header h1 {
+            font-size: 28px;
+            margin: 16px;
+        }
+        .header p {
+            font-size: 16px;
+            color: #ff8c00;
+            color: rgb(230,230,230);
+            margin: 5px 0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(5px);
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 4px 10px rgba(255, 140, 0, 0.3);
+        }
+        h2 {
+            font-size: 18px;
+            margin-bottom: 15px;
+        }
+        select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ff8c00;
+            font-size: 16px;
+            background: #1a1a1a;
+            color: white;
+            outline: none;
+            transition: 0.3s;
+        }
+        select:focus {
+            box-shadow: 0 0 10px #00bfff;
+            border-color: #00bfff;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background: #ff8c00;
+            color: black;
+            font-size: 18px;
+            font-weight: bold;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #e07b00;
+        }
+        /* Message Box Styling */
+        .message-box {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #222;
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 15px rgba(255, 140, 0, 0.5);
+            width: 90%;
+            max-width: 350px;
+            text-align: center;
+        }
+        .message-box button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #ff8c00;
+            border: none;
+            color: black;
+            font-size: 16px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .message-box button:hover {
+            background: #e07b00;
+        }
+        /* Footer */
+        .footer {
+            position: absolute;
+            bottom: 10px;
+            font-size: 12px;
+            width: 90%;
+            max-width: 600px;
+            color: #ccc;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Personality & Intelligence Report</h1>
+        <p>Crafted by Sourabh Sir</p>
+    </div>
+
+    <div class="container">
+        <h2>Select Your Name</h2>
+        <select id="studentSelect">
+            <option value="">-- Choose Your Name --</option>
+            <option>Aanya Sharma</option>
+            <option>Atharva Sharma</option>
+            <option>Bhavya Choudhary</option>
+            <option>Bhumika Rathi</option>
+            <option>Chitransh Agrawal</option>
+            <option>Devanshi Sharma</option>
+            <option>Dipanshu Choudhary</option>
+            <option>Gourav Saini</option>
+            <option>Harsh</option>
+            <option>Harshita</option>
+            <option>Ishika Meena</option>
+            <option>Jaanvi</option>
+            <option>Jigyasa Sharma</option>
+            <option>Kartikay Sharma</option>
+            <option>Keshav Vyas</option>
+            <option>Krishna Meena</option>
+            <option>Krishna Saini</option>
+            <option>Kunal Jangid</option>
+            <option>Madhavi Kumawat</option>
+            <option>Niharika Jangid</option>
+            <option>Nitin Singh Gehlot</option>
+            <option>Pari Yadav</option>
+            <option>Pradhuman Singh</option>
+            <option>Pranjal Singh Meena</option>
+            <option>Reyansh Jangir</option>
+            <option>Rishabh</option>
+            <option>Ritu Rarh</option>
+            <option>Sameer</option>
+            <option>Shivam Sharma</option>
+            <option>Suhana Budania</option>
+            <option>Suman Choudhary</option>
+            <option>Vihaan Choudhary</option>
+            <option>Vihan Chhabarwal</option>
+            <option>Yashasvi Kumawat</option>
+        </select>
+        <button onclick="redirectToReport()">View Personality Report</button>
+    </div>
+
+    <!-- Custom Message Box -->
+    <div id="messageBox" class="message-box">
+        <p id="messageText">The report for this student does not exist. It may not have been created yet or the student may not have taken the personality test.</p>
+        <button onclick="closeMessageBox()">Okay</button>
+    </div>
+
+    <div class="footer">
+        <p>Disclaimer: These reports are AI-generated and based on students' responses. They are only for guidance and may not be 100% accurate. Always discuss with parents, teachers, or counselors before making decisions. Sourabh Sir is not responsible for any incorrect analysis.</p>
+    </div>
+
+    <script>
+        function redirectToReport() {
+            var studentName = document.getElementById("studentSelect").value;
+            if (studentName) {
+                var formattedName = studentName.toLowerCase().replace(/ /g, "-");
+                var url = "https://sourabhsuneja.github.io/redirect/report/" + formattedName + ".html";
+
+                fetch(url, { method: 'HEAD' })
+                    .then(response => {
+                        if (response.ok) {
+                            window.location.href = url;
+                        } else {
+                            showMessageBox("The report for " + studentName + " does not exist. It may not have been created yet or the student may not have taken the personality test.");
+                        }
+                    })
+                    .catch(() => {
+                        showMessageBox("Error checking the report. Please try again later.");
+                    });
+
+            } else {
+                showMessageBox("Please select a name.");
+            }
+        }
+
+        function showMessageBox(message) {
+            document.getElementById("messageText").innerText = message;
+            document.getElementById("messageBox").style.display = "block";
+        }
+
+        function closeMessageBox() {
+            document.getElementById("messageBox").style.display = "none";
+        }
+    </script>
+
+</body>
+</html>
