@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Suhana's Personality & Intelligence Report</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+        h1, h2 {
+            color: #333;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: #fff;
+        }
+        th, td {
+            border: 1px solid #ddd;
+            padding: 10px;
+            text-align: left;
+        }
+        th {
+            background: #007bff;
+            color: white;
+        }
+        strong {
+            color: #007bff;
+        }
+        .section {
+            background: white;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 5px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Suhana's Personality & Intelligence Report</h1>
+
+    <div class="section">
+        <h2>1. Personality Overview</h2>
+        <p><strong>Introversion (0%) vs. Extraversion (100%)</strong><br>
+        Suhana is a <strong>highly extroverted</strong> individual who thrives in social environments. She enjoys engaging with others, expressing her thoughts, and participating in group activities.</p>
+
+        <p><strong>Sensing (25%) vs. Intuition (75%)</strong><br>
+        She has a <strong>strong intuitive mindset</strong>, focusing on ideas, possibilities, and abstract concepts rather than just facts and details.</p>
+
+        <p><strong>Thinking (25%) vs. Feeling (75%)</strong><br>
+        Suhana is <strong>emotionally driven</strong>, making decisions based on values, empathy, and personal connections rather than pure logic.</p>
+
+        <p><strong>Judging (28.57%) vs. Perceiving (71.43%)</strong><br>
+        She is <strong>adaptable and spontaneous</strong>, preferring flexibility over rigid structures in her approach to learning and daily activities.</p>
+
+        <p><strong>Additional Observations:</strong></p>
+        <ul>
+            <li><strong>Highly expressive and communicative</strong>, making her a great storyteller and performer.</li>
+            <li><strong>Strong social and emotional intelligence</strong>, allowing her to connect with people effortlessly.</li>
+            <li><strong>Creative and imaginative</strong>, thriving in artistic and expressive fields.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>2. Multiple Intelligence Profile</h2>
+        <table>
+            <tr>
+                <th>Type of Intelligence</th>
+                <th>Score (out of 9)</th>
+                <th>Description</th>
+            </tr>
+            <tr>
+                <td><strong>Linguistic (Word Smart)</strong></td>
+                <td>8</td>
+                <td>Excellent communication and storytelling skills.</td>
+            </tr>
+            <tr>
+                <td><strong>Musical (Music Smart)</strong></td>
+                <td>8</td>
+                <td>Strong sense of rhythm, melody, and musical expression.</td>
+            </tr>
+            <tr>
+                <td><strong>Logical (Number Smart)</strong></td>
+                <td>6</td>
+                <td>Moderate analytical and reasoning skills.</td>
+            </tr>
+            <tr>
+                <td><strong>Bodily-Kinesthetic (Body Smart)</strong></td>
+                <td>8</td>
+                <td>Strong coordination and movement skills.</td>
+            </tr>
+            <tr>
+                <td><strong>Visual-Spatial (Picture Smart)</strong></td>
+                <td>9</td>
+                <td>Exceptional ability to visualize and create mental images.</td>
+            </tr>
+            <tr>
+                <td><strong>Interpersonal (People Smart)</strong></td>
+                <td>9</td>
+                <td>Highly social and able to connect with people easily.</td>
+            </tr>
+            <tr>
+                <td><strong>Intrapersonal (Self Smart)</strong></td>
+                <td>8</td>
+                <td>Strong self-awareness and emotional understanding.</td>
+            </tr>
+            <tr>
+                <td><strong>Naturalistic (Nature Smart)</strong></td>
+                <td>8</td>
+                <td>A deep appreciation for nature and the environment.</td>
+            </tr>
+            <tr>
+                <td><strong>Fine-Kinesthetic (Hand Skills)</strong></td>
+                <td>Excellent</td>
+                <td>Highly skilled in detailed hand-eye coordination tasks.</td>
+            </tr>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>3. Career Suggestions</h2>
+        <p>Based on Suhana’s strengths in <strong>linguistic, musical, and interpersonal intelligence</strong>, the following career paths may be suitable for her:</p>
+
+        <h3>Creative & Expressive Careers:</h3>
+        <ul>
+            <li><strong>Writer, Journalist, or Public Speaker</strong> – Her <strong>linguistic intelligence</strong> makes her an excellent communicator.</li>
+            <li><strong>Musician, Singer, or Performer</strong> – Her <strong>musical intelligence</strong> supports a career in the performing arts.</li>
+            <li><strong>Actor, Director, or Stage Performer</strong> – Her <strong>extroverted and expressive nature</strong> suits performance-based careers.</li>
+        </ul>
+
+        <h3>People-Oriented Careers:</h3>
+        <ul>
+            <li><strong>Psychologist, Counselor, or Social Worker</strong> – Her <strong>emotional intelligence</strong> makes her a great fit for helping professions.</li>
+            <li><strong>Teacher or Public Relations Specialist</strong> – Her <strong>interpersonal skills</strong> make her a great educator and communicator.</li>
+        </ul>
+
+        <h3>Other Potential Career Paths:</h3>
+        <ul>
+            <li><strong>Fashion Designer or Stylist</strong> – Her <strong>visual-spatial intelligence</strong> makes her a great fit for creative design fields.</li>
+            <li><strong>Entrepreneur or Marketing Specialist</strong> – Her <strong>extroversion and creativity</strong> could lead her to success in business and branding.</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>4. Guidelines for Parents and Teachers</h2>
+        <ul>
+            <li>Encourage <strong>creative expression</strong> through writing, drama, or music.</li>
+            <li>Provide opportunities for <strong>social engagement</strong> and leadership roles.</li>
+            <li>Support her <strong>visual and artistic talents</strong> with projects that involve designing, painting, or film-making.</li>
+            <li>Foster her <strong>emotional intelligence</strong> by discussing feelings and perspectives in different situations.</li>
+        </ul>
+    </div>
+
+    <p><strong>Disclaimer:</strong> This report is based on Suhana’s responses and is <strong>only indicative</strong>. Final career and personality decisions should involve discussions with <strong>teachers, parents, and career counselors</strong>.</p>
+
+</body>
+</html>
