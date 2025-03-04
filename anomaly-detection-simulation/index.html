@@ -258,13 +258,13 @@
         }
 
         function detectAnomaly(amount) {
-            if (transactions.length < 3) return false;
+            if (transactions.length < 4) return false;
 
             let amounts = transactions.map(t => t.amount);
             let mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
             let stdDev = Math.sqrt(amounts.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / amounts.length);
 
-            return Math.abs(amount - mean) > 2 * stdDev;
+            return Math.abs(amount - mean) > 2.5 * stdDev;
         }
     </script>
 </body>
