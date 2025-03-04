@@ -26,11 +26,21 @@
       height: 100vh;
     }
     
+    /* Logo */
+    .logo {
+      width: 90px;
+      height: 90px;
+      margin-top: 30px;
+      border-radius: 50%;
+      border: 3px solid white;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
     /* Page Heading */
     .page-heading {
       font-size: 28px;
       font-weight: bold;
-      margin-top: 40px;
+      margin-top: 15px;
       margin-bottom: 20px;
       text-align: center;
       color: #007bff;
@@ -59,18 +69,6 @@
       font-weight: bold;
       color: white;
       border-bottom: 3px solid #0056b3;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    
-    .logo {
-      width: 70px;
-      height: 70px;
-      margin-bottom: 10px;
-      border-radius: 50%;
-      border: 2px solid white;
-      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
     }
     
     /* Chat Box */
@@ -156,12 +154,10 @@
   </style>
 </head>
 <body>
+  <img src="https://i.postimg.cc/Y0qB2Wyc/images-2024-05-21-T183208-408.jpg" alt="School Logo" class="logo">
   <div class="page-heading">Welcome to Jamna Vidyapeeth AI Assistant</div>
   <div class="chat-container">
-    <div class="header">
-      <img src="https://i.postimg.cc/Y0qB2Wyc/images-2024-05-21-T183208-408.jpg" alt="School Logo" class="logo">
-      AI Parent Assistant
-    </div>
+    <div class="header">AI Parent Assistant</div>
     <div class="chat-box" id="chat-box">
       <div class="message bot-message">
         Hello! Ask me anything about Jamna Vidyapeeth.
