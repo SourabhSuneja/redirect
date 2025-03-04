@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Anomaly Detection in Transactions</title>
     <style>
+        * {
+            max-height: 9999999px;
+        }
         body {
             background-color: #121212;
             color: white;
@@ -20,11 +23,11 @@
         }
 
         .description {
-            font-size: 16px;
+            font-size: 15px;
             color: #ddd;
             max-width: 600px;
             margin: 10px auto 20px;
-            line-height: 1.6;
+            line-height: 1.2;
         }
 
         .names-list {
@@ -254,7 +257,7 @@
         }
 
         function detectAnomaly(amount) {
-            if (transactions.length < 5) return false;
+            if (transactions.length < 4) return false;
 
             let amounts = transactions.map(t => t.amount);
             let mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
