@@ -258,7 +258,7 @@
         }
 
         function detectAnomaly(amount) {
-            if (transactions.length < 4) return false;
+            if (transactions.length < 4 || amount < 10000) return false;
 
             let amounts = transactions.map(t => t.amount);
             let mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
