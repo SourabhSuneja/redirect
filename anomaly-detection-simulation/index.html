@@ -264,7 +264,7 @@
             let mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
             let stdDev = Math.sqrt(amounts.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / amounts.length);
 
-            return Math.abs(amount - mean) > 2.5 * stdDev;
+            return Math.abs(amount - mean) > 3 * stdDev;
         }
     </script>
 </body>
