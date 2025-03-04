@@ -1,71 +1,267 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-      <!-- Google tag -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-QF1MCK0B9Y"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-QF1MCK0B9Y');
-</script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anomaly Detection Tool</title>
-    <meta name="description" content="A fun banking simulation that demonstrates Anomaly Detection! Send money to different people, and the app will alert you if an unusual transaction is detected. Try it out!">
-    <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <title>Anomaly Detection in Transactions</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: white;
+            font-family: 'Poppins', sans-serif;
+            text-align: center;
+            padding: 20px;
+        }
+
+        h1 {
+            color: #ff9800;
+            font-size: 30px;
+            text-transform: uppercase;
+        }
+
+        .description {
+            font-size: 16px;
+            color: #ddd;
+            max-width: 600px;
+            margin: 10px auto 20px;
+            line-height: 1.6;
+        }
+
+        .names-list {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin: 20px 0;
+        }
+
+        .name-tile {
+            background: #1e1e1e;
+            padding: 15px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: transform 0.3s, background 0.3s;
+            font-weight: bold;
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+        }
+
+        .name-tile:hover {
+            transform: scale(1.1);
+            background: #ff9800;
+            color: black;
+        }
+
+        #transaction-log {
+            margin-top: 30px;
+            display: none; /* Initially hidden */
+        }
+
+        table {
+            width: 80%;
+            margin: auto;
+            border-collapse: collapse;
+            background: #1e1e1e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        th, td {
+            padding: 12px;
+            border-bottom: 1px solid white;
+        }
+
+        th {
+            background-color: #333;
+        }
+
+        td {
+            text-align: center;
+        }
+
+        .success {
+            color: limegreen;
+        }
+
+        .error {
+            color: red;
+            font-weight: bold;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background: #222;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.3);
+        }
+
+        .close {
+            float: right;
+            cursor: pointer;
+            color: red;
+            font-size: 22px;
+            font-weight: bold;
+        }
+
+        input[type="number"] {
+            padding: 12px;
+            border: 2px solid #555;
+            border-radius: 8px;
+            outline: none;
+            font-size: 16px;
+            width: 80%;
+            margin: 10px 0;
+            text-align: center;
+            background: #1e1e1e;
+            color: white;
+        }
+
+        input[type="number"]:focus {
+            border-color: #ff9800;
+            box-shadow: 0 0 10px rgba(255, 152, 0, 0.8);
+        }
+
+        button {
+            padding: 12px 20px;
+            font-size: 16px;
+            font-weight: bold;
+            background: #ff9800;
+            border: none;
+            color: black;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(255, 152, 0, 0.5);
+        }
+
+        button:hover {
+            background: #e68900;
+            transform: scale(1.05);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+    </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>Anomaly Detection Tool</h1>
+        <h1>Anomaly Detection in Transactions</h1>
         <p class="description">
-            <strong>This app lets you send money to different people in a fun way!</strong><br><br>But be careful—if you try to send a much bigger amount than usual, the app will catch it and warn you. Try it out and see how <strong>AI-Based Anomaly Detection</strong> works! <br>
+            This app lets you send money to different people in a fun way!<br><br>
+            But be careful—if you try to send a much bigger amount than usual, the app will catch it and warn you. Try it out and see how AI-Based Anomaly Detection works!
         </p>
-        
-        <ul class="user-list">
-            <li data-name="Aanya Sharma">Aanya Sharma <div class="transactions"></div></li>
-            <li data-name="Atharva Sharma">Atharva Sharma <div class="transactions"></div></li>
-            <li data-name="Bhavya Choudhary">Bhavya Choudhary <div class="transactions"></div></li>
-            <li data-name="Bhumika Rathi">Bhumika Rathi <div class="transactions"></div></li>
-            <li data-name="Chitransh Agrawal">Chitransh Agrawal <div class="transactions"></div></li>
-            <li data-name="Devanshi Sharma">Devanshi Sharma <div class="transactions"></div></li>
-            <li data-name="Dipanshu Choudhary">Dipanshu Choudhary <div class="transactions"></div></li>
-            <li data-name="Gourav Saini">Gourav Saini <div class="transactions"></div></li>
-            <li data-name="Harsh">Harsh <div class="transactions"></div></li>
-            <li data-name="Harshita">Harshita <div class="transactions"></div></li>
-            <li data-name="Ishika">Ishika <div class="transactions"></div></li>
-            <li data-name="Jaanvi">Jaanvi <div class="transactions"></div></li>
-            <li data-name="Jigyasa">Jigyasa <div class="transactions"></div></li>
-        </ul>
-    </div>
 
-    <!-- Modal -->
-    <div class="modal" id="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <h2>Transfer Money</h2>
-            <p id="recipient-name"></p>
-            <input type="number" id="amount" placeholder="Enter amount (₹)" min="1">
-            <button id="transfer-btn">Transfer</button>
+        <div class="names-list">
+            <div class="name-tile" onclick="openTransactionModal('Amit')">Amit</div>
+            <div class="name-tile" onclick="openTransactionModal('Priya')">Priya</div>
+            <div class="name-tile" onclick="openTransactionModal('Rahul')">Rahul</div>
+            <div class="name-tile" onclick="openTransactionModal('Sneha')">Sneha</div>
+            <div class="name-tile" onclick="openTransactionModal('Vikas')">Vikas</div>
+        </div>
+
+        <div id="transaction-log">
+            <h2>Transaction Log</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Amount (₹)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="log-body"></tbody>
+            </table>
         </div>
     </div>
 
-    <!-- Alert Box -->
-    <div class="alert-box" id="alert-box">
-        <i class="fas fa-exclamation-triangle"></i>
-        <p id="alert-text"></p>
+    <div id="modal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeTransactionModal()">&times;</span>
+            <h2>Transfer Money</h2>
+            <p id="modal-name"></p>
+            <input type="number" id="amount" placeholder="Enter amount" />
+            <button onclick="processTransaction()">Transfer</button>
+            <p id="error-msg" style="color: red; font-weight: bold;"></p>
+        </div>
     </div>
 
-    <!-- Success Box -->
-    <div class="success-box" id="success-box">
-        <i class="fas fa-check-circle"></i>
-        <p id="success-text">Transaction Successful!</p>
-    </div>
+    <script>
+        let transactions = [];
+        let currentPerson = "";
 
+        function openTransactionModal(name) {
+            currentPerson = name;
+            document.getElementById("modal-name").textContent = `Send money to ${name}`;
+            document.getElementById("amount").value = "";
+            document.getElementById("error-msg").textContent = "";
+            document.getElementById("modal").style.display = "flex";
+        }
+
+        function closeTransactionModal() {
+            document.getElementById("modal").style.display = "none";
+        }
+
+        function processTransaction() {
+            let amount = parseFloat(document.getElementById("amount").value);
+            if (isNaN(amount) || amount <= 0) {
+                document.getElementById("error-msg").textContent = "Enter a valid amount!";
+                return;
+            }
+
+            let isAnomaly = detectAnomaly(amount);
+            let status = isAnomaly ? "Blocked (Anomaly Detected)" : "Success";
+
+            transactions.push({ name: currentPerson, amount: amount, status: status });
+
+            if (transactions.length === 1) {
+                document.getElementById("transaction-log").style.display = "block"; // Show transaction log
+            }
+
+            updateTransactionLog();
+
+            if (!isAnomaly) {
+                closeTransactionModal();
+            } else {
+                document.getElementById("error-msg").textContent = "⚠️ Unusual transaction detected! Transaction blocked.";
+            }
+        }
+
+        function updateTransactionLog() {
+            let logBody = document.getElementById("log-body");
+            logBody.innerHTML = "";
+
+            transactions.forEach((t) => {
+                let row = `<tr>
+                    <td>${t.name}</td>
+                    <td>₹${t.amount}</td>
+                    <td class="${t.status.includes('Blocked') ? 'error' : 'success'}">${t.status}</td>
+                </tr>`;
+                logBody.innerHTML += row;
+            });
+        }
+
+        function detectAnomaly(amount) {
+            if (transactions.length < 5) return false;
+
+            let amounts = transactions.map(t => t.amount);
+            let mean = amounts.reduce((a, b) => a + b, 0) / amounts.length;
+            let stdDev = Math.sqrt(amounts.map(x => Math.pow(x - mean, 2)).reduce((a, b) => a + b, 0) / amounts.length);
+
+            return Math.abs(amount - mean) > 2 * stdDev;
+        }
+    </script>
 </body>
 </html>
-
