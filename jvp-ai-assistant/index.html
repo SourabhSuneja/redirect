@@ -13,207 +13,162 @@
   </script>
   <script type="module" src="ai-prompt.js"></script>
   <style>
-/* General Styling */
-body {
-  font-family: 'Poppins', sans-serif;
-  background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
-  color: #fff;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
-}
-
-/* Smooth Fade-in Effect */
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-/* Chat Container */
-.chat-container {
-  width: 100%;
-  max-width: 450px;
-  height: 100%;
-  max-height: 600px;
-  background: rgba(18, 18, 18, 0.95);
-  border-radius: 12px;
-  box-shadow: 0px 0px 15px rgba(255, 255, 255, 0.1);
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  animation: fadeIn 0.8s ease-in-out;
-}
-
-/* Header */
-.header {
-  padding: 15px;
-  background: #1e1e1e;
-  text-align: center;
-  border-bottom: 2px solid #333;
-  box-shadow: 0px 2px 5px rgba(255, 255, 255, 0.1);
-}
-
-.title {
-  font-size: 1.3em;
-  font-weight: bold;
-  letter-spacing: 1px;
-}
-
-.subtitle {
-  font-size: 0.9em;
-  color: #bbb;
-}
-
-/* Chat Box */
-.chat-box {
-  flex: 1;
-  padding: 20px;
-  overflow-y: auto;
-  scrollbar-width: thin; 
-  scrollbar-color: #1a73e8 #222;
-}
-
-/* Custom Scrollbar */
-.chat-box::-webkit-scrollbar {
-  width: 5px;
-}
-
-.chat-box::-webkit-scrollbar-track {
-  background: #222;
-}
-
-.chat-box::-webkit-scrollbar-thumb {
-  background: #1a73e8;
-  border-radius: 5px;
-}
-
-/* Messages */
-.message {
-  margin-bottom: 12px;
-  padding: 12px 16px;
-  border-radius: 8px;
-  line-height: 1.5;
-  max-width: 80%;
-  word-wrap: break-word;
-  opacity: 0;
-  animation: fadeIn 0.5s ease-in-out forwards;
-}
-
-.bot-message {
-  background: #252525;
-  color: #fff;
-}
-
-.user-message {
-  background: #1a73e8;
-  color: #fff;
-  margin-left: auto;
-  border-bottom-right-radius: 0;
-}
-
-/* Input Box */
-.input-box {
-  display: flex;
-  padding: 12px;
-  background: #1e1e1e;
-  border-top: 2px solid #333;
-}
-
-#user-input {
-  flex: 1;
-  padding: 10px 15px;
-  border: none;
-  border-radius: 25px;
-  background: #333;
-  color: #fff;
-  resize: none;
-  overflow: hidden;
-  font-size: 16px;
-  transition: 0.3s;
-}
-
-#user-input:focus {
-  outline: none;
-  box-shadow: 0px 0px 10px rgba(26, 115, 232, 0.7);
-}
-
-/* Send Button */
-button {
-  padding: 12px 18px;
-  border: none;
-  border-radius: 25px;
-  background: linear-gradient(135deg, #1a73e8, #0047ab);
-  color: white;
-  font-size: 15px;
-  cursor: pointer;
-  transition: 0.3s;
-}
-
-button:hover {
-  background: linear-gradient(135deg, #1664c1, #003399);
-  box-shadow: 0px 0px 10px rgba(26, 115, 232, 0.5);
-}
-
-/* Typing Indicator */
-.typing-indicator {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-}
-
-.typing-indicator span {
-  background: #fff;
-  border-radius: 50%;
-  width: 8px;
-  height: 8px;
-  margin-right: 4px;
-  animation: blink 1s infinite;
-}
-
-.typing-indicator span:nth-child(2) {
-  animation-delay: 0.2s;
-}
-
-.typing-indicator span:nth-child(3) {
-  animation-delay: 0.4s;
-}
-
-@keyframes blink {
-  0%, 100% { opacity: 0.2; }
-  50% { opacity: 1; }
-}
-
-/* Responsive Design */
-@media (max-width: 600px) {
-  .chat-container {
-    width: 100%;
-    height: 100vh;
-    max-height: none;
-    border-radius: 0;
-  }
-}
+    /* General Styling */
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #f9f9f9, #e3f2fd);
+      color: #333;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      height: 100vh;
+    }
+    
+    /* Page Heading */
+    .page-heading {
+      font-size: 28px;
+      font-weight: bold;
+      margin-top: 40px;
+      margin-bottom: 20px;
+      text-align: center;
+      color: #007bff;
+      text-shadow: 1px 1px 2px rgba(0, 123, 255, 0.3);
+    }
+    
+    /* Chat Container */
+    .chat-container {
+      width: 100%;
+      max-width: 450px;
+      height: 100%;
+      max-height: 600px;
+      background: #ffffff;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+    
+    /* Header */
+    .header {
+      padding: 15px;
+      background: #007bff;
+      text-align: center;
+      font-weight: bold;
+      color: white;
+      border-bottom: 3px solid #0056b3;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .logo {
+      width: 70px;
+      height: 70px;
+      margin-bottom: 10px;
+      border-radius: 50%;
+      border: 2px solid white;
+      box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+    }
+    
+    /* Chat Box */
+    .chat-box {
+      flex: 1;
+      padding: 20px;
+      overflow-y: auto;
+      background: #f9f9f9;
+    }
+    
+    /* Messages */
+    .message {
+      margin-bottom: 12px;
+      padding: 12px 16px;
+      border-radius: 8px;
+      line-height: 1.5;
+      max-width: 80%;
+      word-wrap: break-word;
+      box-shadow: 0px 1px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .bot-message {
+      background: #e3f2fd;
+      color: #333;
+    }
+    
+    .user-message {
+      background: #007bff;
+      color: white;
+      margin-left: auto;
+      text-align: right;
+    }
+    
+    /* Input Box */
+    .input-box {
+      display: flex;
+      padding: 12px;
+      background: #ffffff;
+      border-top: 2px solid #e0e0e0;
+    }
+    
+    #user-input {
+      flex: 1;
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      border-radius: 25px;
+      font-size: 16px;
+      transition: 0.3s;
+    }
+    
+    #user-input:focus {
+      outline: none;
+      border-color: #007bff;
+      box-shadow: 0px 0px 5px rgba(0, 123, 255, 0.5);
+    }
+    
+    /* Send Button */
+    button {
+      padding: 12px 18px;
+      border: none;
+      border-radius: 25px;
+      background: #007bff;
+      color: white;
+      font-size: 15px;
+      cursor: pointer;
+      transition: 0.3s;
+      margin-left: 8px;
+    }
+    
+    button:hover {
+      background: #0056b3;
+    }
+    
+    /* Responsive Design */
+    @media (max-width: 600px) {
+      .chat-container {
+        width: 100%;
+        height: 100vh;
+        max-height: none;
+        border-radius: 0;
+      }
+    }
   </style>
 </head>
 <body>
+  <div class="page-heading">Welcome to Jamna Vidyapeeth AI Assistant</div>
   <div class="chat-container">
     <div class="header">
-      <div class="title">AI Parent Assistant</div>
-      <div class="subtitle">Ask Anything about Jamna Vidyapeeth</div>
+      <img src="https://i.postimg.cc/Y0qB2Wyc/images-2024-05-21-T183208-408.jpg" alt="School Logo" class="logo">
+      AI Parent Assistant
     </div>
     <div class="chat-box" id="chat-box">
       <div class="message bot-message">
-        Hello, what would you like to know about our school?
-        <br><br><b>Examples:</b><br>
-        <i>When was the school established?</i><br>
-        <i>Facilities offered by the school?</i><br>
-        <i>How do I get admission here?</i><br>
+        Hello! Ask me anything about Jamna Vidyapeeth.
       </div>
     </div>
     <div class="input-box">
-      <textarea id="user-input" placeholder="Type something..." rows="1" oninput="autoResize(this)" onkeypress="handleKeyPress(event)"></textarea>
+      <textarea id="user-input" placeholder="Type your question..." rows="1" onkeypress="handleKeyPress(event)"></textarea>
       <button onclick="sendMessage()">Send</button>
     </div>
   </div>
