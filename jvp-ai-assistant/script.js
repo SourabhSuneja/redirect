@@ -63,7 +63,15 @@ function formatGeminiResponse(text) {
   // Replace italic formatting with HTML italic tags
   text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
 
-  return text;
+  return linkify(text);
+}
+
+function linkify(text) {
+    const urlPattern = /(https?:\/\/[^\s]+)/g;
+    if (!urlPattern.test(text)) {
+        return text; // Return original text if no URL is found
+    }
+    return text.replace(urlPattern, '<a href="$1" target="_blank">$1</a>');
 }
 
 
