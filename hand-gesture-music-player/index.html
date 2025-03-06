@@ -1,132 +1,201 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Experience music like never before! Control your favorite Indian songs with hand gestures using this AI-powered gesture-controlled music player. Just move your hands and let the rhythm flow!">
-  <title>Hand Gesture Music Player</title>
-  <!-- Load FontAwesome icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
-
-  <!-- Load audio files details -->
-  <script src="files.js"></script>
-
-  <!-- Load the custom CSS style file -->
-  <link rel="stylesheet" type="text/css" href="style.css">
-
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
-    <script type="text/javascript">
-        const URL = "https://teachablemachine.withgoogle.com/models/2bU4Ml4_P/";
-        let model, webcam, labelContainer, maxPredictions;
-        //let audio = new Audio('wear-helmet.mp3');
-
-        async function init() {
-            const modelURL = URL + "model.json";
-            const metadataURL = URL + "metadata.json";
-
-            model = await tmImage.load(modelURL, metadataURL);
-            maxPredictions = model.getTotalClasses();
-
-            const flip = true;
-            webcam = new tmImage.Webcam(200, 200, flip);
-            await webcam.setup();
-            await webcam.play();
-            window.requestAnimationFrame(loop);
-
-            document.getElementById("webcam-container").appendChild(webcam.canvas);
-            labelContainer = document.getElementById("label-container");
-            for (let i = 0; i < maxPredictions; i++) {
-                labelContainer.appendChild(document.createElement("div"));
-            }
-        }
-
-        async function loop() {
-            webcam.update();
-            await predict();
-            window.requestAnimationFrame(loop);
-        }
-
-        async function predict() {
-            const prediction = await model.predict(webcam.canvas);
-            let withoutHelmetProbability = 0;
-
-            for (let i = 0; i < maxPredictions; i++) {
-                const classPrediction =
-                    prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
-                labelContainer.childNodes[i].innerHTML = classPrediction;
-
-                // Check if the prediction class is "Without Helmet"
-                if (prediction[i].className === "Without Helmet") {
-                    withoutHelmetProbability = prediction[i].probability * 100;
-                }
-            }
-
-            // Play the audio if the probability of "Without Helmet" is greater than 70%
-            if (withoutHelmetProbability > 70) {
-                //audio.play();
-            }
-        }
-    </script>
-</head>
-<body>
-  <div class="player">
-    <div class="details">
-      <div class="now-playing">PLAYING x OF y</div>
-      <div class="track-art"></div>
-      <div class="track-name">Track Name</div>
-      <div class="track-artist">Track Artist</div>
-    </div>
-    <div class="buttons">
-      <div class="prev-track" onclick="prevTrack()"><i class="fa fa-step-backward fa-2x"></i></div>
-      <div class="playpause-track" onclick="playpauseTrack()"><i class="fa fa-play-circle fa-5x"></i></div>
-      <div class="next-track" onclick="nextTrack()"><i class="fa fa-step-forward fa-2x"></i></div>
-    </div>
-    <div class="slider_container">
-      <div class="current-time">00:00</div>
-      <input type="range" min="1" max="100" value="0" class="seek_slider" onchange="seekTo()">
-      <div class="total-duration">00:00</div>
-    </div>
-    <div class="slider_container">
-      <i class="fa fa-volume-down"></i>
-      <input type="range" min="1" max="100" value="99" class="volume_slider" onchange="setVolume()">
-      <i class="fa fa-volume-up"></i>
-    </div>
-  </div>
-
-    <!-- Full-screen overlay -->
-    <div id="nas-overlay">
-        <div id="nas-message">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Experience music like never before! Control your favorite Indian songs with hand gestures using this AI-powered gesture-controlled music player. Just move your hands and let the rhythm flow!">
+      <title>Hand Gesture Music Player</title>
+      <!-- Load FontAwesome icons -->
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.13.0/css/all.min.css">
+      <!-- Load audio files details -->
+      <script src="https://sourabhsuneja.github.io/redirect/hand-gesture-music-player/files.js"></script>
+      <!-- Load the custom CSS style file -->
+      <link rel="stylesheet" type="text/css" href="https://sourabhsuneja.github.io/redirect/hand-gesture-music-player/style.css">
+      <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+      <script type="text/javascript">
+         const URL = "https://teachablemachine.withgoogle.com/models/2bU4Ml4_P/";
+         let model, webcam, labelContainer, maxPredictions, isDetecting;
+          isDetecting = false;
+         //let audio = new Audio('wear-helmet.mp3');
+         
+         async function init() {
+         
+             const modelURL = URL + "model.json";
+             const metadataURL = URL + "metadata.json";
+         
+             model = await tmImage.load(modelURL, metadataURL);
+             maxPredictions = model.getTotalClasses();
+         
+             const flip = true;
+             webcam = new tmImage.Webcam(200, 200, flip);
+             await webcam.setup();
+             await webcam.play();
+             window.requestAnimationFrame(loop);
+         
+             document.getElementById("webcam-container").appendChild(webcam.canvas);
+             labelContainer = document.getElementById("label-container");
+             for (let i = 0; i < maxPredictions; i++) {
+                 labelContainer.appendChild(document.createElement("div"));
+             }
+         }
+         
+         async function loop() {
+             webcam.update();
+             await predict();
+             window.requestAnimationFrame(loop);
+         }
+         
+         async function predict() {
+             if(!isDetecting) {
+                  return;
+             }
+             // document.getElementById('detection-overlay').style.display = "flex";
+             const prediction = await model.predict(webcam.canvas);
+             let withoutHelmetProbability = 0;
+         
+             for (let i = 0; i < maxPredictions; i++) {
+                 const classPrediction =
+                     prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
+                 labelContainer.childNodes[i].innerHTML = classPrediction;
+         
+                 // Check prediction class
+                 if (prediction[i].className === "Fist" && (prediction[i].probability * 100) > 60) {
+                     
+                     isDetecting = false;
+         updateDetectionOverlay("Seems like you're in the mood for an action-packed song!");
+                 }
+         
+         
+         if (prediction[i].className === "Folded hands" && (prediction[i].probability * 100) > 60) {
+                     
+                     isDetecting = false;
+         updateDetectionOverlay("Seems like you're in the mood for a devotional song!");
+                 }
+         
+         
+         
+         if (prediction[i].className === "V Shaped" && (prediction[i].probability * 100) > 60) {
+                     
+                     isDetecting = false;
+         updateDetectionOverlay("Seems like you're in the mood for a victory song!");
+                 }
+         
+         
+         
+             }
+         
+         
+         }
+      </script>
+      <style>
+         .gesture-icon {
+         font-size: 50px;
+         color: #ffcc00;
+         animation: pulse 1.5s infinite;
+         }
+         @keyframes pulse {
+         0% { transform: scale(1); opacity: 0.7; }
+         50% { transform: scale(1.2); opacity: 1; }
+         100% { transform: scale(1); opacity: 0.7; }
+         }
+         #detection-overlay {
+         display: none;
+         }
+      </style>
+   </head>
+   <body>
+      <div class="player">
+         <div class="details">
+            <div class="now-playing">PLAYING x OF y</div>
+            <div class="track-art"></div>
+            <div class="track-name">Track Name</div>
+            <div class="track-artist">Track Artist</div>
+         </div>
+         <div class="buttons">
+            <div class="prev-track" onclick="prevTrack()"><i class="fa fa-step-backward fa-2x"></i></div>
+            <div class="playpause-track" onclick="playpauseTrack()"><i class="fa fa-play-circle fa-5x"></i></div>
+            <div class="next-track" onclick="nextTrack()"><i class="fa fa-step-forward fa-2x"></i></div>
+         </div>
+         <div class="slider_container">
+            <div class="current-time">00:00</div>
+            <input type="range" min="1" max="100" value="0" class="seek_slider" onchange="seekTo()">
+            <div class="total-duration">00:00</div>
+         </div>
+         <div class="slider_container">
+            <i class="fa fa-volume-down"></i>
+            <input type="range" min="1" max="100" value="99" class="volume_slider" onchange="setVolume()">
+            <i class="fa fa-volume-up"></i>
+         </div>
+         <button style="background: black; color: white; padding: 7px 14px; border: none; font-size: 16px; margin-top: 12px; border-radius: 4px;" onclick="toggleDetection()">Use Hand Gesture</button>
+      </div>
+      <!-- Gesture detection overlay -->
+      <div id="detection-overlay" style="position: fixed; top: 0; left: 0; height: 100%; width: 100%; background: rgba(0,0,0,0.7); color: white; z-index: 10000; justify-content: center; align-items: center;">
+         <div id="detection-text" style="background: black; color: white; padding: 24px; font-size: 24px; width: 100%; border-radius: 4px; text-align: center;">Ah! Just flash a hand gesture, and I'll spin the perfect tune for you!<br><br><i class="fas fa-hand-paper gesture-icon"></i></div>
+      </div>
+      <!-- Full-screen overlay -->
+      <div id="nas-overlay">
+         <div id="nas-message">
             <h1>No Music Available!</h1>
             <p>It looks like there's no audio file available at the moment!</p>
             <!-- Centered Font Awesome Music Icon -->
             <i id="nas-icon" class="fas fa-play-circle"></i>
             <!-- Action Button -->
             <a href="#" onclick="window.history.back(); return false;">Go back</a>
-        </div>
-    </div>
-
-    <div id="ai-detection-box">
-      <div id="webcam-container"></div>
-      <div id="label-container"></div>
-    </div>
-
-    <script>
-
-        // Function to show overlay if track_list is not defined or falsy
-        function checkTrackList() {
-            if (!track_list || track_list.length === 0) {
-                document.getElementById('nas-overlay').style.display = 'flex';
-            }
-        }
-
-        // Call the function to check and show the overlay if necessary
-        checkTrackList();
-        // Start detecting hand gestures
-        init();
-    </script>
-
-  <!-- Load the main script for the player -->
-  <script src="main.js"></script>
-</body>
+         </div>
+      </div>
+      <div style="display: block" id="ai-detection-box">
+         <div id="webcam-container"></div>
+         <div id="label-container"></div>
+      </div>
+      <script>
+         // Function to show overlay if track_list is not defined or falsy
+         function checkTrackList() {
+             if (!track_list || track_list.length === 0) {
+                 document.getElementById('nas-overlay').style.display = 'flex';
+             }
+         }
+         
+         
+         function toggleDetection() {
+         isDetecting = !isDetecting;
+         }
+         
+         
+         function updateDetectionOverlay(text) {
+         const overlay = document.getElementById('detection-overlay');
+         const overlayText = document.getElementById('detection-text');
+         if (!overlay) return;
+         
+         // Clear current text 
+         overlayText.innerHTML = '';
+         
+         let index = 0;
+         
+         // Typing effect
+         function typeEffect() {
+         if (index < text.length) {
+             overlayText.innerHTML += text.charAt(index);
+             index++;
+             setTimeout(typeEffect, 50); // Adjust speed here
+         } else {
+             // Hide after 2 seconds
+             setTimeout(() => {
+                 overlay.style.display = 'none';
+             }, 2000);
+         }
+         }
+         
+         typeEffect();
+         }
+         
+         
+         
+         // Call the function to check and show the overlay if necessary
+         checkTrackList();
+         init();
+      </script>
+      <!-- Load the main script for the player -->
+      <script src="https://sourabhsuneja.github.io/redirect/hand-gesture-music-player/main.js"></script>
+   </body>
 </html>
