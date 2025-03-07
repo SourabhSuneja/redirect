@@ -50,7 +50,7 @@
 function getMusicMood(gesture) {
     switch (gesture.toLowerCase()) {
         case "fist":
-        case "closed hand":
+        case "fist/closed hand":
             return "Time for an action song! Get ready to feel the energy!";
         case "peace sign":
             return "Victory time! Here's a winning song for you!";
@@ -65,13 +65,16 @@ function getMusicMood(gesture) {
 }
 
     function playGestureTrack(gesture) {
-    if(gesture.toLowerCase().includes("pause") || gesture.toLowerCase().includes("resume")) {
+    if(gesture.toLowerCase().includes("open palm") || gesture.toLowerCase().includes("four fingers")) {
         playpauseTrack();
         return;
     }
     let trackNumber;
 
     switch (gesture.toLowerCase()) {
+        case "fist/closed hand":
+            trackNumber = 4;
+            break;
         case "peace sign":
             trackNumber = Math.random() < 0.5 ? 0 : 1; // Randomly select 0 or 1
             break;
