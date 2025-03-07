@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Gesture Recognition</title>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #121212;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 18px;
+            background: #6200ea;
+            color: white;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #3700b3;
+        }
+        video {
+            width: 320px;
+            height: auto;
+            border: 2px solid white;
+            margin-top: 20px;
+            border-radius: 10px;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 20px;
+        }
+    </style>
+</head>
+<body>
+    <button id="startButton">Start Detecting</button>
+    <video id="video" autoplay></video>
+    <div id="result">Gesture: <span id="gesture">None</span> (Confidence: <span id="confidence">0</span>%)</div>
+
+    <script>
+        const video = document.getElementById('video');
+        const startButton = document.getElementById('startButton');
+        const gestureText = document.getElementById('gesture');
+        const confidenceText = document.getElementById('confidence');
+        let model;
+
+        async function loadModel() {
+            model = await handPoseDetection.createDetector(handPoseDetection.SupportedModels.MediaPipeHands, {
+                runtime: 'mediapipe',
+                solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands',
+            });
+        }
+
+        async function startCamera() {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            video.srcObject = stream;
+            detectHands();
+        }
+
+        async function detectHands() {
+            if (!model) await loadModel();
+            
+            setInterval(async () => {
+                const hands = await model.estimateHands(video);
+                if (hands.length > 0) {
+                    const hand = hands[0];
+                    const landmarks = hand.keypoints;
+                    const gesture = recognizeGesture(landmarks);
+                    
+                    gestureText.innerText = gesture.name;
+                    confidenceText.innerText = (gesture.confidence * 100).toFixed(2);
+                }
+            }, 200);
+        }
+
+        function recognizeGesture(landmarks) {
+            // Simple example logic to detect basic gestures
+            if (!landmarks) return { name: 'None', confidence: 0 };
+            
+            const thumbTip = landmarks[4];
+            const indexTip = landmarks[8];
+            const middleTip = landmarks[12];
+            const ringTip = landmarks[16];
+            const pinkyTip = landmarks[20];
+            
+            const thumbUp = thumbTip.y < indexTip.y && thumbTip.y < middleTip.y;
+            const fist = indexTip.y > landmarks[6].y && middleTip.y > landmarks[10].y;
+            const victory = indexTip.y < landmarks[5].y && middleTip.y < landmarks[9].y && ringTip.y > landmarks[13].y;
+            
+            if (thumbUp) return { name: 'Thumb Up', confidence: 0.9 };
+            if (victory) return { name: 'Victory (V)', confidence: 0.85 };
+            if (fist) return { name: 'Fist', confidence: 0.95 };
+            return { name: 'Open Palm', confidence: 0.8 };
+        }
+
+        startButton.addEventListener('click', startCamera);
+    </script>
+</body>
+</html>
