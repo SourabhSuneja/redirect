@@ -4,110 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Hand Gesture Recognition</title>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/hand-pose-detection"></script>
     <style>
         body {
             font-family: Arial, sans-serif;
             text-align: center;
-            background-color: #121212;
-            color: white;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
             margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
         }
+
+        h1 {
+            color: #333;
+            margin-top: 20px;
+        }
+
+        video {
+            display: block;
+            margin: 20px auto;
+            border: 2px solid #444;
+            border-radius: 8px;
+            max-width: 100%;
+            height: auto;
+        }
+
         button {
             padding: 10px 20px;
-            font-size: 18px;
-            background: #6200ea;
+            background-color: #007bff;
             color: white;
             border: none;
-            cursor: pointer;
             border-radius: 5px;
-            transition: 0.3s;
+            font-size: 16px;
+            cursor: pointer;
         }
+
         button:hover {
-            background: #3700b3;
+            background-color: #0056b3;
         }
-        video {
-            width: 320px;
-            height: auto;
-            border: 2px solid white;
+
+        .results {
             margin-top: 20px;
-            border-radius: 10px;
         }
-        #result {
-            margin-top: 20px;
-            font-size: 20px;
+
+        #prediction {
+            font-size: 18px;
+            color: #333;
+            font-weight: bold;
         }
     </style>
 </head>
 <body>
-    <button id="startButton">Start Detecting</button>
+    <h1>Hand Gesture Recognition</h1>
     <video id="video" autoplay></video>
-    <div id="result">Gesture: <span id="gesture">None</span> (Confidence: <span id="confidence">0</span>%)</div>
-
+    <button id="startButton">Start Detecting</button>
+    <div class="results">
+        <h3>Prediction:</h3>
+        <p id="prediction">No prediction yet.</p>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
     <script>
-        const video = document.getElementById('video');
+        const videoElement = document.getElementById('video');
         const startButton = document.getElementById('startButton');
-        const gestureText = document.getElementById('gesture');
-        const confidenceText = document.getElementById('confidence');
-        let model;
+        const predictionElement = document.getElementById('prediction');
 
-        async function loadModel() {
-            model = await handPoseDetection.createDetector(handPoseDetection.SupportedModels.MediaPipeHands, {
-                runtime: 'mediapipe',
-                solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands',
-            });
-        }
+        // Load MediaPipe Hands
+        const hands = new Hands({
+            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+        });
+        hands.setOptions({
+            maxNumHands: 1,
+            modelComplexity: 1,
+            minDetectionConfidence: 0.7,
+            minTrackingConfidence: 0.7
+        });
 
-        async function startCamera() {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            video.srcObject = stream;
-            detectHands();
-        }
+        hands.onResults(results => {
+            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
+                const landmarks = results.multiHandLandmarks[0];
+                const thumbIsUp = landmarks[4].y < landmarks[3].y && landmarks[4].y < landmarks[2].y;
+                const fingersAreOpen = landmarks[8].y < landmarks[6].y && landmarks[12].y < landmarks[10].y 
+                                       && landmarks[16].y < landmarks[14].y && landmarks[20].y < landmarks[18].y;
+                const victoryGesture = landmarks[8].y < landmarks[6].y && landmarks[12].y < landmarks[10].y 
+                                       && !(landmarks[16].y < landmarks[14].y) && !(landmarks[20].y < landmarks[18].y);
+                const fistGesture = landmarks[8].y > landmarks[6].y && landmarks[12].y > landmarks[10].y 
+                                    && landmarks[16].y > landmarks[14].y && landmarks[20].y > landmarks[18].y;
 
-        async function detectHands() {
-            if (!model) await loadModel();
-            
-            setInterval(async () => {
-                const hands = await model.estimateHands(video);
-                if (hands.length > 0) {
-                    const hand = hands[0];
-                    const landmarks = hand.keypoints;
-                    const gesture = recognizeGesture(landmarks);
-                    
-                    gestureText.innerText = gesture.name;
-                    confidenceText.innerText = (gesture.confidence * 100).toFixed(2);
+                if (thumbIsUp) {
+                    predictionElement.textContent = "Gesture: Thumb Up 👍 (Confidence: 95%)";
+                } else if (victoryGesture) {
+                    predictionElement.textContent = "Gesture: V Shaped (Victory) ✌️ (Confidence: 95%)";
+                } else if (fistGesture) {
+                    predictionElement.textContent = "Gesture: Fist 👊 (Confidence: 90%)";
+                } else if (fingersAreOpen) {
+                    predictionElement.textContent = "Gesture: Palm Open 🖐️ (Confidence: 90%)";
+                } else {
+                    predictionElement.textContent = "Gesture: Unknown.";
                 }
-            }, 200);
-        }
+            } else {
+                predictionElement.textContent = "No hand detected.";
+            }
+        });
 
-        function recognizeGesture(landmarks) {
-            // Simple example logic to detect basic gestures
-            if (!landmarks) return { name: 'None', confidence: 0 };
-            
-            const thumbTip = landmarks[4];
-            const indexTip = landmarks[8];
-            const middleTip = landmarks[12];
-            const ringTip = landmarks[16];
-            const pinkyTip = landmarks[20];
-            
-            const thumbUp = thumbTip.y < indexTip.y && thumbTip.y < middleTip.y;
-            const fist = indexTip.y > landmarks[6].y && middleTip.y > landmarks[10].y;
-            const victory = indexTip.y < landmarks[5].y && middleTip.y < landmarks[9].y && ringTip.y > landmarks[13].y;
-            
-            if (thumbUp) return { name: 'Thumb Up', confidence: 0.9 };
-            if (victory) return { name: 'Victory (V)', confidence: 0.85 };
-            if (fist) return { name: 'Fist', confidence: 0.95 };
-            return { name: 'Open Palm', confidence: 0.8 };
-        }
+        // Start video feed
+        startButton.addEventListener('click', async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+            videoElement.srcObject = stream;
 
-        startButton.addEventListener('click', startCamera);
+            const camera = new Camera(videoElement, {
+                onFrame: async () => {
+                    await hands.send({ image: videoElement });
+                },
+                width: 640,
+                height: 480
+            });
+            camera.start();
+        });
     </script>
 </body>
 </html>
