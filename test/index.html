@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hand Gesture Recognition</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container-fluid p-0 vh-100">
+        <!-- Camera Feed and Canvas -->
+        <video id="webcam" autoplay playsinline></video>
+        <canvas id="output-canvas"></canvas>
+        
+        <!-- Info Overlay -->
+        <div id="info-overlay">
+            <div id="combined-info" class="combined-info">
+                <h2>Combined Number: <span id="combined-fingers-count">0</span></h2>
+            </div>
+            <div class="hands-container">
+                <div id="right-hand-info" class="hand-info">
+                    <h3>Right Hand: <span id="right-fingers-count">0</span> fingers</h3>
+                    <div id="right-fingers-list"></div>
+                </div>
+                <div id="left-hand-info" class="hand-info">
+                    <h3>Left Hand: <span id="left-fingers-count">0</span> fingers</h3>
+                    <div id="left-fingers-list"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Control Buttons -->
+        <div class="control-buttons">
+            <button id="fullscreen-button" class="control-btn" title="Toggle Fullscreen">
+                <i class="fas fa-expand"></i>
+            </button>
+            <button id="settings-button" class="control-btn" title="Settings">
+                <i class="fas fa-cog"></i>
+            </button>
+            <button id="camera-flip-button" class="control-btn" title="Flip Camera">
+                <i class="fas fa-camera-rotate"></i>
+            </button>
+        </div>
+        
+        <!-- Settings Panel (initially hidden) -->
+        <div id="settings-panel" class="settings-panel">
+            <div class="settings-header">
+                <h4>Settings</h4>
+                <button class="close-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="settings-content">
+                <div class="setting-item">
+                    <label for="detection-confidence">Detection Confidence</label>
+                    <input type="range" id="detection-confidence" min="0.1" max="1" step="0.05" value="0.6">
+                    <span class="value-display">0.6</span>
+                </div>
+                <div class="setting-item">
+                    <label for="tracking-confidence">Tracking Confidence</label>
+                    <input type="range" id="tracking-confidence" min="0.1" max="1" step="0.05" value="0.5">
+                    <span class="value-display">0.5</span>
+                </div>
+                <div class="setting-item">
+                    <label for="model-complexity">Model Complexity</label>
+                    <select id="model-complexity" class="form-select">
+                        <option value="0">Light (Faster)</option>
+                        <option value="1" selected>Medium (Balanced)</option>
+                        <option value="2">Heavy (Most Accurate)</option>
+                    </select>
+                </div>
+                <div class="setting-item form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="debug-mode">
+                    <label class="form-check-label" for="debug-mode">Debug Mode</label>
+                </div>
+                <div class="setting-item form-check form-switch">
+                    <input class="form-check-input" type="checkbox" id="show-landmarks" checked>
+                    <label class="form-check-label" for="show-landmarks">Show Hand Landmarks</label>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Loading Spinner -->
+        <div id="loading-spinner">
+            <div class="spinner-border text-light" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p>Initializing Hand Tracking...</p>
+        </div>
+        
+        <!-- Gesture Guide Modal -->
+        <div class="modal fade" id="gestureGuideModal" tabindex="-1" aria-labelledby="gestureGuideModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-lg">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="gestureGuideModalLabel">Hand Gesture Guide</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <h6>Basic Gestures</h6>
+                                <ul class="list-group">
+                                    <li class="list-group-item">Fist: No fingers raised</li>
+                                    <li class="list-group-item">Pointing: Index finger only</li>
+                                    <li class="list-group-item">Peace Sign: Index and Middle fingers</li>
+                                    <li class="list-group-item">Thumbs Up: Only thumb raised</li>
+                                    <li class="list-group-item">Open Palm: All fingers raised</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h6>Keyboard Shortcuts</h6>
+                                <ul class="list-group">
+                                    <li class="list-group-item"><kbd>D</kbd> - Toggle debug mode</li>
+                                    <li class="list-group-item"><kbd>F</kbd> - Toggle fullscreen</li>
+                                    <li class="list-group-item"><kbd>ESC</kbd> - Close settings panel</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Help Button -->
+        <button id="help-button" class="help-btn" data-bs-toggle="modal" data-bs-target="#gestureGuideModal">
+            <i class="fas fa-question"></i>
+        </button>
+    </div>
+
+<!-- Player Starts -->
+<div class="player">
+         <div class="details">
+            <div class="now-playing">PLAYING x OF y</div>
+            <div class="track-art"></div>
+            <div class="track-name">Track Name</div>
+            <div class="track-artist">Track Artist</div>
+         </div>
+         <div class="buttons">
+            <div class="prev-track" onclick="prevTrack()"><i class="fa fa-step-backward fa-2x"></i></div>
+            <div class="playpause-track" onclick="playpauseTrack()"><i class="fa fa-play-circle fa-5x"></i></div>
+            <div class="next-track" onclick="nextTrack()"><i class="fa fa-step-forward fa-2x"></i></div>
+         </div>
+         <div class="slider_container">
+            <div class="current-time">00:00</div>
+            <input type="range" min="1" max="100" value="0" class="seek_slider" onchange="seekTo()">
+            <div class="total-duration">00:00</div>
+         </div>
+         <div class="slider_container">
+            <i class="fa fa-volume-down"></i>
+            <input type="range" min="1" max="100" value="99" class="volume_slider" onchange="setVolume()">
+            <i class="fa fa-volume-up"></i>
+         </div>
+         <button style="background: black; color: white; padding: 7px 14px; border: none; font-size: 16px; margin-top: 12px; border-radius: 4px;" onclick="toggleDetection()">Use Hand Gesture</button>
+      </div>
+<!-- Player Ends -->
+
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Bootstrap JS Bundle -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- MediaPipe Hands -->
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+    <!-- Custom JS -->
+    <script src="script.js"></script>
+</body>
+</html>
