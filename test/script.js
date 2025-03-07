@@ -575,7 +575,7 @@ class HandGestureRecognizer {
         this.ctx.lineWidth = 2;
         
         const text = `${handedness === 'Left' ? 'Right' : 'Left'} Hand: ${gesture.description}`;
-        alert(gesture.description);
+        updateDetectionOverlay(gesture.description);
         const textWidth = this.ctx.measureText(text).width;
         
         const x = avgX * this.canvas.width - textWidth / 2;
