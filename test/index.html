@@ -11,13 +11,17 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="style.css">
     <script>
+      let detected = false;
       function updateDetectionOverlay(text) {
          const overlay = document.getElementById('detection-overlay');
          const overlayText = document.getElementById('detection-text');
-         if (!overlay) return;
-         
+         if (detected) return;
+
+         detected = true;
          // Clear current text 
          overlayText.innerHTML = '';
+         // Make overlay visible
+         overlay.style.display = 'flex';
          
          let index = 0;
          
@@ -28,10 +32,11 @@
              index++;
              setTimeout(typeEffect, 50); // Adjust speed here
          } else {
-             // Hide after 2 seconds
+             // Hide after 3 seconds
              setTimeout(() => {
                  overlay.style.display = 'none';
-             }, 2000);
+                 detected = false;
+             }, 3000);
          }
          }
          
