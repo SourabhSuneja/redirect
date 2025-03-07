@@ -33,13 +33,14 @@
          if (index < text.length) {
              overlayText.innerHTML += text.charAt(index);
              index++;
-             setTimeout(typeEffect, 20); // Adjust speed here
+             setTimeout(typeEffect, 50); // Adjust speed here
          } else {
              // Hide after 3 seconds
              setTimeout(() => {
                  overlay.style.display = 'none';
                  detected = false;
                  playGestureTrack(gesture);
+                 playTrack();
              }, 3000);
          }
          }
