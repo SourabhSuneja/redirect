@@ -49,7 +49,7 @@
              if(!isDetecting) {
                   return;
              }
-             // document.getElementById('detection-overlay').style.display = "flex";
+             document.getElementById('detection-overlay').style.display = "flex";
              const prediction = await model.predict(webcam.canvas);
              let withoutHelmetProbability = 0;
          
@@ -59,24 +59,24 @@
                  labelContainer.childNodes[i].innerHTML = classPrediction;
          
                  // Check prediction class
-                 if (prediction[i].className === "Fist" && (prediction[i].probability * 100) > 60) {
+                 if (prediction[i].className === "Fist" && (prediction[i].probability * 100) > 85) {
                      
-                     //isDetecting = false;
+                     isDetecting = false;
          updateDetectionOverlay("Seems like you're in the mood for an action-packed song!");
                  }
          
          
-         if (prediction[i].className === "Folded hands" && (prediction[i].probability * 100) > 60) {
+         if (prediction[i].className === "Folded hands" && (prediction[i].probability * 100) > 85) {
                      
-                     //isDetecting = false;
+                     isDetecting = false;
          updateDetectionOverlay("Seems like you're in the mood for a devotional song!");
                  }
          
          
          
-         if (prediction[i].className === "V Shaped" && (prediction[i].probability * 100) > 60) {
+         if (prediction[i].className === "V Shaped" && (prediction[i].probability * 100) > 85) {
                      
-                     //isDetecting = false;
+                     isDetecting = false;
          updateDetectionOverlay("Seems like you're in the mood for a victory song!");
                  }
          
