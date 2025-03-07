@@ -25,6 +25,7 @@
          
          let index = 0;
 
+         let gesture = text;
          text = getMusicMood(text);
          
          // Typing effect
@@ -38,6 +39,7 @@
              setTimeout(() => {
                  overlay.style.display = 'none';
                  detected = false;
+                 playGestureTrack(gesture);
              }, 3000);
          }
          }
@@ -60,6 +62,24 @@ function getMusicMood(gesture) {
         default:
             return "Oops! I don’t know that gesture. Try again!";
     }
+}
+
+    function playGestureTrack(gesture) {
+    let trackNumber;
+
+    switch (gesture.toLowerCase()) {
+        case "peace sign":
+            trackNumber = Math.random() < 0.5 ? 0 : 1; // Randomly select 0 or 1
+            break;
+        case "thumbs up":
+            trackNumber = Math.random() < 0.5 ? 2 : 3; // Randomly select 2 or 3
+            break;
+        default:
+            console.log("Gesture not recognized. No track selected.");
+            return;
+    }
+
+    loadTrack(trackNumber);
 }
 
     </script>    
