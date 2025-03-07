@@ -40,7 +40,6 @@
                  overlay.style.display = 'none';
                  detected = false;
                  playGestureTrack(gesture);
-                 playTrack();
              }, 3000);
          }
          }
@@ -59,13 +58,17 @@ function getMusicMood(gesture) {
             return "Let's cheer up with a happy song!";
         case "open palm":
         case "four fingers":
-            return "Pause or play? Your music is waiting!";
+            return "Pause or Resume Gesture";
         default:
             return "Oops! I don’t know that gesture. Try again!";
     }
 }
 
     function playGestureTrack(gesture) {
+    if(gesture.toLowerCase().includes("pause") || gesture.toLowerCase().includes("resume")) {
+        playpauseTrack();
+        return;
+    }
     let trackNumber;
 
     switch (gesture.toLowerCase()) {
@@ -81,6 +84,7 @@ function getMusicMood(gesture) {
     }
 
     loadTrack(trackNumber);
+    playTrack();
 }
 
     </script>    
