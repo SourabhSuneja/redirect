@@ -23,4 +23,10 @@ let track_list = [
     image: "https://sourabhsuneja.github.io/academic-resources/images/music-icon.png",
     path: "https://sourabhsuneja.github.io/redirect/test/songs/aashayein.mp3"
   },
+  {
+    name: "Sultan",
+    artist: "Unknown",
+    image: "https://sourabhsuneja.github.io/academic-resources/images/music-icon.png",
+    path: "https://sourabhsuneja.github.io/redirect/test/songs/sultan.mp3"
+  },
   ];
