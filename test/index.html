@@ -24,6 +24,8 @@
          overlay.style.display = 'flex';
          
          let index = 0;
+
+         text = getMusicMood(text);
          
          // Typing effect
          function typeEffect() {
@@ -42,6 +44,24 @@
          
          typeEffect();
          }
+
+function getMusicMood(gesture) {
+    switch (gesture.toLowerCase()) {
+        case "fist":
+        case "closed hand":
+            return "Time for an action song! Get ready to feel the energy!";
+        case "peace sign":
+            return "Victory time! Here's a winning song for you!";
+        case "thumbs up":
+            return "Let's cheer up with a happy song!";
+        case "open palm":
+        case "four fingers":
+            return "Pause or play? Your music is waiting!";
+        default:
+            return "Oops! I don’t know that gesture. Try again!";
+    }
+}
+
     </script>    
 </head>
 <body>
