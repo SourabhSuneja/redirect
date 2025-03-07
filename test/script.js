@@ -450,7 +450,6 @@ class HandGestureRecognizer {
                 const gesture = this.recognizeGesture(raisedFingers.list);
                 if (gesture) {
                     this.displayGestureLabel(landmarks, gesture, handedness);
-                    alert(gesture);
                 }
             });
         }
@@ -576,6 +575,7 @@ class HandGestureRecognizer {
         this.ctx.lineWidth = 2;
         
         const text = `${handedness === 'Left' ? 'Right' : 'Left'} Hand: ${gesture.description}`;
+        alert(gesture.description);
         const textWidth = this.ctx.measureText(text).width;
         
         const x = avgX * this.canvas.width - textWidth / 2;
