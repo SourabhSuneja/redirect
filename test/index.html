@@ -30,7 +30,7 @@
          
          // Typing effect
          function typeEffect() {
-         if (index < text.length) {
+         /* if (index < text.length) {
              overlayText.innerHTML += text.charAt(index);
              index++;
              setTimeout(typeEffect, 50); // Adjust speed here
@@ -41,7 +41,13 @@
                  detected = false;
                  playGestureTrack(gesture);
              }, 3000);
-         }
+         } */
+             overlayText.innerHTML = text;
+             setTimeout(() => {
+                 overlay.style.display = 'none';
+                 detected = false;
+                 playGestureTrack(gesture);
+             }, 2000);
          }
          
          typeEffect();
