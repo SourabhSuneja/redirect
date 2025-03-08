@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Lost & Found - Lost Items</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Baloo Chettan 2', cursive;
+      background-color: #f4faff;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2b8de4;
+    }
+
+    .tiles-container {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin-top: 20px;
+    }
+
+    .tile {
+      width: 150px;
+      height: 150px;
+      background-color: #374243;
+      color: #fff;
+      border-radius: 15px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .tile:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .tile img {
+      width: 50px;
+      height: 50px;
+    }
+
+    .tile span {
+      margin-top: 10px;
+      font-size: 16px;
+      font-weight: bold;
+    }
+
+    #description-dialog {
+      display: none;
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+      text-align: center;
+      width: 300px;
+      z-index: 1000;
+    }
+
+    #description-dialog input,
+    #description-dialog select {
+      width: 100%;
+      padding: 10px;
+      margin-top: 10px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      display: block;
+    }
+
+    #description-dialog button {
+      margin-top: 15px;
+      background-color: #2b8de4;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    #description-dialog button:hover {
+      background-color: #236ba4;
+    }
+
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 999;
+    }
+  </style>
+</head>
+<body>
+  <h1>Lost Something? Let Us Help!</h1>
+
+  <div class="tiles-container">
+    <div class="tile" onclick="showDialog('Notebook/Book')">
+      <img src="https://img.icons8.com/color/96/book.png" alt="Notebook/Book">
+      <span>Notebook/Book</span>
+    </div>
+    <div class="tile" onclick="showDialog('Lunch Box')">
+      <img src="https://img.icons8.com/color/96/lunchbox.png" alt="Lunch Box">
+      <span>Lunch Box</span>
+    </div>
+    <div class="tile" onclick="showDialog('Water Bottle')">
+      <img src="https://img.icons8.com/color/96/water-bottle.png" alt="Water Bottle">
+      <span>Water Bottle</span>
+    </div>
+  </div>
+
+  <div class="overlay" id="overlay"></div>
+
+  <div id="description-dialog">
+    <h2>Describe your lost <span id="item-type"></span></h2>
+    <input type="text" id="student-name" placeholder="Your Name">
+    <select id="student-class">
+      <option value="">Select Your Class</option>
+      <!-- Generate options for Class 1 to Class 12 -->
+      <script>
+        for (let i = 1; i <= 12; i++) {
+          document.write(`<option value="Class ${i}">Class ${i}</option>`);
+        }
+      </script>
+    </select>
+    <input type="text" id="item-description" placeholder="E.g., Blue bottle, small, steel">
+    <button onclick="submitDescription()">Submit</button>
+  </div>
+
+  <script>
+    function showDialog(itemType) {
+      document.getElementById('item-type').textContent = itemType;
+      document.getElementById('description-dialog').style.display = 'block';
+      document.getElementById('overlay').style.display = 'block';
+    }
+
+    function submitDescription() {
+      const name = document.getElementById('student-name').value;
+      const studentClass = document.getElementById('student-class').value;
+      const description = document.getElementById('item-description').value;
+
+      if (!name || !studentClass || !description) {
+        alert("Oops! Please make sure you've told us:\n\n- Your name\n- Your class\n- A description of the lost item.\n\nWe want to help you find it!");
+        return;
+      }
+
+      console.log('Submitting:', { name, studentClass, description }); // Replace with your function later
+      document.getElementById('description-dialog').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
+      alert('Details submitted! We’ll try to find your lost item.');
+    }
+  </script>
+</body>
+</html>
