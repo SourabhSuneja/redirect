@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reported Lost Items</title>
+  <link href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Baloo Chettan 2', cursive;
+      background-color: #f4faff;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+
+    h1 {
+      text-align: center;
+      color: #2b8de4;
+      margin-bottom: 20px;
+    }
+
+    .items-container {
+      max-width: 800px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .item-card {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 15px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .item-icon img {
+      width: 50px;
+      height: 50px;
+    }
+
+    .item-details {
+      flex-grow: 1;
+    }
+
+    .item-details h2 {
+      margin: 0;
+      font-size: 18px;
+      color: #2b8de4;
+    }
+
+    .item-details p {
+      margin: 5px 0 0;
+      font-size: 14px;
+      color: #666;
+    }
+  </style>
+</head>
+<body>
+  <h1>Reported Lost Items</h1>
+  <div class="items-container" id="items-container">
+    <!-- Items will be dynamically added here -->
+  </div>
+
+  <script>
+    // Global object containing reported lost items
+    const reportedItems = [
+      {
+        name: "Aarav Gupta",
+        class: "Class 5",
+        type: "Water Bottle",
+        description: "Blue, steel, 500ml"
+      },
+      {
+        name: "Diya Sharma",
+        class: "Class 7",
+        type: "Notebook/Book",
+        description: "Math notebook, yellow cover"
+      },
+      {
+        name: "Raj Malhotra",
+        class: "Class 2",
+        type: "Lunch Box",
+        description: "Small, green, rectangular"
+      }
+    ];
+
+    // Function to dynamically list all reported items
+    function displayReportedItems() {
+      const container = document.getElementById('items-container');
+
+      reportedItems.forEach(item => {
+        const itemCard = document.createElement('div');
+        itemCard.classList.add('item-card');
+
+        const itemIcon = document.createElement('div');
+        itemIcon.classList.add('item-icon');
+
+        // Select appropriate icon based on item type
+        const iconImage = document.createElement('img');
+        switch (item.type) {
+          case "Water Bottle":
+            iconImage.src = "https://img.icons8.com/color/96/water-bottle.png";
+            break;
+          case "Notebook/Book":
+            iconImage.src = "https://img.icons8.com/color/96/book.png";
+            break;
+          case "Lunch Box":
+            iconImage.src = "https://img.icons8.com/color/96/lunchbox.png";
+            break;
+          default:
+            iconImage.src = "https://img.icons8.com/color/96/box.png"; // Default icon
+        }
+
+        itemIcon.appendChild(iconImage);
+
+        const itemDetails = document.createElement('div');
+        itemDetails.classList.add('item-details');
+
+        const itemTitle = document.createElement('h2');
+        itemTitle.textContent = `${item.type}`;
+
+        const itemDescription = document.createElement('p');
+        itemDescription.textContent = `Description: ${item.description}`;
+
+        const studentDetails = document.createElement('p');
+        studentDetails.textContent = `Reported by: ${item.name}, ${item.class}`;
+
+        itemDetails.appendChild(itemTitle);
+        itemDetails.appendChild(itemDescription);
+        itemDetails.appendChild(studentDetails);
+
+        itemCard.appendChild(itemIcon);
+        itemCard.appendChild(itemDetails);
+
+        container.appendChild(itemCard);
+      });
+    }
+
+    // Call the function to display items on page load
+    displayReportedItems();
+  </script>
+</body>
+</html>
