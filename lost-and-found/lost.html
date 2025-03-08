@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Lost & Found - Lost Items</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400;700&display=swap" rel="stylesheet">
-  <script type="module" src="supabase-crud.js"></script>
+  <script type="module" src="https://sourabhsuneja.github.io/redirect/lost-and-found/supabase-crud.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -32,7 +32,8 @@
     }
 
     .tile {
-      width: 150px;
+      width: 80%;
+      max-width: 250px;
       height: 150px;
       background-color: #374243;
       color: #fff;
@@ -158,7 +159,8 @@
       document.getElementById('overlay').style.display = 'block';
     }
 
-    function submitDescription() {
+    async function submitDescription() {
+      const type = document.getElementById('item-type').textContent;
       const name = document.getElementById('student-name').value;
       const studentClass = document.getElementById('student-class').value;
       const description = document.getElementById('item-description').value;
@@ -168,10 +170,15 @@
         return;
       }
 
-      console.log('Submitting:', { name, studentClass, description }); // Replace with your function later
-      document.getElementById('description-dialog').style.display = 'none';
-      document.getElementById('overlay').style.display = 'none';
-      alert('Details submitted! We’ll try to find your lost item.');
+      document.getElementById('item-type').textContent = 'Submitting...';
+      const success = await insertData('lost_items', {name, class: studentClass, type, description});
+      if(success) {
+          document.getElementById('description-dialog').style.display = 'none';
+          document.getElementById('overlay').style.display = 'none';
+          alert('Details submitted! We’ll try to find your lost item soon.');
+      } else {
+          alert('Error submitting details!');
+      }      
     }
   </script>
 </body>
