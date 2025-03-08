@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Reported Lost Items</title>
   <link href="https://fonts.googleapis.com/css2?family=Baloo+Chettan+2:wght@400;700&display=swap" rel="stylesheet">
-  <script type="module" src="supabase-crud.js"></script>
+  <script type="module" src="https://sourabhsuneja.github.io/redirect/lost-and-found/supabase-crud.js"></script>
   <style>
     body {
       font-family: 'Baloo Chettan 2', cursive;
@@ -69,33 +69,38 @@
 
   <script>
     // Global object containing reported lost items
-    const reportedItems = [
-      {
-        name: "Aarav Gupta",
-        class: "Class 5",
-        type: "Water Bottle",
-        description: "Blue, steel, 500ml"
-      },
-      {
-        name: "Diya Sharma",
-        class: "Class 7",
-        type: "Notebook/Book",
-        description: "Math notebook, yellow cover"
-      },
-      {
-        name: "Raj Malhotra",
-        class: "Class 2",
-        type: "Lunch Box",
-        description: "Small, green, rectangular"
-      }
-    ];
+    let reportedItems;
+
+window.onload = async function () {
+    try {
+        reportedItems = await selectData('lost_items');
+        displayReportedItems();
+    } catch (error) {
+        console.error("Error fetching lost items:", error);
+    }
+    const subscription = subscribeToTable('lost_items', handleLiveUpdate);
+};
+
+// function to handle live updates (new reported items)
+function handleLiveUpdate(payload) {
+   if (payload.eventType === 'INSERT') {
+      insertCard(payload.new);
+   } 
+}
+
 
     // Function to dynamically list all reported items
     function displayReportedItems() {
-      const container = document.getElementById('items-container');
 
       reportedItems.forEach(item => {
-        const itemCard = document.createElement('div');
+        insertCard(item);
+      });
+    }
+
+    function insertCard(item) {
+const container = document.getElementById('items-container');
+
+const itemCard = document.createElement('div');
         itemCard.classList.add('item-card');
 
         const itemIcon = document.createElement('div');
@@ -139,11 +144,7 @@
         itemCard.appendChild(itemDetails);
 
         container.appendChild(itemCard);
-      });
     }
-
-    // Call the function to display items on page load
-    displayReportedItems();
   </script>
 </body>
 </html>
