@@ -134,7 +134,7 @@ const itemCard = document.createElement('div');
         itemDescription.textContent = `Description: ${item.description}`;
 
         const studentDetails = document.createElement('p');
-        studentDetails.textContent = `Reported by: ${item.name}, ${item.class}`;
+        studentDetails.textContent = `Reported by: ${item.name}, ${item.class} on ${formatTimestamp(item.reported_at)}`;
 
         itemDetails.appendChild(itemTitle);
         itemDetails.appendChild(itemDescription);
@@ -145,6 +145,30 @@ const itemCard = document.createElement('div');
 
         container.appendChild(itemCard);
     }
+
+    // function to format timestamp
+    function formatTimestamp(timestamp) {
+    // Parse the timestamp
+    let date = new Date(timestamp);
+
+    // Get date components
+    let day = date.getDate();
+    let month = date.toLocaleString('en-US', { month: 'short' }); // Short month name
+    let year = date.getFullYear();
+
+    // Get time components
+    let hours = date.getHours();
+    let minutes = date.getMinutes();
+    let ampm = hours >= 12 ? 'PM' : 'AM';
+
+    // Convert 24-hour time to 12-hour format
+    hours = hours % 12 || 12; // Convert '0' to '12'
+    
+    // Format minutes to always have two digits
+    minutes = minutes.toString().padStart(2, '0');
+
+    return `${day} ${month}, ${year} at ${hours}:${minutes} ${ampm}`;
+}
   </script>
 </body>
 </html>
