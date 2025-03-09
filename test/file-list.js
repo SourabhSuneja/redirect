@@ -19,7 +19,7 @@ let track_list = [
   },
   {
     name: "Aashaayein",
-    artist: "K.K.",
+    artist: "K.K. & Salim Merchant",
     image: "https://sourabhsuneja.github.io/academic-resources/images/music-icon.png",
     path: "https://sourabhsuneja.github.io/redirect/test/songs/aashayein.mp3"
   },
