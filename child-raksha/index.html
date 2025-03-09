@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Child Raksha</title>
+    <meta name="description" content="A safety app for children and teenagers to request help in emergencies. Instantly send alerts with location and optional photos for quick assistance.">
+    <link href="https://fonts.googleapis.com/css2?family=Baloo+Bhaina+2&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script type="module" src="https://sourabhsuneja.github.io/redirect/lost-and-found/supabase-crud.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Child Raksha</h1>
+        <p>Select an option to send an alert to the Child Raksha Team:</p>
+        
+        <div class="options-grid">
+            <div class="option" onclick="openDialog('Someone gave me a bad touch')">
+                <img src="images/bad_touch.png" alt="Bad Touch">
+                <span>Someone gave me a bad touch</span>
+            </div>
+            <div class="option" onclick="openDialog('I am lost')">
+                <img src="images/lost.png" alt="Lost">
+                <span>Looks like I am lost</span>
+            </div>
+            <div class="option" onclick="openDialog('Someone is following me')">
+                <img src="images/follow.png" alt="Following">
+                <span>Someone is following me</span>
+            </div>
+            <div class="option" onclick="openDialog('I feel unsafe')">
+                <img src="images/unsafe.png" alt="Unsafe">
+                <span>I am feeling unsafe here</span>
+            </div>
+        </div>
+    </div>
+
+    <div id="alertDialog" class="dialog-overlay">
+        <div class="dialog-box">
+            <span class="close-btn" onclick="closeDialog()">×</span>
+            <h2>Send Safety Alert</h2>
+            <p>Fill in the details below to request help.</p>
+            <input type="text" id="childName" placeholder="Your Name (Optional)">
+            <input type="text" id="contactNumber" placeholder="Parent's Contact Number (Optional)">
+            <textarea id="description" placeholder="Describe the problem (Optional)"></textarea>
+<button id="captureBtn">Capture Photo (Optional)</button>
+    <input type="file" accept="image/*" capture="environment" id="cameraInput">
+    <span id="fileLabel"></span>
+    <img id="preview" alt="Captured Image">
+            <div style="font-family: 'Arial', sans-serif; margin: 16px 0;"><span style="color: red">*</span> Your precise location will be mandatorily shared to help us reach you.</div>
+            <button id="alert-btn" onclick="sendAlert()">Send Alert</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
