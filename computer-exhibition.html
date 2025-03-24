@@ -4,13 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Computer Exhibition Projects</title>
+    <meta name="description" content="See all project details here.">
     <style>
+        * {
+            max-height: 9999999px;
+        }
         body {
             font-family: 'Arial', sans-serif;
             background-color: #f8f9fa;
             margin: 0;
             padding: 20px;
             color: #333;
+        }
+        .hidden {
+            display: none;
         }
         .container {
             max-width: 900px;
@@ -20,7 +27,7 @@
             border-radius: 8px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        h1, h2 {
+        h1, h2, h3 {
             text-align: center;
             color: #0056b3;
         }
@@ -44,6 +51,13 @@
         tr:hover {
             background-color: #d9edf7;
         }
+        .summary {
+            margin-top: 20px;
+            padding: 15px;
+            background: #e8f5e9;
+            border-left: 5px solid #4caf50;
+            font-size: 16px;
+        }
         .note {
             background: #fffae6;
             padding: 15px;
@@ -62,7 +76,7 @@
                 border: none;
                 padding: 0;
             }
-            .note {
+            .summary, .note {
                 background: none;
                 border-left: none;
             }
@@ -95,13 +109,13 @@
             <tr><td>Devanshi, Jaanvi & Suhana (8-A2)</td><td>Animal Detection Model using AI</td></tr>
         </table>
 
-        <h3>For Classes 9 to 12:</h3>
-        <table>
+        <h3 class="hidden">For Classes 9 to 12:</h3>
+        <table class="hidden">
             <tr>
                 <th>Student(s)</th>
                 <th>Project</th>
             </tr>
-            <tr><td>Aaysha Katariya, Arpita Sahal, Vishwa, Nikita Kumawat (12)</td><td>Bank Management Application</td></tr>
+            <tr><td>Ayesha, Arpita, Vishwa, Nikita (12)</td><td>Bank Management Application</td></tr>
             <tr><td>Chanchal (10-A1) & Vandana (10-A2)</td><td>PowerPoint Presentation on Cybercrime</td></tr>
             <tr><td>Prashant Yadav (10-A1), Mayank (10-A2)</td><td>Snake Food Game in Python</td></tr>
             <tr><td>Ishu & Yash Choudhary (10-A2)</td><td>Video on School's Sports Day (FilmoraGo)</td></tr>
@@ -109,8 +123,17 @@
             <tr><td>Mahi Meena (10-A2)</td><td>PowerPoint Presentation on Computers</td></tr>
         </table>
 
+        <div class="summary">
+            <strong>Project Summary:</strong><br>
+            - <strong>Games:</strong> 7 <br>
+            - <strong>Utility Apps:</strong> 4 <br>
+            - <strong>Concept-based Simulation App:</strong> 1 <br>
+            - <strong>Working Model:</strong> 1 (Thermocol-based Smart City with AI-based Sensor) <br>
+            - <strong>Non-Working Model:</strong> 1 (e.g. a small keyboard, computer devices) <br>
+        </div>
+
         <div class="note">
-            <strong>Note:</strong> To ensure a smooth exhibition, we will be needing approximately <strong>10 laptops</strong> and <strong>4 phones</strong> to be provided to the students for their project demonstrations. Kindly let us know if the school can arrange these devices in case students are unable to bring their own. This will help us plan ahead accordingly.  
+            <strong>Note:</strong> To ensure a smooth exhibition, we will be needing approximately <strong>10 laptops</strong> and <strong>3 phones</strong> to be provided to the students for their project demonstrations. 
         </div>
     </div>
 </body>
