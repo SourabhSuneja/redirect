@@ -147,7 +147,7 @@
   <div class="overlay" id="overlay"></div>
 
   <div id="description-dialog">
-    <span id="close-btn">&times;</span>
+    <span onclick="closeDialog()" id="close-btn">&times;</span>
     <h2>Describe your lost <span id="item-type"></span></h2>
     <input type="text" id="student-name" placeholder="Your Name">
     <select id="student-class">
@@ -168,6 +168,11 @@
       document.getElementById('item-type').textContent = itemType;
       document.getElementById('description-dialog').style.display = 'block';
       document.getElementById('overlay').style.display = 'block';
+    }
+
+    function closeDialog() {
+      document.getElementById('description-dialog').style.display = 'none';
+      document.getElementById('overlay').style.display = 'none';
     }
 
     async function submitDescription() {
