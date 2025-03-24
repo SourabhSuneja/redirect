@@ -78,7 +78,7 @@
     <script type="text/javascript">
         const URL = "https://teachablemachine.withgoogle.com/models/v5Xpoeyza/";
         let model, webcam, labelContainer, maxPredictions;
-        //let audio = new Audio('wear-helmet.mp3');
+        let audio = new Audio('zebra-warning.mp3');
 
         async function init() {
             const modelURL = URL + "model.json";
@@ -108,7 +108,7 @@
 
         async function predict() {
             const prediction = await model.predict(webcam.canvas);
-            let withoutHelmetProbability = 0;
+            let zebraProbability = 0;
 
             for (let i = 0; i < maxPredictions; i++) {
                 const classPrediction =
@@ -116,14 +116,14 @@
                 labelContainer.childNodes[i].innerHTML = classPrediction;
 
                 // Check if the prediction class is "Without Helmet"
-                if (prediction[i].className === "Without Helmet") {
-                    withoutHelmetProbability = prediction[i].probability * 100;
+                if (prediction[i].className === "Zebra") {
+                    zebraProbability = prediction[i].probability * 100;
                 }
             }
 
             // Play the audio if the probability of "Without Helmet" is greater than 70%
-            if (withoutHelmetProbability > 70) {
-                //audio.play();
+            if (zebraProbability > 90) {
+                audio.play();
             }
         }
     </script>
@@ -138,7 +138,7 @@
     <footer>
         Powered by Sourabh Suneja
     </footer>
-    <!-- Preload audio 
-    <audio id="audio" src="wear-helmet.mp3" preload="auto"></audio> -->
+    <!-- Preload audio -->
+    <audio id="audio" src="zebra-warning.mp3" preload="auto"></audio> 
 </body>
 </html>
