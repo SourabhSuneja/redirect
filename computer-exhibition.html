@@ -6,131 +6,112 @@
     <title>Computer Exhibition Projects</title>
     <style>
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            margin: 0;
             padding: 20px;
-            background: #fff;
-            color: #000;
+            color: #333;
         }
-        h1 {
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1, h2 {
             text-align: center;
-            text-transform: uppercase;
-            margin-bottom: 20px;
+            color: #0056b3;
         }
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-top: 15px;
         }
         th, td {
-            border: 1px solid #000;
-            padding: 10px;
+            border: 1px solid #ddd;
+            padding: 12px;
             text-align: left;
         }
         th {
-            background: #ddd;
+            background-color: #0056b3;
+            color: white;
+        }
+        tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+        tr:hover {
+            background-color: #d9edf7;
+        }
+        .note {
+            background: #fffae6;
+            padding: 15px;
+            border-left: 5px solid #ffcc00;
+            margin-top: 20px;
             font-size: 16px;
         }
-        td {
-            font-size: 14px;
-        }
+        /* Print-friendly styles */
         @media print {
             body {
-                margin: 0;
+                background: white;
+                color: black;
+            }
+            .container {
+                box-shadow: none;
+                border: none;
                 padding: 0;
             }
-            table {
-                page-break-inside: avoid;
+            .note {
+                background: none;
+                border-left: none;
             }
         }
     </style>
 </head>
 <body>
+    <div class="container">
+        <h1>Computer Exhibition</h1>
+        <h2>Projects Assigned</h2>
 
-    <h1>Computer Exhibition Projects</h1>
+        <h3>For Classes 6 to 8:</h3>
+        <table>
+            <tr>
+                <th>Student(s)</th>
+                <th>Project</th>
+            </tr>
+            <tr><td>Atharva Sharma (8-A2)</td><td>NGO App for Restaurant Food Donation</td></tr>
+            <tr><td>Abhay (6-A3) & Udbhav (6-A4)</td><td>Patchman Game in Scratch</td></tr>
+            <tr><td>Tanuj (7-A1) & Vidit (6-A1)</td><td>Star Catching Game in Scratch</td></tr>
+            <tr><td>Yeshita (8-A1) & Pratiksha (8-A3)</td><td>Anomaly Detection Tool</td></tr>
+            <tr><td>Unnati (6-A2) & Bhargavi (7-A2)</td><td>PowerPoint Presentation on School</td></tr>
+            <tr><td>Himanshi (6-A1), Vanya (6-A4) & Arshika (6-A1)</td><td>Pong Game, Apple Catching Games in Scratch</td></tr>
+            <tr><td>Kunal</td><td>Hand-gesture Controlled AI Music Player</td></tr>
+            <tr><td>Ronak (6-A3) & Yashwardhan (6-A2)</td><td>Flappy Bird in Scratch</td></tr>
+            <tr><td>Yogesh & Priyanshu Choudhary (7-A2)</td><td>Jumping over the Obstacle in Scratch</td></tr>
+            <tr><td>Ishita & Anishka (7-A3)</td><td>Boat Sailing Game in Scratch</td></tr>
+            <tr><td>Vanshika (7-A1) & Charu (6-A1)</td><td>Child Raksha App</td></tr>
+            <tr><td>Saksham (7-A1)</td><td>Lost & Found App</td></tr>
+            <tr><td>Devanshi, Jaanvi & Suhana (8-A2)</td><td>Animal Detection Model using AI</td></tr>
+        </table>
 
-    <table>
-        <tr>
-            <th>Student(s)</th>
-            <th>Class</th>
-            <th>Project Title</th>
-        </tr>
-        <tr>
-            <td>Arshika, Charu, Manvi, Himanshi</td>
-            <td>6-A1</td>
-            <td>Simple Games in Scratch (Pong Game, Catching the Falling Apple, Balloon Shooter, etc.)</td>
-        </tr>
-        <tr>
-            <td>Sameer & Vidit</td>
-            <td>6-A1</td>
-            <td>An application in Python to guess what disease a person is suffering from based on their symptoms</td>
-        </tr>
-        <tr>
-            <td>Jaynil, Tanish, Unnati</td>
-            <td>6-A2</td>
-            <td>A simple calculator in Python</td>
-        </tr>
-        <tr>
-            <td>Vania, Yashwardhan</td>
-            <td>6-A2</td>
-            <td>Charts on Computer Vision (AI)</td>
-        </tr>
-        <tr>
-            <td>Abhay, Himansh, Ronak</td>
-            <td>6-A3</td>
-            <td>A drawing application in Scratch</td>
-        </tr>
-        <tr>
-            <td>Udhbhav, Ujjwal</td>
-            <td>6-A4</td>
-            <td>Asteroid Shooter Game in Scratch</td>
-        </tr>
-        <tr>
-            <td>Vanya & Yashasvi</td>
-            <td>6-A4</td>
-            <td>A small laptop model</td>
-        </tr>
-        <tr>
-            <td>Arnav, Chetan, Prateek, Tanuj</td>
-            <td>7-A1</td>
-            <td>An HTML-based Virtual Lost & Found application</td>
-        </tr>
-        <tr>
-            <td>Mahi, Anishka, Ishita</td>
-            <td>7-A3</td>
-            <td>A web-based food nutritional value checker</td>
-        </tr>
-        <tr>
-            <td>Niket, Rudransh, Yashraj</td>
-            <td>7-A3</td>
-            <td>A small report card maker application</td>
-        </tr>
-        <tr>
-            <td>Shreya & Tamanna</td>
-            <td>8-A1</td>
-            <td>An AI Chat Assistant for our school</td>
-        </tr>
-        <tr>
-            <td>Yeshita, Utsav & Yatish</td>
-            <td>8-A1</td>
-            <td>An AI-based Anomaly Detection tool for banks</td>
-        </tr>
-        <tr>
-            <td>Devanshi, Suhana, Jaanvi</td>
-            <td>8-A2</td>
-            <td>An AI-based small city model where stray animals can be detected using computer vision</td>
-        </tr>
-        <tr>
-            <td>Kunal & Pranjal</td>
-            <td>8-A2</td>
-            <td>A Hand Gesture controlled music player</td>
-        </tr>
-        <tr>
-            <td>Himanshu, Swarnika, Pratiksha</td>
-            <td>8-A3</td>
-            <td>An AI-based Empty Shelf Detection system for malls</td>
-        </tr>
-    </table>
+        <h3>For Classes 9 to 12:</h3>
+        <table>
+            <tr>
+                <th>Student(s)</th>
+                <th>Project</th>
+            </tr>
+            <tr><td>Aaysha Katariya, Arpita Sahal, Vishwa, Nikita Kumawat (12)</td><td>Bank Management Application</td></tr>
+            <tr><td>Chanchal (10-A1) & Vandana (10-A2)</td><td>PowerPoint Presentation on Cybercrime</td></tr>
+            <tr><td>Prashant Yadav (10-A1), Mayank (10-A2)</td><td>Snake Food Game in Python</td></tr>
+            <tr><td>Ishu & Yash Choudhary (10-A2)</td><td>Video on School's Sports Day (FilmoraGo)</td></tr>
+            <tr><td>Rehan Sharma & Divyansh Choudhary (10-A1)</td><td>Video on AI (FilmoraGo)</td></tr>
+            <tr><td>Mahi Meena (10-A2)</td><td>PowerPoint Presentation on Computers</td></tr>
+        </table>
 
+        <div class="note">
+            <strong>Note:</strong> To ensure a smooth exhibition, we will be needing approximately <strong>10 laptops</strong> and <strong>4 phones</strong> to be provided to the students for their project demonstrations. Kindly let us know if the school can arrange these devices in case students are unable to bring their own. This will help us plan ahead accordingly.  
+        </div>
+    </div>
 </body>
 </html>
