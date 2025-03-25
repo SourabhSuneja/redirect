@@ -78,7 +78,7 @@
     <script type="text/javascript">
         const URL = "https://teachablemachine.withgoogle.com/models/v5Xpoeyza/";
         let model, webcam, labelContainer, maxPredictions;
-        let audio = new Audio('locker-siren.mp3');
+        let audio = new Audio('locker-siren.wav');
 
         async function init() {
             const modelURL = URL + "model.json";
@@ -139,6 +139,6 @@
         Powered by Sourabh Suneja
     </footer>
     <!-- Preload audio -->
-    <audio id="audio" src="locker-siren.mp3" preload="auto"></audio> 
+    <audio id="audio" src="locker-siren.wav" preload="auto"></audio> 
 </body>
 </html>
