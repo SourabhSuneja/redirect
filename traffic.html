@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Real-time traffic detection using AI.">
+    <title>Traffic Detection with AI</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f0f0;
+            color: #333;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            flex: 1;
+        }
+        h1 {
+            color: #007bff;
+            margin-bottom: 20px;
+        }
+        #webcam-container {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        #webcam-container canvas {
+            border: 2px solid #007bff;
+            border-radius: 10px;
+        }
+        #label-container {
+            margin: 20px 0;
+            display: flex;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+        #label-container div {
+            background-color: #007bff;
+            color: #fff;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+        button {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        footer {
+            background-color: #007bff;
+            color: white;
+            padding: 10px;
+            text-align: center;
+            position: relative;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
+    <script type="text/javascript">
+        const URL = "https://teachablemachine.withgoogle.com/models/v5Xpoeyza/";
+        let model, webcam, labelContainer, maxPredictions;
+        let audio = new Audio('traffic-warning.mp3');
+
+        async function init() {
+            const modelURL = URL + "model.json";
+            const metadataURL = URL + "metadata.json";
+
+            model = await tmImage.load(modelURL, metadataURL);
+            maxPredictions = model.getTotalClasses();
+
+            const flip = false;
+            webcam = new tmImage.Webcam(200, 200, flip);
+            await webcam.setup({ facingMode: "environment" }); // Added { facingMode: "environment" }
+            await webcam.play();
+            window.requestAnimationFrame(loop);
+
+            document.getElementById("webcam-container").appendChild(webcam.canvas);
+            labelContainer = document.getElementById("label-container");
+            for (let i = 0; i < maxPredictions; i++) {
+                labelContainer.appendChild(document.createElement("div"));
+            }
+        }
+
+        async function loop() {
+            webcam.update();
+            await predict();
+            window.requestAnimationFrame(loop);
+        }
+
+        async function predict() {
+            const prediction = await model.predict(webcam.canvas);
+            let zebraProbability = 0;
+
+            for (let i = 0; i < maxPredictions; i++) {
+                const classPrediction =
+                    prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
+                labelContainer.childNodes[i].innerHTML = classPrediction;
+
+                // Check if the prediction class is "Without Helmet"
+                if (prediction[i].className === "Zebra") {
+                    zebraProbability = prediction[i].probability * 100;
+                }
+            }
+
+            // Play the audio if the probability of "Without Helmet" is greater than 70%
+            if (zebraProbability > 90) {
+                audio.play();
+            }
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <h1>Real-time Traffic Detection with AI</h1>
+        <button type="button" onclick="init()">Start Detection</button>
+        <div id="webcam-container"></div>
+        <div id="label-container"></div>
+    </div>
+    <footer>
+        Powered by Sourabh Suneja
+    </footer>
+    <!-- Preload audio -->
+    <audio id="audio" src="traffic-warning.mp3" preload="auto"></audio> 
+</body>
+</html>
