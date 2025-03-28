@@ -76,7 +76,7 @@
     <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@latest/dist/tf.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@teachablemachine/image@latest/dist/teachablemachine-image.min.js"></script>
     <script type="text/javascript">
-        const URL = "https://teachablemachine.withgoogle.com/models/v5Xpoeyza/";
+        const URL = "https://teachablemachine.withgoogle.com/models/oWcjgQKryx/";
         let model, webcam, labelContainer, maxPredictions;
         let audio = new Audio('traffic-warning.mp3');
 
@@ -108,21 +108,21 @@
 
         async function predict() {
             const prediction = await model.predict(webcam.canvas);
-            let zebraProbability = 0;
+            let trafficProbability = 0;
 
             for (let i = 0; i < maxPredictions; i++) {
                 const classPrediction =
                     prediction[i].className + ": " + (prediction[i].probability * 100).toFixed(2) + "%";
                 labelContainer.childNodes[i].innerHTML = classPrediction;
 
-                // Check if the prediction class is "Without Helmet"
-                if (prediction[i].className === "Zebra") {
-                    zebraProbability = prediction[i].probability * 100;
+                // Check if the prediction class
+                if (prediction[i].className === "Traffic") {
+                    trafficProbability = prediction[i].probability * 100;
                 }
             }
 
             // Play the audio if the probability of "Without Helmet" is greater than 70%
-            if (zebraProbability > 90) {
+            if (trafficProbability > 80) {
                 audio.play();
             }
         }
