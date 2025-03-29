@@ -5,30 +5,40 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Class 6 Computer Science Lesson Plan</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
     <style>
         body {
             font-family: 'Poppins', sans-serif;
-            margin: 20px;
-            padding: 20px;
-            background: #f8f8f8;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #2a75bb, #1d5a8e);
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
         }
         .container {
             background: white;
             padding: 20px;
             border-radius: 10px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            max-width: 90%;
+            width: 1100px;
+            color: black;
+            text-align: center;
         }
         h1, h2 {
-            text-align: center;
+            color: #2a75bb;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            overflow-x: auto;
+            display: block;
         }
         th, td {
-            border: 1px solid #444;
+            border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
         }
@@ -40,17 +50,16 @@
             background: #f2f2f2;
         }
         .print-btn {
-            display: block;
-            width: 150px;
-            margin: 20px auto;
-            padding: 10px;
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 20px;
             background: #2a75bb;
             color: white;
-            text-align: center;
-            font-size: 16px;
-            cursor: pointer;
             border: none;
             border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: background 0.3s;
         }
         .print-btn:hover {
             background: #1d5a8e;
@@ -61,6 +70,17 @@
             }
             .print-btn {
                 display: none;
+            }
+        }
+        @media (max-width: 768px) {
+            table {
+                display: block;
+                overflow-x: auto;
+                white-space: nowrap;
+            }
+            th, td {
+                padding: 8px;
+                font-size: 14px;
             }
         }
     </style>
@@ -135,33 +155,6 @@
             <td>Lab session: Creating a personal homepage using HTML.</td>
             <td>3</td>
             <td>6</td>
-        </tr>
-        <tr>
-            <td><strong>Ch-7: Introduction to CSS</strong> (November 2025)</td>
-            <td>Understand how to style web pages using CSS.</td>
-            <td>Live coding, hands-on practice.</td>
-            <td>Students will apply CSS styles to HTML pages.</td>
-            <td>Lab session: Styling a webpage using different CSS properties.</td>
-            <td>3</td>
-            <td>5</td>
-        </tr>
-        <tr>
-            <td><strong>Ch-8: Artificial Intelligence</strong> (December 2025)</td>
-            <td>Understand the basics of AI and its applications.</td>
-            <td>Interactive discussions, real-world case studies.</td>
-            <td>Students will explain AI concepts and applications.</td>
-            <td>Activity: Identifying AI in everyday life.</td>
-            <td>None</td>
-            <td>3</td>
-        </tr>
-        <tr>
-            <td><strong>Ch-9: Internet and Netiquette</strong> (January 2026)</td>
-            <td>Learn safe and ethical internet usage.</td>
-            <td>Case studies, discussions.</td>
-            <td>Students will demonstrate responsible online behavior.</td>
-            <td>Activity: Creating a poster on internet safety.</td>
-            <td>None</td>
-            <td>3</td>
         </tr>
     </table>
 
