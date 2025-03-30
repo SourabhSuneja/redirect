@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School Time Table Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #f4f4f9;
+            text-align: center;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+            overflow-x: auto;
+        }
+        .table-container {
+            overflow-x: auto;
+            width: 100%;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            min-width: 900px;
+        }
+        th, td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: center;
+        }
+        th {
+            background: #007bff;
+            color: white;
+        }
+        select {
+            width: 100%;
+            padding: 3px;
+            margin-bottom: 5px;
+        }
+        .warning {
+            color: red;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+        button {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin-top: 10px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h2>School Time Table Generator</h2>
+        <div id="warning" class="warning"></div>
+        <div class="table-container">
+            <table id="timetable">
+                <thead>
+                    <tr>
+                        <th>Class</th>
+                        <th>Period 1</th>
+                        <th>Period 2</th>
+                        <th>Period 3</th>
+                        <th>Period 4</th>
+                        <th>Period 5</th>
+                        <th>Period 6</th>
+                        <th>Period 7</th>
+                        <th>Period 8</th>
+                        <th>Period 9</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <!-- Classes will be dynamically inserted here -->
+                </tbody>
+            </table>
+        </div>
+        <button onclick="printTimeTable()"><i class="fas fa-print"></i> Print Time Table</button>
+    </div><script>
+    const classes = ["1-A1", "1-A2", "5-A1", "8-A1", "8-A2"];
+    const subjects = ["Maths", "Science", "English", "History"];
+    const teachers = ["Mr. Sourabh", "Ms. Kavya", "Mr. Raj", "Ms. Anita"];
+    const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
+    const timetableData = JSON.parse(localStorage.getItem("timetableData")) || {};
+    const timetable = document.querySelector("#timetable tbody");
+    const warningBox = document.getElementById("warning");
+
+    function createTable() {
+        classes.forEach(cls => {
+            let row = `<tr><td><strong>${cls}</strong></td>`;
+            for (let i = 1; i <= 9; i++) {
+                row += `<td>`;
+                weekdays.forEach(day => {
+                    const key = `${cls}-${day}-Period${i}`;
+                    const savedSubject = timetableData[key]?.subject || "";
+                    const savedTeacher = timetableData[key]?.teacher || "";
+                    row += `<div>
+                        <strong>${day}</strong><br>
+                        <select class="subject" onchange="saveTimetable('${cls}', '${day}', ${i})">
+                            <option value="" ${savedSubject === "" ? "selected" : ""}>--Select Subject--</option>
+                            ${subjects.map(sub => `<option value="${sub}" ${savedSubject === sub ? "selected" : ""}>${sub}</option>`).join('')}
+                        </select>
+                        <select class="teacher" onchange="saveTimetable('${cls}', '${day}', ${i})">
+                            <option value="" ${savedTeacher === "" ? "selected" : ""}>--Select Teacher--</option>
+                            ${teachers.map(teacher => `<option value="${teacher}" ${savedTeacher === teacher ? "selected" : ""}>${teacher}</option>`).join('')}
+                        </select>
+                    </div>`;
+                });
+                row += `</td>`;
+            }
+            row += "</tr>";
+            timetable.innerHTML += row;
+        });
+    }
+
+    function saveTimetable(cls, day, period) {
+        const key = `${cls}-${day}-Period${period}`;
+        const subject = document.querySelector(`td:nth-child(${period + 1}) div:nth-child(${weekdays.indexOf(day) + 1}) .subject`).value;
+        const teacher = document.querySelector(`td:nth-child(${period + 1}) div:nth-child(${weekdays.indexOf(day) + 1}) .teacher`).value;
+        
+        if (subject || teacher) {
+            timetableData[key] = { subject, teacher };
+        } else {
+            delete timetableData[key];
+        }
+        localStorage.setItem("timetableData", JSON.stringify(timetableData));
+        checkClash();
+    }
+
+    function checkClash() {
+        const periods = 9;
+        weekdays.forEach(day => {
+            for (let p = 0; p < periods; p++) {
+                let teacherSlots = {};
+                document.querySelectorAll(`#timetable tbody tr`).forEach(row => {
+                    const selectedTeacher = row.children[p + 1].querySelector(`div:nth-child(${weekdays.indexOf(day) + 1}) .teacher`).value;
+                    if (selectedTeacher) {
+                        if (teacherSlots[selectedTeacher]) {
+                            warningBox.innerHTML = `Clash detected! ${selectedTeacher} is assigned to multiple classes in Period ${p + 1} on ${day}.`;
+                            row.children[p + 1].querySelector(`div:nth-child(${weekdays.indexOf(day) + 1}) .teacher`).value = "";
+                        } else {
+                            teacherSlots[selectedTeacher] = true;
+                        }
+                    }
+                });
+            }
+        });
+    }
+
+    function printTimeTable() {
+        window.print();
+    }
+
+    createTable();
+
+</script>
+
+</body>
+</html>
