@@ -89,9 +89,9 @@
         </div>
         <button onclick="printTimeTable()"><i class="fas fa-print"></i> Print Time Table</button>
     </div><script>
-    const classes = ["1-A1", "1-A2", "5-A1", "8-A1", "8-A2"];
-    const subjects = ["Maths", "Science", "English", "History"];
-    const teachers = ["Mr. Sourabh", "Ms. Kavya", "Mr. Raj", "Ms. Anita"];
+    const classes = ["1-A1", "1-A2", "1-A3", "1-A4", "2-A1", "2-A2", "2-A3", "2-A4"];
+    const subjects = ["English", "Hindi", "Maths", "Science", "SST", "Sanskrit", "Computer", "GK"];
+    const teachers = ["Sourabh Suneja", "CS Sharma", "Abhilasha Joshi"];
     const weekdays = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
     const timetableData = JSON.parse(localStorage.getItem("timetableData")) || {};
     const timetable = document.querySelector("#timetable tbody");
