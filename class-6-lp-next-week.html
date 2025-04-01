@@ -1,5 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
+<!DOCTYPE html><html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,12 +11,14 @@
             background-color: #f8f9fa;
         }
         .container {
-            width: 80%;
+            width: 100%;
+            max-width: 1000px;
             margin: auto;
             background: white;
             padding: 20px;
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
         }
         h1, h2 {
             text-align: center;
@@ -27,11 +28,15 @@
             width: 100%;
             border-collapse: collapse;
             margin-top: 20px;
+            word-wrap: break-word;
         }
         th, td {
             border: 1px solid #ddd;
             padding: 10px;
             text-align: left;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            vertical-align: top;
         }
         th {
             background-color: #007bff;
@@ -65,24 +70,44 @@
         <h2>Topic Coverage Plan (April 3 - April 5, 2025)</h2>
         <table>
             <tr>
-                <th>Date</th>
-                <th>Topic</th>
-                <th>Classwork / Homework</th>
+                <th style="width: 10%">Date</th>
+                <th style="width: 15%">Topic</th>
+                <th style="width: 15%">Learning Objectives</th>
+                <th style="width: 15%">Resources Used</th>
+                <th style="width: 15%">Pedagogy</th>
+                <th style="width: 15%">Learning Outcomes</th>
+                <th style="width: 15%">Art Integrated Activity</th>
+                <th style="width: 15%">Assignment</th>
             </tr>
             <tr>
                 <td>April 3, 2025</td>
                 <td>First & Second Generation Languages</td>
-                <td>Explanation + Reading</td>
+                <td>Understand early programming languages and their limitations.</td>
+                <td>Textbook, PPT, YouTube Video</td>
+                <td>Lecture + Discussion</td>
+                <td>Students will differentiate between first & second-gen languages.</td>
+                <td>Draw a timeline showing evolution of programming languages.</td>
+                <td>Write 5 differences between first & second-gen languages.</td>
             </tr>
             <tr>
                 <td>April 4, 2025</td>
                 <td>Third & Fourth Generation Languages</td>
-                <td>Explanation + Reading</td>
+                <td>Understand advancements in programming languages.</td>
+                <td>Textbook, Online Articles</td>
+                <td>Interactive Presentation + Q&A</td>
+                <td>Students will compare third & fourth-gen languages.</td>
+                <td>Design a poster showcasing examples of modern languages.</td>
+                <td>List 3 modern programming languages and their uses.</td>
             </tr>
             <tr>
                 <td>April 5, 2025</td>
                 <td>Translators (Assemblers, Interpreters & Compilers)</td>
-                <td>Explanation + Class Discussion + Book Exercises (HW)</td>
+                <td>Understand different types of language translators.</td>
+                <td>Textbook, YouTube Video, Live Demo</td>
+                <td>Class Discussion + Practical Demo</td>
+                <td>Students will explain the role of assemblers, interpreters, and compilers.</td>
+                <td>Create a flowchart showing how compilers & interpreters work.</td>
+                <td>Complete textbook exercises related to language translators.</td>
             </tr>
         </table>
         <button class="print-button" onclick="window.print()">Print</button>
