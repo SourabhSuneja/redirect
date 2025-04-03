@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CBSE Percentage Calculator</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #7209b7;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #38b000;
+            --danger: #d00000;
+            --warning: #ffaa00;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1), 0 1px 3px rgba(0, 0, 0, 0.08);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            max-height: 9999999px;
+        }
+
+        body {
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem 1.5rem;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        h1 {
+            color: var(--primary);
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: rgb(50,50,50);
+            font-size: 1.1rem;
+        }
+
+        .calculator-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 2rem;
+        }
+
+        @media (min-width: 768px) {
+            .calculator-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .calculator-card {
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: var(--card-shadow);
+            padding: 1.5rem;
+            transition: var(--transition);
+        }
+
+        .calculator-card:hover {
+            box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1), 0 4px 6px rgba(0, 0, 0, 0.05);
+            transform: translateY(-5px);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        .form-control:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .subject-heading {
+            font-size: 1.2rem;
+            color: var(--primary);
+            margin: 1.5rem 0 1rem;
+        }
+
+        .btn {
+            display: inline-block;
+            padding: 0.75rem 1.5rem;
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            text-align: center;
+            margin-top: 1rem;
+            width: 100%;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(67, 97, 238, 0.3);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .result-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin-top: 2rem;
+            box-shadow: var(--card-shadow);
+            text-align: center;
+            display: none;
+        }
+
+        .result-card h2 {
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+        }
+
+        .percentage {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 1rem 0;
+        }
+
+        .details {
+            margin-top: 1rem;
+            font-size: 0.95rem;
+        }
+
+        .chart-container {
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        .form-note {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        .input-error {
+            border-color: var(--danger) !important;
+        }
+
+        .error-message {
+            color: var(--danger);
+            font-size: 0.85rem;
+            margin-top: 0.3rem;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>CBSE Percentage Calculator</h1>
+            <p class="subtitle">For Class 9 & 10 Students</p>
+        </header>
+
+        <div class="calculator-grid">
+            <div class="calculator-card">
+                <form id="marksForm">
+                    <div class="subject-heading">Compulsory Subjects for Calculation</div>
+                    <div class="form-group">
+                        <label for="english">English</label>
+                        <input type="number" class="form-control" id="english" min="0" max="100" placeholder="Enter marks (0-100)" required>
+                        <div class="error-message" id="english-error">Marks must be between 0 and 100</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="secondLang">Second Language (Hindi/Sanskrit)</label>
+                        <input type="number" class="form-control" id="secondLang" min="0" max="100" placeholder="Enter marks (0-100)" required>
+                        <div class="error-message" id="secondLang-error">Marks must be between 0 and 100</div>
+                    </div>
+
+                    <div class="subject-heading">Remaining Subjects (Best 3 will be considered)</div>
+                    <div class="form-group">
+                        <label for="science">Science</label>
+                        <input type="number" class="form-control" id="science" min="0" max="100" placeholder="Enter marks (0-100)" required>
+                        <div class="error-message" id="science-error">Marks must be between 0 and 100</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="maths">Mathematics</label>
+                        <input type="number" class="form-control" id="maths" min="0" max="100" placeholder="Enter marks (0-100)" required>
+                        <div class="error-message" id="maths-error">Marks must be between 0 and 100</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="socialScience">Social Science</label>
+                        <input type="number" class="form-control" id="socialScience" min="0" max="100" placeholder="Enter marks (0-100)" required>
+                        <div class="error-message" id="socialScience-error">Marks must be between 0 and 100</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="skillBased">Skill-Based Subject (Data Science/IT)</label>
+                        <input type="number" class="form-control" id="skillBased" min="0" max="100" placeholder="Enter marks (0-100)" required>
+                        <div class="error-message" id="skillBased-error">Marks must be between 0 and 100</div>
+                    </div>
+
+                    <button type="submit" class="btn" id="calculateBtn">Calculate Percentage</button>
+                    <p class="form-note">Note: English and Second Language are mandatory. Best 3 scores from remaining subjects will be considered.</p>
+                </form>
+            </div>
+
+            <div>
+                <div class="calculator-card">
+                    <div class="chart-container">
+                        <canvas id="marksChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="result-card" id="resultCard">
+                    <h2>Your Result</h2>
+                    <div class="percentage" id="percentageDisplay">--</div>
+                    <div class="details" id="resultDetails"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const form = document.getElementById('marksForm');
+            const resultCard = document.getElementById('resultCard');
+            const percentageDisplay = document.getElementById('percentageDisplay');
+            const resultDetails = document.getElementById('resultDetails');
+            const ctx = document.getElementById('marksChart').getContext('2d');
+            let marksChart;
+            
+            // Initialize chart with empty data
+            initializeChart([0, 0, 0, 0, 0, 0]);
+
+            // Form validation
+            const inputs = form.querySelectorAll('input[type="number"]');
+            inputs.forEach(input => {
+                input.addEventListener('input', function() {
+                    validateInput(this);
+                });
+            });
+
+            form.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // Validate all inputs
+                let isValid = true;
+                inputs.forEach(input => {
+                    if (!validateInput(input)) {
+                        isValid = false;
+                    }
+                });
+                
+                if (!isValid) return;
+                
+                // Get values
+                const english = parseFloat(document.getElementById('english').value);
+                const secondLang = parseFloat(document.getElementById('secondLang').value);
+                const science = parseFloat(document.getElementById('science').value);
+                const maths = parseFloat(document.getElementById('maths').value);
+                const socialScience = parseFloat(document.getElementById('socialScience').value);
+                const skillBased = parseFloat(document.getElementById('skillBased').value);
+                
+                // Calculate percentage
+                const result = calculatePercentage(english, secondLang, science, maths, socialScience, skillBased);
+                
+                // Update UI
+                displayResult(result);
+                
+                // Update chart
+                updateChart([english, secondLang, science, maths, socialScience, skillBased]);
+            });
+            
+            function validateInput(input) {
+                const value = parseFloat(input.value);
+                const errorElement = document.getElementById(`${input.id}-error`);
+                
+                if (isNaN(value) || value < 0 || value > 100) {
+                    input.classList.add('input-error');
+                    errorElement.style.display = 'block';
+                    return false;
+                } else {
+                    input.classList.remove('input-error');
+                    errorElement.style.display = 'none';
+                    return true;
+                }
+            }
+            
+            function calculatePercentage(english, secondLang, science, maths, socialScience, skillBased) {
+                // Compulsory subjects
+                const compulsoryTotal = english + secondLang;
+                
+                // Find best 3 from optional subjects
+                const optionalSubjects = [
+                    { name: 'Science', marks: science },
+                    { name: 'Mathematics', marks: maths },
+                    { name: 'Social Science', marks: socialScience },
+                    { name: 'Skill-Based Subject', marks: skillBased }
+                ];
+                
+                // Sort in descending order
+                optionalSubjects.sort((a, b) => b.marks - a.marks);
+                
+                // Take best 3
+                const best3 = optionalSubjects.slice(0, 3);
+                const best3Total = best3.reduce((sum, subject) => sum + subject.marks, 0);
+                
+                // Total marks and percentage
+                const totalMarks = compulsoryTotal + best3Total;
+                const percentage = (totalMarks / 500) * 100; // Total of 5 subjects, each with max 100
+                
+                return {
+                    percentage: percentage.toFixed(2),
+                    best3Subjects: best3,
+                    totalMarks: totalMarks
+                };
+            }
+            
+            function displayResult(result) {
+                resultCard.style.display = 'block';
+                percentageDisplay.textContent = `${result.percentage}%`;
+                
+                let detailsText = `Total Marks: ${result.totalMarks}/500<br><br>`;
+                detailsText += "Subjects considered for calculation:<br>";
+                detailsText += "• English<br>• Second Language<br>";
+                
+                result.best3Subjects.forEach(subject => {
+                    detailsText += `• ${subject.name} (${subject.marks})<br>`;
+                });
+                
+                resultDetails.innerHTML = detailsText;
+                
+                // Scroll to results
+                resultCard.scrollIntoView({ behavior: 'smooth' });
+            }
+            
+            function initializeChart(data) {
+                const labels = ['English', 'Second Lang', 'Science', 'Maths', 'Social Science', 'Skill-Based'];
+                
+                marksChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Marks',
+                            data: data,
+                            backgroundColor: [
+                                '#4361ee',
+                                '#3f37c9',
+                                '#4895ef',
+                                '#4cc9f0',
+                                '#7209b7',
+                                '#f72585'
+                            ],
+                            borderColor: [
+                                '#4361ee',
+                                '#3f37c9',
+                                '#4895ef',
+                                '#4cc9f0',
+                                '#7209b7',
+                                '#f72585'
+                            ],
+                            borderWidth: 1,
+                            borderRadius: 5
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            },
+                            tooltip: {
+                                backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                                padding: 10,
+                                titleFont: {
+                                    size: 14
+                                },
+                                bodyFont: {
+                                    size: 14
+                                }
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: {
+                                    color: 'rgba(0, 0, 0, 0.05)'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        },
+                        animation: {
+                            duration: 1500
+                        }
+                    }
+                });
+            }
+            
+            function updateChart(data) {
+                marksChart.data.datasets[0].data = data;
+                marksChart.update();
+            }
+        });
+    </script>
+</body>
+</html>
