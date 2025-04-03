@@ -1,0 +1,875 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>School Library Management</title>
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+      <style>
+         :root {
+         --primary: #4361ee;
+         --primary-light: #4895ef;
+         --secondary: #3f37c9;
+         --success: #4cc9f0;
+         --warning: #f72585;
+         --danger: #b5179e;
+         --light: #f8f9fa;
+         --dark: #212529;
+         --gray: #6c757d;
+         --sidebar-width: 250px;
+         --header-height: 60px;
+         --font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+         }
+         * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         }
+         body {
+         font-family: var(--font-family);
+         background-color: #f5f7fb;
+         color: var(--dark);
+         overflow-x: hidden;
+         overflow-x: hidden; /* Prevent horizontal scrollbar */
+         min-height: 100vh; /* Ensure body covers the full viewport height */
+         }
+         .app-container {
+         display: flex;
+         min-height: 100vh;
+         }
+         /* Sidebar Styles */
+         .sidebar {
+         width: var(--sidebar-width);
+         background: linear-gradient(to bottom, var(--primary), var(--secondary));
+         color: white;
+         transition: all 0.3s ease;
+         height: 100vh;
+         position: fixed;
+         z-index: 100;
+         box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+         overflow-y: auto;
+         }
+         .sidebar-header {
+         padding: 1.5rem;
+         display: flex;
+         align-items: center;
+         height: var(--header-height);
+         border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+         }
+         .sidebar-header h1 {
+         font-size: 1.25rem;
+         font-weight: 600;
+         display: flex;
+         align-items: center;
+         }
+         .sidebar-header h1 i {
+         margin-right: 10px;
+         font-size: 1.5rem;
+         }
+         .nav-links {
+         padding: 1rem 0;
+         list-style-type: none;
+         }
+         .nav-item {
+         padding: 0.5rem 1.5rem;
+         cursor: pointer;
+         transition: all 0.2s ease;
+         display: flex;
+         align-items: center;
+         margin-bottom: 0.25rem;
+         }
+         .nav-item:hover {
+         background-color: rgba(255, 255, 255, 0.1);
+         border-left: 4px solid white;
+         }
+         .nav-item.active {
+         background-color: rgba(255, 255, 255, 0.2);
+         border-left: 4px solid white;
+         }
+         .nav-item i {
+         margin-right: 10px;
+         width: 20px;
+         text-align: center;
+         }
+         /* Main Content Area */
+         .main-content {
+         flex: 1;
+         margin-left: var(--sidebar-width);
+         padding: 20px 16px;
+         transition: all 0.3s ease;
+         width: calc(100% - var(--sidebar-width)); /* Ensure main content doesn't exceed page width */
+         }
+         /* Header */
+         .header {
+         background-color: white;
+         height: var(--header-height);
+         display: flex;
+         align-items: center;
+         justify-content: space-between;
+         padding: 0 20px;
+         margin-bottom: 20px;
+         border-radius: 8px;
+         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+         }
+         .header-title {
+         font-size: 1.5rem;
+         font-weight: 600;
+         color: var(--primary);
+         text-align: center;
+         }
+         .header-actions {
+         display: flex;
+         align-items: center;
+         }
+         .search-box {
+         background-color: #f5f7fb;
+         border-radius: 20px;
+         padding: 8px 15px;
+         display: flex;
+         align-items: center;
+         margin-right: 15px;
+         }
+         .search-box input {
+         border: none;
+         background: transparent;
+         outline: none;
+         padding-left: 8px;
+         width: 180px;
+         }
+         .user-profile {
+         display: flex;
+         align-items: center;
+         }
+         .user-profile img {
+         width: 40px;
+         height: 40px;
+         border-radius: 50%;
+         object-fit: cover;
+         margin-right: 10px;
+         display: none;
+         }
+         .user-profile span {
+         color: var(--gray);
+         font-weight: bold;
+         }
+         /* Dashboard Cards */
+         .dashboard-stats {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+         gap: 20px;
+         margin-bottom: 20px;
+         }
+         .stat-card {
+         background-color: white;
+         padding: 20px;
+         border-radius: 8px;
+         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+         transition: transform 0.3s ease;
+         display: flex;
+         align-items: center;
+         }
+         .stat-card:hover {
+         transform: translateY(-5px);
+         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+         }
+         .stat-icon {
+         width: 60px;
+         height: 60px;
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         border-radius: 50%;
+         margin-right: 15px;
+         font-size: 1.5rem;
+         }
+         .stat-icon.blue {
+         background-color: rgba(67, 97, 238, 0.2);
+         color: var(--primary);
+         }
+         .stat-icon.green {
+         background-color: rgba(76, 201, 240, 0.2);
+         color: var(--success);
+         }
+         .stat-icon.red {
+         background-color: rgba(247, 37, 133, 0.2);
+         color: var(--warning);
+         }
+         .stat-icon.purple {
+         background-color: rgba(181, 23, 158, 0.2);
+         color: var(--danger);
+         }
+         .stat-details h3 {
+         font-size: 1.75rem;
+         margin-bottom: 5px;
+         font-weight: 700;
+         }
+         .stat-details p {
+         color: var(--gray);
+         font-size: 0.9rem;
+         }
+         /* Content Sections */
+         .content-section {
+         background-color: white;
+         padding: 20px;
+         border-radius: 8px;
+         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+         margin-bottom: 20px;
+         }
+         .section-title {
+         font-size: 1.25rem;
+         margin-bottom: 20px;
+         padding-bottom: 10px;
+         border-bottom: 1px solid #eee;
+         color: var(--primary);
+         font-weight: 600;
+         }
+         /* Form Styles */
+         .form-grid {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+         gap: 15px;
+         }
+         .form-group {
+         margin-bottom: 15px;
+         }
+         .form-group label {
+         display: block;
+         margin-bottom: 5px;
+         font-weight: 500;
+         color: var(--dark);
+         }
+         .form-control {
+         width: 100%;
+         padding: 10px 15px;
+         border-radius: 6px;
+         border: 1px solid #ddd;
+         font-size: 0.95rem;
+         transition: all 0.3s ease;
+         }
+         .form-control:focus {
+         border-color: var(--primary);
+         box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+         outline: none;
+         }
+         .btn {
+         padding: 10px 20px;
+         border-radius: 6px;
+         border: none;
+         cursor: pointer;
+         font-weight: 500;
+         transition: all 0.3s ease;
+         display: inline-flex;
+         align-items: center;
+         }
+         .btn i {
+         margin-right: 8px;
+         }
+         .btn-primary {
+         background-color: var(--primary);
+         color: white;
+         }
+         .btn-primary:hover {
+         background-color: var(--secondary);
+         }
+         .btn-success {
+         background-color: var(--success);
+         color: white;
+         }
+         .btn-success:hover {
+         opacity: 0.9;
+         }
+         .btn-warning {
+         background-color: var(--warning);
+         color: white;
+         }
+         .btn-warning:hover {
+         opacity: 0.9;
+         }
+         /* Table Styles */
+         .table-container {
+         overflow-x: auto;
+         }
+         table {
+         width: 100%;
+         border-collapse: collapse;
+         }
+         th, td {
+         padding: 12px 15px;
+         text-align: left;
+         }
+         thead {
+         background-color: #f8f9fa;
+         border-bottom: 2px solid #eee;
+         }
+         th {
+         font-weight: 600;
+         color: var(--gray);
+         }
+         tbody tr {
+         border-bottom: 1px solid #eee;
+         transition: background-color 0.3s ease;
+         }
+         tbody tr:hover {
+         background-color: rgba(67, 97, 238, 0.05);
+         }
+         .status-badge {
+         padding: 5px 10px;
+         border-radius: 20px;
+         font-size: 0.8rem;
+         font-weight: 500;
+         }
+         .status-available {
+         background-color: rgba(76, 201, 240, 0.2);
+         color: var(--success);
+         }
+         .status-borrowed {
+         background-color: rgba(247, 37, 133, 0.2);
+         color: var(--warning);
+         }
+         .action-btn {
+         padding: 6px 12px;
+         border-radius: 4px;
+         cursor: pointer;
+         font-size: 0.8rem;
+         margin-right: 5px;
+         }
+         .action-btn-view {
+         background-color: rgba(67, 97, 238, 0.1);
+         color: var(--primary);
+         }
+         .action-btn-edit {
+         background-color: rgba(76, 201, 240, 0.1);
+         color: var(--success);
+         }
+         .action-btn-delete {
+         background-color: rgba(247, 37, 133, 0.1);
+         color: var(--warning);
+         }
+         /* Active section styles */
+         .page {
+         display: none;
+         }
+         .page.active {
+         display: block;
+         }
+         /* Mobile Responsive */
+         @media (max-width: 991px) {
+         .sidebar {
+         width: 60px;
+         overflow: hidden;
+         }
+         .sidebar-header h1 span,
+         .nav-item span {
+         display: none;
+         }
+         .sidebar-header {
+         justify-content: center;
+         padding: 1.5rem 0;
+         }
+         .sidebar-header h1 i {
+         margin-right: 0;
+         }
+         .nav-item {
+         justify-content: center;
+         padding: 0.5rem;
+         }
+         .nav-item i {
+         margin-right: 0;
+         font-size: 1.2rem;
+         }
+         .main-content {
+         margin-left: 60px;
+         }
+         }
+         @media (max-width: 767px) {
+         .header {
+         flex-direction: column;
+         height: auto;
+         padding: 15px;
+         }
+         .header-title {
+         margin-bottom: 10px;
+         }
+         .search-box {
+         margin-bottom: 10px;
+         width: 100%;
+         display: none;
+         }
+         .search-box input {
+         width: 100%;
+         }
+         }
+      </style>
+   </head>
+   <body>
+      <div class="app-container">
+         <!-- Sidebar Navigation -->
+         <div class="sidebar">
+            <div class="sidebar-header">
+               <h1><i class="fas fa-book"></i> <span>Library</span></h1>
+            </div>
+            <ul class="nav-links">
+               <li class="nav-item active" data-page="dashboard">
+                  <i class="fas fa-chart-pie"></i>
+                  <span>Dashboard</span>
+               </li>
+               <li class="nav-item" data-page="add-book">
+                  <i class="fas fa-plus-circle"></i>
+                  <span>Add Book</span>
+               </li>
+               <li class="nav-item" data-page="manage-books">
+                  <i class="fas fa-book-open"></i>
+                  <span>Manage Books</span>
+               </li>
+               <li class="nav-item" data-page="lend-book">
+                  <i class="fas fa-hand-holding"></i>
+                  <span>Lend Book</span>
+               </li>
+               <li class="nav-item" data-page="return-book">
+                  <i class="fas fa-undo"></i>
+                  <span>Return Book</span>
+               </li>
+               <li class="nav-item" data-page="issued-books">
+                  <i class="fas fa-bookmark"></i>
+                  <span>Issued Books</span>
+               </li>
+               <li class="nav-item" data-page="students">
+                  <i class="fas fa-user-graduate"></i>
+                  <span>Students</span>
+               </li>
+               <li class="nav-item" data-page="settings">
+                  <i class="fas fa-cog"></i>
+                  <span>Settings</span>
+               </li>
+            </ul>
+         </div>
+         <!-- Main Content Area -->
+         <div class="main-content">
+            <!-- Header -->
+            <div class="header">
+               <div class="header-title">School Library Management System</div>
+               <div class="header-actions">
+                  <div class="search-box">
+                     <i class="fas fa-search"></i>
+                     <input type="text" placeholder="Search...">
+                  </div>
+                  <div class="user-profile">
+                     <img src="https://avataaars.io/?avatarStyle=Circle&topType=LongHairStraight&hairColor=BrownDark&clotheType=BlazerSweater&eyeType=Happy&mouthType=Smile&skinColor=Light&facialHairType=Blank&accessoriesType=Blank" alt="User">
+                     <span>Powered by Sourabh Sir</span>
+                  </div>
+               </div>
+            </div>
+            <!-- Dashboard Page -->
+            <div class="page active" id="dashboard">
+               <div class="dashboard-stats">
+                  <div class="stat-card">
+                     <div class="stat-icon blue">
+                        <i class="fas fa-book"></i>
+                     </div>
+                     <div class="stat-details">
+                        <h3>1,245</h3>
+                        <p>Total Books</p>
+                     </div>
+                  </div>
+                  <div class="stat-card">
+                     <div class="stat-icon green">
+                        <i class="fas fa-user-graduate"></i>
+                     </div>
+                     <div class="stat-details">
+                        <h3>534</h3>
+                        <p>Students</p>
+                     </div>
+                  </div>
+                  <div class="stat-card">
+                     <div class="stat-icon red">
+                        <i class="fas fa-bookmark"></i>
+                     </div>
+                     <div class="stat-details">
+                        <h3>78</h3>
+                        <p>Issued Books</p>
+                     </div>
+                  </div>
+                  <div class="stat-card">
+                     <div class="stat-icon purple">
+                        <i class="fas fa-clock"></i>
+                     </div>
+                     <div class="stat-details">
+                        <h3>12</h3>
+                        <p>Overdue Books</p>
+                     </div>
+                  </div>
+               </div>
+               <div class="content-section">
+                  <h2 class="section-title">Recent Activities</h2>
+                  <div class="table-container">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>Date</th>
+                              <th>Student</th>
+                              <th>Book</th>
+                              <th>Action</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr>
+                              <td>April 2, 2025</td>
+                              <td>Alex Johnson</td>
+                              <td>The Great Gatsby</td>
+                              <td>Borrowed</td>
+                           </tr>
+                           <tr>
+                              <td>April 1, 2025</td>
+                              <td>Sarah Williams</td>
+                              <td>To Kill a Mockingbird</td>
+                              <td>Returned</td>
+                           </tr>
+                           <tr>
+                              <td>March 30, 2025</td>
+                              <td>Michael Brown</td>
+                              <td>1984</td>
+                              <td>Borrowed</td>
+                           </tr>
+                           <tr>
+                              <td>March 28, 2025</td>
+                              <td>Emily Davis</td>
+                              <td>Pride and Prejudice</td>
+                              <td>Returned</td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <!-- Add Book Page -->
+            <div class="page" id="add-book">
+               <div class="content-section">
+                  <h2 class="section-title">Add New Book</h2>
+                  <div class="form-grid">
+                     <div class="form-group">
+                        <label for="bookTitle">Book Title</label>
+                        <input type="text" id="bookTitle" class="form-control" placeholder="Enter book title">
+                     </div>
+                     <div class="form-group">
+                        <label for="bookAuthor">Author</label>
+                        <input type="text" id="bookAuthor" class="form-control" placeholder="Enter author name">
+                     </div>
+                     <div class="form-group">
+                        <label for="bookISBN">ISBN</label>
+                        <input type="text" id="bookISBN" class="form-control" placeholder="Enter ISBN number">
+                     </div>
+                     <div class="form-group">
+                        <label for="bookCategory">Category</label>
+                        <select id="bookCategory" class="form-control">
+                           <option value="">Select category</option>
+                           <option value="fiction">Fiction</option>
+                           <option value="non-fiction">Non-Fiction</option>
+                           <option value="science">Science</option>
+                           <option value="history">History</option>
+                           <option value="biography">Biography</option>
+                           <option value="reference">Reference</option>
+                        </select>
+                     </div>
+                     <div class="form-group">
+                        <label for="bookQuantity">Quantity</label>
+                        <input type="number" id="bookQuantity" class="form-control" placeholder="Enter quantity" min="1">
+                     </div>
+                     <div class="form-group">
+                        <label for="bookShelf">Shelf Location</label>
+                        <input type="text" id="bookShelf" class="form-control" placeholder="Enter shelf location">
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <label for="bookDescription">Description</label>
+                     <textarea id="bookDescription" class="form-control" rows="4" placeholder="Enter book description"></textarea>
+                  </div>
+                  <button class="btn btn-primary"><i class="fas fa-plus-circle"></i> Add Book</button>
+               </div>
+            </div>
+            <!-- Manage Books Page -->
+            <div class="page" id="manage-books">
+               <div class="content-section">
+                  <h2 class="section-title">Manage Books</h2>
+                  <div class="table-container">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>Title</th>
+                              <th>Author</th>
+                              <th>ISBN</th>
+                              <th>Category</th>
+                              <th>Status</th>
+                              <th>Actions</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr>
+                              <td>The Great Gatsby</td>
+                              <td>F. Scott Fitzgerald</td>
+                              <td>9780743273565</td>
+                              <td>Fiction</td>
+                              <td><span class="status-badge status-borrowed">Borrowed</span></td>
+                              <td>
+                                 <button class="action-btn action-btn-view"><i class="fas fa-eye"></i></button>
+                                 <button class="action-btn action-btn-edit"><i class="fas fa-edit"></i></button>
+                                 <button class="action-btn action-btn-delete"><i class="fas fa-trash"></i></button>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>To Kill a Mockingbird</td>
+                              <td>Harper Lee</td>
+                              <td>9780061120084</td>
+                              <td>Fiction</td>
+                              <td><span class="status-badge status-available">Available</span></td>
+                              <td>
+                                 <button class="action-btn action-btn-view"><i class="fas fa-eye"></i></button>
+                                 <button class="action-btn action-btn-edit"><i class="fas fa-edit"></i></button>
+                                 <button class="action-btn action-btn-delete"><i class="fas fa-trash"></i></button>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>1984</td>
+                              <td>George Orwell</td>
+                              <td>9780451524935</td>
+                              <td>Fiction</td>
+                              <td><span class="status-badge status-borrowed">Borrowed</span></td>
+                              <td>
+                                 <button class="action-btn action-btn-view"><i class="fas fa-eye"></i></button>
+                                 <button class="action-btn action-btn-edit"><i class="fas fa-edit"></i></button>
+                                 <button class="action-btn action-btn-delete"><i class="fas fa-trash"></i></button>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>Pride and Prejudice</td>
+                              <td>Jane Austen</td>
+                              <td>9780141439518</td>
+                              <td>Fiction</td>
+                              <td><span class="status-badge status-available">Available</span></td>
+                              <td>
+                                 <button class="action-btn action-btn-view"><i class="fas fa-eye"></i></button>
+                                 <button class="action-btn action-btn-edit"><i class="fas fa-edit"></i></button>
+                                 <button class="action-btn action-btn-delete"><i class="fas fa-trash"></i></button>
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <!-- Lend Book Page -->
+            <div class="page" id="lend-book">
+               <div class="content-section">
+                  <h2 class="section-title">Lend Book to Student</h2>
+                  <div class="form-grid">
+                     <div class="form-group">
+                        <label for="studentId">Student ID</label>
+                        <input type="text" id="studentId" class="form-control" placeholder="Enter student ID">
+                     </div>
+                     <div class="form-group">
+                        <label for="studentName">Student Name</label>
+                        <input type="text" id="studentName" class="form-control" placeholder="Enter student name">
+                     </div>
+                     <div class="form-group">
+                        <label for="bookId">Book ID/ISBN</label>
+                        <input type="text" id="bookId" class="form-control" placeholder="Enter book ID or ISBN">
+                     </div>
+                     <div class="form-group">
+                        <label for="bookTitle">Book Title</label>
+                        <input type="text" id="bookTitleLend" class="form-control" placeholder="Enter book title">
+                     </div>
+                     <div class="form-group">
+                        <label for="issueDate">Issue Date</label>
+                        <input type="date" id="issueDate" class="form-control">
+                     </div>
+                     <div class="form-group">
+                        <label for="returnDate">Expected Return Date</label>
+                        <input type="date" id="returnDate" class="form-control">
+                     </div>
+                  </div>
+                  <button class="btn btn-primary"><i class="fas fa-hand-holding"></i> Lend Book</button>
+               </div>
+            </div>
+            <!-- Return Book Page -->
+            <div class="page" id="return-book">
+               <div class="content-section">
+                  <h2 class="section-title">Return Book</h2>
+                  <div class="form-grid">
+                     <div class="form-group">
+                        <label for="issuedBookId">Issue ID</label>
+                        <input type="text" id="issuedBookId" class="form-control" placeholder="Enter issue ID">
+                     </div>
+                     <div class="form-group">
+                        <label for="returnStudentId">Student ID</label>
+                        <input type="text" id="returnStudentId" class="form-control" placeholder="Enter student ID">
+                     </div>
+                     <div class="form-group">
+                        <label for="returnBookId">Book ID/ISBN</label>
+                        <input type="text" id="returnBookId" class="form-control" placeholder="Enter book ID or ISBN">
+                     </div>
+                     <div class="form-group">
+                        <label for="actualReturnDate">Return Date</label>
+                        <input type="date" id="actualReturnDate" class="form-control">
+                     </div>
+                  </div>
+                  <div class="form-group">
+                     <label for="returnCondition">Book Condition</label>
+                     <select id="returnCondition" class="form-control">
+                        <option value="excellent">Excellent</option>
+                        <option value="good">Good</option>
+                        <option value="fair">Fair</option>
+                        <option value="poor">Poor</option>
+                        <option value="damaged">Damaged</option>
+                     </select>
+                  </div>
+                  <div class="form-group">
+                     <label for="returnNotes">Notes</label>
+                     <textarea id="returnNotes" class="form-control" rows="3" placeholder="Enter notes if any"></textarea>
+                  </div>
+                  <button class="btn btn-success"><i class="fas fa-undo"></i> Return Book</button>
+               </div>
+            </div>
+            <!-- Issued Books Page -->
+            <div class="page" id="issued-books">
+               <div class="content-section">
+                  <h2 class="section-title">Currently Issued Books</h2>
+                  <div class="table-container">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>Issue ID</th>
+                              <th>Book Title</th>
+                              <th>Student</th>
+                              <th>Issue Date</th>
+                              <th>Due Date</th>
+                              <th>Status</th>
+                              <th>Actions</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr>
+                              <td>IS001</td>
+                              <td>The Great Gatsby</td>
+                              <td>Alex Johnson</td>
+                              <td>April 2, 2025</td>
+                              <td>April 16, 2025</td>
+                              <td><span class="status-badge status-available">On Time</span></td>
+                              <td>
+                                 <button class="action-btn action-btn-view"><i class="fas fa-eye"></i></button>
+                                 <button class="action-btn action-btn-edit"><i class="fas fa-undo"></i></button>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>IS002</td>
+                              <td>1984</td>
+                              <td>Michael Brown</td>
+                              <td>March 30, 2025</td>
+                              <td>April 13, 2025</td>
+                              <td><span class="status-badge status-available">On Time</span></td>
+                              <td>
+                                 <button class="action-btn action-btn-view"><i class="fas fa-eye"></i></button>
+                                 <button class="action-btn action-btn-edit"><i class="fas fa-undo"></i></button>
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="page" id="students">
+               <div class="content-section">
+                  <h2 class="section-title">Manage Students</h2>
+                  <div class="table-container">
+                     <table>
+                        <thead>
+                           <tr>
+                              <th>Student ID</th>
+                              <th>Name</th>
+                              <th>Class</th>
+                              <th>Email</th>
+                              <th>Actions</th>
+                           </tr>
+                        </thead>
+                        <tbody>
+                           <tr>
+                              <td>ST001</td>
+                              <td>Alex Johnson</td>
+                              <td>10th Grade</td>
+                              <td>alex.johnson@example.com</td>
+                              <td>
+                                 <button class="action-btn action-btn-view"><i class="fas fa-eye"></i></button>
+                                 <button class="action-btn action-btn-edit"><i class="fas fa-edit"></i></button>
+                                 <button class="action-btn action-btn-delete"><i class="fas fa-trash"></i></button>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>ST002</td>
+                              <td>Sarah Williams</td>
+                              <td>11th Grade</td>
+                              <td>sarah.williams@example.com</td>
+                              <td>
+                                 <button class="action-btn action-btn-view"><i class="fas fa-eye"></i></button>
+                                 <button class="action-btn action-btn-edit"><i class="fas fa-edit"></i></button>
+                                 <button class="action-btn action-btn-delete"><i class="fas fa-trash"></i></button>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>ST003</td>
+                              <td>Michael Brown</td>
+                              <td>12th Grade</td>
+                              <td>michael.brown@example.com</td>
+                              <td>
+                                 <button class="action-btn action-btn-view"><i class="fas fa-eye"></i></button>
+                                 <button class="action-btn action-btn-edit"><i class="fas fa-edit"></i></button>
+                                 <button class="action-btn action-btn-delete"><i class="fas fa-trash"></i></button>
+                              </td>
+                           </tr>
+                        </tbody>
+                     </table>
+                  </div>
+               </div>
+            </div>
+            <div class="page" id="settings">
+               <div class="content-section">
+                  <h2 class="section-title">Library Settings</h2>
+                  <div class="form-grid">
+                     <div class="form-group">
+                        <label for="libraryName">Library Name</label>
+                        <input type="text" id="libraryName" class="form-control" placeholder="Enter library name" value="School Library">
+                     </div>
+                     <div class="form-group">
+                        <label for="maxBorrowDays">Max Borrow Days</label>
+                        <input type="number" id="maxBorrowDays" class="form-control" placeholder="Enter max borrow days" value="14" min="1">
+                     </div>
+                     <div class="form-group">
+                        <label for="overdueFine">Overdue Fine (per day)</label>
+                        <input type="number" id="overdueFine" class="form-control" placeholder="Enter overdue fine" value="1.00" min="0" step="0.01">
+                     </div>
+                     <div class="form-group">
+                        <label for="libraryAddress">Library Address</label>
+                        <textarea id="libraryAddress" class="form-control" rows="3" placeholder="Enter library address">123 School Street, City, Country</textarea>
+                     </div>
+                  </div>
+                  <button class="btn btn-primary"><i class="fas fa-cog"></i> Save Settings</button>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script>
+         document.addEventListener('DOMContentLoaded', function() {
+             const navItems = document.querySelectorAll('.nav-item');
+             const pages = document.querySelectorAll('.page');
+         
+             navItems.forEach(item => {
+                 item.addEventListener('click', function() {
+                     navItems.forEach(navItem => navItem.classList.remove('active'));
+                     this.classList.add('active');
+         
+                     pages.forEach(page => page.classList.remove('active'));
+                     const pageId = this.dataset.page;
+                     document.getElementById(pageId).classList.add('active');
+                 });
+             });
+         });
+      </script>
+   </body>
+</html>
