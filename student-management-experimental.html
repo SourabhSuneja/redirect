@@ -740,6 +740,7 @@ const searchTestBtn = document.getElementById('searchTestBtn');
             // Test/Exam data
             let tests = [];
             let currentTestId = null;
+            let currentTestToDelete = null;
 
          
              // Initialize the application
@@ -772,7 +773,13 @@ const searchTestBtn = document.getElementById('searchTestBtn');
          
                  transport.addEventListener('change', toggleBusNumberField);
 
-                // Add to the DOM Elements section
+
+               
+document.getElementById('deleteTestModal').querySelector('.close-modal').addEventListener('click', hideDeleteTestModal);
+document.getElementById('cancelDeleteTest').addEventListener('click', hideDeleteTestModal);
+document.getElementById('confirmDeleteTest').addEventListener('click', handleDeleteTestConfirm);
+
+                
 
 
 // Add these event listeners to the init() function
@@ -1197,6 +1204,30 @@ function loadTestsData() {
              function handleSearch() {
                  renderStudentsList(searchInput.value);
              }
+
+
+            
+
+// Show Delete Test Modal
+function showDeleteTestModal(id) {
+    currentTestToDelete = id;
+    document.getElementById('deleteTestModal').style.display = 'flex';
+}
+
+// Hide Delete Test Modal
+function hideDeleteTestModal() {
+    document.getElementById('deleteTestModal').style.display = 'none';
+    currentTestToDelete = null;
+}
+
+// Handle Delete Test Confirmation
+function handleDeleteTestConfirm() {
+    tests = tests.filter(t => t.id !== currentTestToDelete);
+    saveTestsData();
+    renderTestsList();
+    hideDeleteTestModal();
+}
+            
          
              // Initialize the app
              init();
