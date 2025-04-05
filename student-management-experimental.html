@@ -475,6 +475,41 @@
             </div>
             <!-- Content Section -->
             <div class="content-section">
+
+<!-- Test List -->
+<div id="testList" class="student-list" style="display: none; margin-top: 30px;">
+   <div class="section-title">
+      <span>Tests & Exams</span>
+      <div class="search-box">
+         <input type="text" id="searchTestInput" placeholder="Search tests...">
+         <button id="searchTestBtn">
+         <span class="material-icons">search</span>
+         </button>
+      </div>
+   </div>
+   <table class="students-table" id="testsTable">
+      <thead>
+         <tr>
+            <th>Sr. No</th>
+            <th>Subject</th>
+            <th>Test Name</th>
+            <th>Max Marks</th>
+            <th>Conducted On</th>
+            <th>Actions</th>
+         </tr>
+      </thead>
+      <tbody id="testTableBody">
+         <!-- Tests will be added here dynamically -->
+      </tbody>
+   </table>
+   <div id="emptyTestState" class="empty-state">
+      <img src="https://i.postimg.cc/VsW3ZZjr/sad.png">
+      <h3>No Tests Found</h3>
+      <p>There are no tests in this class yet. Add your first test to get started.</p>
+      <button id="emptyAddTestBtn" class="btn">Add Test</button>
+   </div>
+</div>
+               
                <!-- Student List -->
                <div id="studentList" class="student-list">
                   <div class="section-title">
@@ -688,11 +723,24 @@
          
              const searchInput = document.getElementById('searchInput');
              const searchBtn = document.getElementById('searchBtn');
+
+            const testList = document.getElementById('testList');
+const testTableBody = document.getElementById('testTableBody');
+const emptyTestState = document.getElementById('emptyTestState');
+const testsTable = document.getElementById('testsTable');
+const emptyAddTestBtn = document.getElementById('emptyAddTestBtn');
+const searchTestInput = document.getElementById('searchTestInput');
+const searchTestBtn = document.getElementById('searchTestBtn');
          
              // Current teacher and students data
              let currentTeacher = null;
              let students = [];
              let currentStudentId = null;
+
+            // Test/Exam data
+            let tests = [];
+            let currentTestId = null;
+
          
              // Initialize the application
              function init() {
@@ -700,8 +748,11 @@
                  loadStudentsData();
                  updateDashboardStats();
                  renderStudentsList();
+                 loadTestsData();
          
                  // Event Listeners
+                 addEditTestForm.addEventListener('submit', handleSaveTest);
+                
                  loginBtn.addEventListener('click', handleLogin);
                  logoutBtn.addEventListener('click', handleLogout);
          
@@ -720,6 +771,18 @@
                  confirmDelete.addEventListener('click', handleDeleteConfirm);
          
                  transport.addEventListener('change', toggleBusNumberField);
+
+                // Add to the DOM Elements section
+
+
+// Add these event listeners to the init() function
+emptyAddTestBtn.addEventListener('click', showAddTestForm);
+searchTestBtn.addEventListener('click', handleTestSearch);
+searchTestInput.addEventListener('keyup', function(e) {
+    if (e.key === 'Enter') {
+        handleTestSearch();
+    }
+});
          
                  searchBtn.addEventListener('click', handleSearch);
                  searchInput.addEventListener('keyup', function(e) {
@@ -765,16 +828,77 @@
                  loginError.style.display = 'none';
              }
          
-             // Show Students List
-             function showStudentsList() {
-                 viewStudentsBtn.classList.add('active');
-                 addStudentBtn.classList.remove('active');
-                 addTestBtn.classList.remove('active');
-                 studentList.style.display = 'block';
-                 studentForm.style.display = 'none';
-                 testForm.style.display = 'none';
-                 renderStudentsList();
-             }
+             // Show/Hide test list when view students is clicked
+function showStudentsList() {
+    viewStudentsBtn.classList.add('active');
+    addStudentBtn.classList.remove('active');
+    addTestBtn.classList.remove('active');
+    studentList.style.display = 'block';
+    testList.style.display = 'block'; // Show the test list as well
+    studentForm.style.display = 'none';
+    testForm.style.display = 'none';
+    renderStudentsList();
+    renderTestsList(); // Render the tests
+}
+
+// Render Tests List
+function renderTestsList(filterText = '') {
+    testTableBody.innerHTML = '';
+    const filteredTests = tests.filter(test =>
+        test.subject.toLowerCase().includes(filterText.toLowerCase()) ||
+        test.testName.toLowerCase().includes(filterText.toLowerCase()) ||
+        test.maxMarks.toString().includes(filterText) ||
+        test.conductedOn.includes(filterText)
+    );
+
+    if (filteredTests.length === 0) {
+        testsTable.style.display = 'none';
+        emptyTestState.style.display = 'block';
+    } else {
+        testsTable.style.display = 'table';
+        emptyTestState.style.display = 'none';
+        filteredTests.forEach((test, index) => {
+            const row = testTableBody.insertRow();
+            const srNoCell = row.insertCell();
+            const subjectCell = row.insertCell();
+            const nameCell = row.insertCell();
+            const maxMarksCell = row.insertCell();
+            const dateCell = row.insertCell();
+            const actionsCell = row.insertCell();
+
+            srNoCell.textContent = index + 1;
+            subjectCell.textContent = test.subject;
+            nameCell.textContent = test.testName;
+            maxMarksCell.textContent = test.maxMarks;
+            dateCell.textContent = formatDate(test.conductedOn);
+
+            actionsCell.classList.add('action-cell');
+            const editButton = document.createElement('button');
+            editButton.textContent = 'Edit';
+            editButton.classList.add('edit-btn');
+            editButton.addEventListener('click', () => showEditTestForm(test.id));
+
+            const deleteButton = document.createElement('button');
+            deleteButton.textContent = 'Delete';
+            deleteButton.classList.add('delete-btn');
+            deleteButton.addEventListener('click', () => showDeleteTestModal(test.id));
+
+            actionsCell.appendChild(editButton);
+            actionsCell.appendChild(deleteButton);
+        });
+    }
+}
+
+// Format date to be more readable
+function formatDate(dateString) {
+    const date = new Date(dateString);
+    return date.toLocaleDateString();
+}
+
+// Handle Test Search
+function handleTestSearch() {
+    renderTestsList(searchTestInput.value);
+}
          
              // Show Add Student Form
              function showAddStudentForm() {
@@ -877,6 +1001,66 @@
                  updateDashboardStats();
                  showStudentsList();
              }
+
+            // Function to handle saving a test
+function handleSaveTest(e) {
+    e.preventDefault();
+
+    const formData = {
+        subject: document.getElementById('subject').value,
+        testName: document.getElementById('testName').value,
+        maxMarks: document.getElementById('maxMarks').value,
+        conductedOn: document.getElementById('conductedOn').value
+    };
+
+    if (currentTestId) {
+        // Edit existing test
+        const index = tests.findIndex(t => t.id === currentTestId);
+
+        if (index !== -1) {
+            tests[index] = {
+                ...tests[index],
+                ...formData
+            };
+        }
+    } else {
+        // Add new test
+        const newTest = {
+            id: generateId(),
+            ...formData,
+            class: currentTeacher.class
+        };
+
+        tests.push(newTest);
+    }
+
+    // Save to localStorage and update UI
+    saveTestsData();
+    showStudentsList();
+}
+
+            // Show Edit Test Form
+function showEditTestForm(id) {
+    const test = tests.find(t => t.id === id);
+
+    if (!test) return;
+
+    viewStudentsBtn.classList.remove('active');
+    addStudentBtn.classList.remove('active');
+    addTestBtn.classList.add('active');
+    studentList.style.display = 'none';
+    studentForm.style.display = 'none';
+    testForm.style.display = 'block';
+    
+    // Fill form with test data
+    document.getElementById('testId').value = test.id;
+    document.getElementById('subject').value = test.subject;
+    document.getElementById('testName').value = test.testName;
+    document.getElementById('maxMarks').value = test.maxMarks;
+    document.getElementById('conductedOn').value = test.conductedOn;
+
+    currentTestId = test.id;
+}
          
              // Show Delete Modal
              function showDeleteModal(id) {
@@ -980,6 +1164,25 @@
                      }
                  }
              }
+
+            // Save Tests Data to Local Storage
+function saveTestsData() {
+    if (currentTeacher) {
+        localStorage.setItem('tests_' + currentTeacher.class.replace('-', '_'), JSON.stringify(tests));
+    }
+}
+
+// Load Tests Data from Local Storage
+function loadTestsData() {
+    if (currentTeacher) {
+        const storedTests = localStorage.getItem('tests_' + currentTeacher.class.replace('-', '_'));
+        if (storedTests) {
+            tests = JSON.parse(storedTests);
+        } else {
+            tests = tests.filter(test => test.class === currentTeacher.class);
+        }
+    }
+}
          
              // Update Dashboard Stats
              function updateDashboardStats() {
