@@ -748,6 +748,7 @@
 
             const viewStudentsBtn = document.getElementById('viewStudentsBtn');
             const addStudentBtn = document.getElementById('addStudentBtn');
+            const addTestBtn = document.getElementById('addTestBtn');
             const studentList = document.getElementById('studentList');
             const studentForm = document.getElementById('studentForm');
             const addEditStudentForm = document.getElementById('addEditStudentForm');
@@ -797,6 +798,8 @@
                 viewStudentsBtn.addEventListener('click', showStudentsList);
                 addStudentBtn.addEventListener('click', showAddStudentForm);
                 emptyAddBtn.addEventListener('click', showAddStudentForm);
+
+                addTestBtn.addEventListener('click', showAddTestForm);
 
                 cancelBtn.addEventListener('click', showStudentsList);
                 addEditStudentForm.addEventListener('submit', handleSaveStudent);
@@ -865,11 +868,23 @@
                 viewStudentsBtn.classList.remove('active');
                 addStudentBtn.classList.add('active');
                 studentList.style.display = 'none';
+                testForm.style.display = 'none';
                 studentForm.style.display = 'block';
                 formTitle.textContent = 'Add New Student';
                 addEditStudentForm.reset();
                 currentStudentId = null;
                 toggleBusNumberField();
+            }
+
+            // Show Add Student Form
+            function showAddTestForm() {
+                viewStudentsBtn.classList.remove('active');
+                addStudentBtn.classList.remove('active');
+                addTestBtn.classList.add('active');
+                studentList.style.display = 'none';
+                studentForm.style.display = 'none';
+                testForm.style.display = 'block';
+                addEditTestForm.reset();
             }
 
             // Show Edit Student Form
