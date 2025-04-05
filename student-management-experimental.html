@@ -756,6 +756,7 @@
             const addEditTestForm = document.getElementById('addEditTestForm');
             const formTitle = document.getElementById('formTitle');
             const cancelBtn = document.getElementById('cancelBtn');
+            const cancelTestBtn = document.getElementById('cancelTestBtn');
             const emptyAddBtn = document.getElementById('emptyAddBtn');
 
             const studentTableBody = document.getElementById('studentTableBody');
@@ -802,6 +803,7 @@
                 addTestBtn.addEventListener('click', showAddTestForm);
 
                 cancelBtn.addEventListener('click', showStudentsList);
+                cancelTestBtn.addEventListener('click', showStudentsList);
                 addEditStudentForm.addEventListener('submit', handleSaveStudent);
 
                 cancelDelete.addEventListener('click', hideDeleteModal);
@@ -858,8 +860,10 @@
             function showStudentsList() {
                 viewStudentsBtn.classList.add('active');
                 addStudentBtn.classList.remove('active');
+                addTestBtn.classList.remove('active');
                 studentList.style.display = 'block';
                 studentForm.style.display = 'none';
+                testForm.style.display = 'none';
                 renderStudentsList();
             }
 
