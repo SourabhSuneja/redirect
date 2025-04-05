@@ -1,1094 +1,1003 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Management System</title>
-    <style>
-        /* Global Styles */
-        :root {
-            --primary: #4361ee;
-            --primary-light: #4895ef;
-            --secondary: #3f37c9;
-            --success: #4cc9f0;
-            --danger: #f72585;
-            --warning: #f8961e;
-            --info: #4895ef;
-            --light: #f8f9fa;
-            --dark: #212529;
-            --gray: #6c757d;
-            --ruby: #e63946;
-            --emerald: #2a9d8f;
-            --topaz: #e9c46a;
-            --sapphire: #4361ee;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            max-height: 999999999px;
-        }
-
-        body {
-            background-color: #f5f7fb;
-            color: var(--dark);
-            line-height: 1.6;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
-        /* Login Screen */
-        .login-container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            background: linear-gradient(135deg, var(--primary-light), var(--secondary));
-        }
-
-        .login-form {
-            background-color: white;
-            padding: 40px;
-            border-radius: 10px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-        }
-
-        .login-form h2 {
-            text-align: center;
-            margin-bottom: 30px;
-            color: var(--primary);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .form-control {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 16px;
-            transition: border-color 0.3s;
-        }
-
-        .form-control:focus {
-            border-color: var(--primary);
-            outline: none;
-        }
-
-        .btn {
-            display: inline-block;
-            padding: 12px 24px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            text-align: center;
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        .btn:hover {
-            background-color: var(--secondary);
-            transform: translateY(-2px);
-        }
-
-        .btn-block {
-            display: block;
-            width: 100%;
-        }
-
-        .error-message {
-            color: var(--danger);
-            margin-top: 15px;
-            text-align: center;
-            display: none;
-        }
-
-        /* Dashboard */
-        .app-container {
-            display: none;
-        }
-
-        .topbar {
-            background-color: white;
-            padding: 15px 20px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .logo {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-info img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .user-name {
-            font-weight: 600;
-        }
-
-        .class-name {
-            color: var(--gray);
-            font-size: 14px;
-        }
-
-        .logout-btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            font-weight: 600;
-            background: #d63031;
-            padding: 8px 15px;
-            border-radius: 4px;
-        }
-
-        /* Dashboard Stats */
-        .stats-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-            gap: 20px;
-            margin: 30px 0;
-        }
-
-        .stat-card {
-            background-color: white;
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-            text-align: center;
-            transition: transform 0.3s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-        }
-
-        .stat-icon {
-            font-size: 36px;
-            margin-bottom: 15px;
-        }
-
-        .stat-value {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .stat-label {
-            color: var(--gray);
-            font-size: 16px;
-        }
-
-        /* Actions */
-        .actions-container {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-        }
-
-        .action-btn {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 12px 20px;
-            background-color: white;
-            border: none;
-            border-radius: 5px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--dark);
-            transition: background-color 0.3s, transform 0.2s;
-        }
-
-        .action-btn:hover {
-            background-color: var(--light);
-            transform: translateY(-2px);
-        }
-
-        .action-btn.active {
-            background-color: var(--primary);
-            color: white;
-        }
-
-        /* Students Table */
-        .content-section {
-            background-color: white;
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
-        }
-
-        .section-title {
-            font-size: 22px;
-            margin-bottom: 20px;
-            color: var(--primary);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .search-box {
-            display: flex;
-            max-width: 300px;
-        }
-
-        .search-box input {
-            flex: 1;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 5px 0 0 5px;
-            font-size: 14px;
-        }
-
-        .search-box button {
-            padding: 10px 15px;
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 0 5px 5px 0;
-            cursor: pointer;
-        }
-
-        .students-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
-        }
-
-        .students-table th, .students-table td {
-            padding: 12px 15px;
-            text-align: left;
-            border-bottom: 1px solid #eee;
-        }
-
-        .students-table th {
-            background-color: #f8f9fa;
-            font-weight: 600;
-        }
-
-        .students-table tr:hover {
-            background-color: #f5f7fb;
-        }
-
-        .action-cell {
-            display: flex;
-            gap: 10px;
-        }
-
-        .edit-btn, .delete-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-
-        .edit-btn {
-            background-color: var(--info);
-            color: white;
-        }
-
-        .delete-btn {
-            background-color: var(--danger);
-            color: white;
-        }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 40px 20px;
-        }
-
-        .empty-state img {
-            width: 70px;
-            margin-bottom: 20px;
-        }
-
-        .empty-state h3 {
-            margin-bottom: 10px;
-            color: var(--dark);
-        }
-
-        .empty-state p {
-            color: var(--gray);
-            margin-bottom: 20px;
-        }
-
-        /* Forms */
-        .student-form, .test-form {
-            display: none;
-        }
-
-        .student-list {
-            display: block;
-            overflow-x: auto;
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-
-        .form-actions {
-            display: flex;
-            justify-content: flex-end;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn-secondary {
-            background-color: var(--gray);
-        }
-
-        /* House colors */
-        .house-ruby { color: var(--ruby); }
-        .house-emerald { color: var(--emerald); }
-        .house-topaz { color: var(--topaz); }
-        .house-sapphire { color: var(--sapphire); }
-
-        /* Responsive Design */
-        @media (max-width: 768px) {
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-
-            .topbar {
-                flex-direction: column;
-                gap: 15px;
-            }
-
-            .user-info {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .section-title {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 8px;
-            }
-            
-            .students-table {
-                display: block;
-                overflow-x: auto;
-            }
-        }
-
-        /* Modal */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: rgba(0, 0, 0, 0.5);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            display: none;
-        }
-
-        .modal {
-            background-color: white;
-            border-radius: 10px;
-            padding: 30px;
-            width: 90%;
-            max-width: 600px;
-            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
-        }
-
-        .modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .modal-title {
-            font-size: 20px;
-            color: var(--primary);
-        }
-
-        .close-modal {
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-            color: var(--gray);
-        }
-
-        /* Icons */
-        .stat-icon .material-icons {
-            font-size: 42px;
-        }
-    </style>
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-</head>
-<body>
-    <!-- Login Screen -->
-    <div id="loginScreen" class="login-container">
-        <div class="login-form">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Student Management System</title>
+      <style>
+         /* Global Styles */
+         :root {
+         --primary: #4361ee;
+         --primary-light: #4895ef;
+         --secondary: #3f37c9;
+         --success: #4cc9f0;
+         --danger: #f72585;
+         --warning: #f8961e;
+         --info: #4895ef;
+         --light: #f8f9fa;
+         --dark: #212529;
+         --gray: #6c757d;
+         --ruby: #e63946;
+         --emerald: #2a9d8f;
+         --topaz: #e9c46a;
+         --sapphire: #4361ee;
+         }
+         * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+         max-height: 999999999px;
+         }
+         body {
+         background-color: #f5f7fb;
+         color: var(--dark);
+         line-height: 1.6;
+         }
+         .container {
+         width: 100%;
+         max-width: 1200px;
+         margin: 0 auto;
+         padding: 20px;
+         }
+         /* Login Screen */
+         .login-container {
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         min-height: 100vh;
+         background: linear-gradient(135deg, var(--primary-light), var(--secondary));
+         }
+         .login-form {
+         background-color: white;
+         padding: 40px;
+         border-radius: 10px;
+         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+         width: 100%;
+         max-width: 400px;
+         }
+         .login-form h2 {
+         text-align: center;
+         margin-bottom: 30px;
+         color: var(--primary);
+         }
+         .form-group {
+         margin-bottom: 20px;
+         }
+         .form-group label {
+         display: block;
+         margin-bottom: 8px;
+         font-weight: 600;
+         }
+         .form-control {
+         width: 100%;
+         padding: 12px;
+         border: 1px solid #ddd;
+         border-radius: 5px;
+         font-size: 16px;
+         transition: border-color 0.3s;
+         }
+         .form-control:focus {
+         border-color: var(--primary);
+         outline: none;
+         }
+         .btn {
+         display: inline-block;
+         padding: 12px 24px;
+         background-color: var(--primary);
+         color: white;
+         border: none;
+         border-radius: 5px;
+         cursor: pointer;
+         font-size: 16px;
+         font-weight: 600;
+         text-align: center;
+         transition: background-color 0.3s, transform 0.2s;
+         }
+         .btn:hover {
+         background-color: var(--secondary);
+         transform: translateY(-2px);
+         }
+         .btn-block {
+         display: block;
+         width: 100%;
+         }
+         .error-message {
+         color: var(--danger);
+         margin-top: 15px;
+         text-align: center;
+         display: none;
+         }
+         /* Dashboard */
+         .app-container {
+         display: none;
+         }
+         .topbar {
+         background-color: white;
+         padding: 15px 20px;
+         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         }
+         .logo {
+         font-size: 22px;
+         font-weight: 700;
+         color: var(--primary);
+         }
+         .user-info {
+         display: flex;
+         align-items: center;
+         gap: 10px;
+         }
+         .user-info img {
+         width: 40px;
+         height: 40px;
+         border-radius: 50%;
+         object-fit: cover;
+         }
+         .user-name {
+         font-weight: 600;
+         }
+         .class-name {
+         color: var(--gray);
+         font-size: 14px;
+         }
+         .logout-btn {
+         background: none;
+         border: none;
+         color: white;
+         cursor: pointer;
+         font-weight: 600;
+         background: #d63031;
+         padding: 8px 15px;
+         border-radius: 4px;
+         }
+         /* Dashboard Stats */
+         .stats-container {
+         display: grid;
+         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+         gap: 20px;
+         margin: 30px 0;
+         }
+         .stat-card {
+         background-color: white;
+         border-radius: 10px;
+         padding: 20px;
+         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+         text-align: center;
+         transition: transform 0.3s;
+         }
+         .stat-card:hover {
+         transform: translateY(-5px);
+         }
+         .stat-icon {
+         font-size: 36px;
+         margin-bottom: 15px;
+         }
+         .stat-value {
+         font-size: 32px;
+         font-weight: 700;
+         color: var(--primary);
+         margin-bottom: 10px;
+         }
+         .stat-label {
+         color: var(--gray);
+         font-size: 16px;
+         }
+         /* Actions */
+         .actions-container {
+         display: flex;
+         gap: 15px;
+         margin-bottom: 30px;
+         flex-wrap: wrap;
+         }
+         .action-btn {
+         display: flex;
+         align-items: center;
+         gap: 10px;
+         padding: 12px 20px;
+         background-color: white;
+         border: none;
+         border-radius: 5px;
+         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+         cursor: pointer;
+         font-weight: 600;
+         color: var(--dark);
+         transition: background-color 0.3s, transform 0.2s;
+         }
+         .action-btn:hover {
+         background-color: var(--light);
+         transform: translateY(-2px);
+         }
+         .action-btn.active {
+         background-color: var(--primary);
+         color: white;
+         }
+         /* Students Table */
+         .content-section {
+         background-color: white;
+         border-radius: 10px;
+         padding: 25px;
+         box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+         }
+         .section-title {
+         font-size: 22px;
+         margin-bottom: 20px;
+         color: var(--primary);
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         }
+         .search-box {
+         display: flex;
+         max-width: 300px;
+         }
+         .search-box input {
+         flex: 1;
+         padding: 10px;
+         border: 1px solid #ddd;
+         border-radius: 5px 0 0 5px;
+         font-size: 14px;
+         }
+         .search-box button {
+         padding: 10px 15px;
+         background-color: var(--primary);
+         color: white;
+         border: none;
+         border-radius: 0 5px 5px 0;
+         cursor: pointer;
+         }
+         .students-table {
+         width: 100%;
+         border-collapse: collapse;
+         margin-top: 20px;
+         }
+         .students-table th, .students-table td {
+         padding: 12px 15px;
+         text-align: left;
+         border-bottom: 1px solid #eee;
+         }
+         .students-table th {
+         background-color: #f8f9fa;
+         font-weight: 600;
+         }
+         .students-table tr:hover {
+         background-color: #f5f7fb;
+         }
+         .action-cell {
+         display: flex;
+         gap: 10px;
+         }
+         .edit-btn, .delete-btn {
+         padding: 6px 12px;
+         border: none;
+         border-radius: 4px;
+         cursor: pointer;
+         font-size: 14px;
+         }
+         .edit-btn {
+         background-color: var(--info);
+         color: white;
+         }
+         .delete-btn {
+         background-color: var(--danger);
+         color: white;
+         }
+         /* Empty state */
+         .empty-state {
+         text-align: center;
+         padding: 40px 20px;
+         }
+         .empty-state img {
+         width: 70px;
+         margin-bottom: 20px;
+         }
+         .empty-state h3 {
+         margin-bottom: 10px;
+         color: var(--dark);
+         }
+         .empty-state p {
+         color: var(--gray);
+         margin-bottom: 20px;
+         }
+         /* Forms */
+         .student-form, .test-form {
+         display: none;
+         }
+         .student-list {
+         display: block;
+         overflow-x: auto;
+         }
+         .form-row {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+         gap: 20px;
+         margin-bottom: 20px;
+         }
+         .form-actions {
+         display: flex;
+         justify-content: flex-end;
+         gap: 15px;
+         margin-top: 30px;
+         }
+         .btn-secondary {
+         background-color: var(--gray);
+         }
+         /* House colors */
+         .house-ruby { color: var(--ruby); }
+         .house-emerald { color: var(--emerald); }
+         .house-topaz { color: var(--topaz); }
+         .house-sapphire { color: var(--sapphire); }
+         /* Responsive Design */
+         @media (max-width: 768px) {
+         .stats-container {
+         grid-template-columns: 1fr;
+         }
+         .topbar {
+         flex-direction: column;
+         gap: 15px;
+         }
+         .user-info {
+         flex-direction: column;
+         text-align: center;
+         }
+         .section-title {
+         flex-direction: column;
+         align-items: flex-start;
+         gap: 8px;
+         }
+         .students-table {
+         display: block;
+         overflow-x: auto;
+         }
+         }
+         /* Modal */
+         .modal-overlay {
+         position: fixed;
+         top: 0;
+         left: 0;
+         right: 0;
+         bottom: 0;
+         background-color: rgba(0, 0, 0, 0.5);
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         z-index: 1000;
+         display: none;
+         }
+         .modal {
+         background-color: white;
+         border-radius: 10px;
+         padding: 30px;
+         width: 90%;
+         max-width: 600px;
+         box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+         }
+         .modal-header {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 20px;
+         }
+         .modal-title {
+         font-size: 20px;
+         color: var(--primary);
+         }
+         .close-modal {
+         background: none;
+         border: none;
+         font-size: 24px;
+         cursor: pointer;
+         color: var(--gray);
+         }
+         /* Icons */
+         .stat-icon .material-icons {
+         font-size: 42px;
+         }
+      </style>
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+   </head>
+   <body>
+      <!-- Login Screen -->
+      <div id="loginScreen" class="login-container">
+         <div class="login-form">
             <h2>Teacher Login</h2>
             <div class="form-group">
-                <label for="teacherId">Teacher ID</label>
-                <input type="text" id="teacherId" class="form-control" placeholder="Enter your ID">
+               <label for="teacherId">Teacher ID</label>
+               <input type="text" id="teacherId" class="form-control" placeholder="Enter your ID">
             </div>
             <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" id="password" class="form-control" placeholder="Enter your password">
+               <label for="password">Password</label>
+               <input type="password" id="password" class="form-control" placeholder="Enter your password">
             </div>
             <button id="loginBtn" class="btn btn-block">Login</button>
             <div id="loginError" class="error-message">Invalid teacher ID or password</div>
-        </div>
-    </div>
-
-    <!-- Main Application -->
-    <div id="appContainer" class="app-container">
-        <!-- Topbar -->
-        <div class="topbar">
+         </div>
+      </div>
+      <!-- Main Application -->
+      <div id="appContainer" class="app-container">
+         <!-- Topbar -->
+         <div class="topbar">
             <div class="logo">Student Management System</div>
             <div class="user-info">
-                <img src="https://i.postimg.cc/KjGsyFnK/user-avatar.png" alt="Teacher Profile">
-                <div>
-                    <div class="user-name" id="teacherName">Teacher Name</div>
-                    <div class="class-name" id="className">Class</div>
-                </div>
-                <button id="logoutBtn" class="logout-btn">Logout</button>
+               <img src="https://i.postimg.cc/KjGsyFnK/user-avatar.png" alt="Teacher Profile">
+               <div>
+                  <div class="user-name" id="teacherName">Teacher Name</div>
+                  <div class="class-name" id="className">Class</div>
+               </div>
+               <button id="logoutBtn" class="logout-btn">Logout</button>
             </div>
-        </div>
-
-        <div class="container">
+         </div>
+         <div class="container">
             <!-- Stats -->
             <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <span class="material-icons">groups</span>
-                    </div>
-                    <div class="stat-value" id="totalStudents">0</div>
-                    <div class="stat-label">Total Students</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <span class="material-icons">directions_bus</span>
-                    </div>
-                    <div class="stat-value" id="schoolTransport">0</div>
-                    <div class="stat-label">School Transport</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <span class="material-icons">family_restroom</span>
-                    </div>
-                    <div class="stat-value" id="withParents">0</div>
-                    <div class="stat-label">With Parents</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon">
-                        <span class="material-icons">directions_walk</span>
-                    </div>
-                    <div class="stat-value" id="self">0</div>
-                    <div class="stat-label">Self</div>
-                </div>
+               <div class="stat-card">
+                  <div class="stat-icon">
+                     <span class="material-icons">groups</span>
+                  </div>
+                  <div class="stat-value" id="totalStudents">0</div>
+                  <div class="stat-label">Total Students</div>
+               </div>
+               <div class="stat-card">
+                  <div class="stat-icon">
+                     <span class="material-icons">directions_bus</span>
+                  </div>
+                  <div class="stat-value" id="schoolTransport">0</div>
+                  <div class="stat-label">School Transport</div>
+               </div>
+               <div class="stat-card">
+                  <div class="stat-icon">
+                     <span class="material-icons">family_restroom</span>
+                  </div>
+                  <div class="stat-value" id="withParents">0</div>
+                  <div class="stat-label">With Parents</div>
+               </div>
+               <div class="stat-card">
+                  <div class="stat-icon">
+                     <span class="material-icons">directions_walk</span>
+                  </div>
+                  <div class="stat-value" id="self">0</div>
+                  <div class="stat-label">Self</div>
+               </div>
             </div>
-
             <!-- Actions -->
             <div class="actions-container">
-                <button id="viewStudentsBtn" class="action-btn active">
-                    <span class="material-icons">list</span> View Students
-                </button>
-                <button id="addStudentBtn" class="action-btn">
-                    <span class="material-icons">person_add</span> Add Student
-                </button>
-                <button id="addTestBtn" class="action-btn">
-                    <span class="material-icons">draw</span> Add Test
-                </button>
+               <button id="viewStudentsBtn" class="action-btn active">
+               <span class="material-icons">list</span> View Students
+               </button>
+               <button id="addStudentBtn" class="action-btn">
+               <span class="material-icons">person_add</span> Add Student
+               </button>
+               <button id="addTestBtn" class="action-btn">
+               <span class="material-icons">draw</span> Add Test
+               </button>
             </div>
-
             <!-- Content Section -->
             <div class="content-section">
-                <!-- Student List -->
-                <div id="studentList" class="student-list">
-                    <div class="section-title">
-                        <span>Students List</span>
-                        <div class="search-box">
-                            <input type="text" id="searchInput" placeholder="Search students...">
-                            <button id="searchBtn">
-                                <span class="material-icons">search</span>
-                            </button>
+               <!-- Student List -->
+               <div id="studentList" class="student-list">
+                  <div class="section-title">
+                     <span>Students List</span>
+                     <div class="search-box">
+                        <input type="text" id="searchInput" placeholder="Search students...">
+                        <button id="searchBtn">
+                        <span class="material-icons">search</span>
+                        </button>
+                     </div>
+                  </div>
+                  <table class="students-table" id="studentsTable">
+                     <thead>
+                        <tr>
+                           <th>Sr. No</th>
+                           <th>Name</th>
+                           <th>Father's Name</th>
+                           <th>WhatsApp</th>
+                           <th>House</th>
+                           <th>Transport</th>
+                           <th>Bus No.</th>
+                           <th>Activity</th>
+                           <th>Actions</th>
+                        </tr>
+                     </thead>
+                     <tbody id="studentTableBody">
+                        <!-- Students will be added here dynamically -->
+                     </tbody>
+                  </table>
+                  <div id="emptyState" class="empty-state">
+                     <img src="https://i.postimg.cc/VsW3ZZjr/sad.png">
+                     <h3>No Students Found</h3>
+                     <p>There are no students in this class yet. Add your first student to get started.</p>
+                     <button id="emptyAddBtn" class="btn">Add Student</button>
+                  </div>
+               </div>
+               <!-- Add/Edit Student Form -->
+               <div id="studentForm" class="student-form">
+                  <div class="section-title">
+                     <span id="formTitle">Add New Student</span>
+                  </div>
+                  <form id="addEditStudentForm">
+                     <input type="hidden" id="studentId">
+                     <div class="form-row">
+                        <div class="form-group">
+                           <label for="studentName">Student Name</label>
+                           <input type="text" id="studentName" class="form-control" required>
                         </div>
-                    </div>
-                    
-                    <table class="students-table" id="studentsTable">
-                        <thead>
-                            <tr>
-                                <th>Sr. No</th>
-                                <th>Name</th>
-                                <th>Father's Name</th>
-                                <th>WhatsApp</th>
-                                <th>House</th>
-                                <th>Transport</th>
-                                <th>Bus No.</th>
-                                <th>Activity</th>
-                                <th>Actions</th>
-                            </tr>
-                        </thead>
-                        <tbody id="studentTableBody">
-                            <!-- Students will be added here dynamically -->
-                        </tbody>
-                    </table>
-                    
-                    <div id="emptyState" class="empty-state">
-                        <img src="https://i.postimg.cc/VsW3ZZjr/sad.png">
-                        <h3>No Students Found</h3>
-                        <p>There are no students in this class yet. Add your first student to get started.</p>
-                        <button id="emptyAddBtn" class="btn">Add Student</button>
-                    </div>
-                </div>
-
-                <!-- Add/Edit Student Form -->
-                <div id="studentForm" class="student-form">
-                    <div class="section-title">
-                        <span id="formTitle">Add New Student</span>
-                    </div>
-                    
-                    <form id="addEditStudentForm">
-                        <input type="hidden" id="studentId">
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="studentName">Student Name</label>
-                                <input type="text" id="studentName" class="form-control" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="fatherName">Father's Name</label>
-                                <input type="text" id="fatherName" class="form-control" required>
-                            </div>
+                        <div class="form-group">
+                           <label for="fatherName">Father's Name</label>
+                           <input type="text" id="fatherName" class="form-control" required>
                         </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="whatsapp">WhatsApp Number</label>
-                                <input type="tel" id="whatsapp" class="form-control" required>
-                            </div>
-                            
-                            <div class="form-group">
-                                <label for="house">House</label>
-                                <select id="house" class="form-control" required>
-                                    <option value="">Select House</option>
-                                    <option value="Ruby">Ruby</option>
-                                    <option value="Emerald">Emerald</option>
-                                    <option value="Topaz">Topaz</option>
-                                    <option value="Sapphire">Sapphire</option>
-                                </select>
-                            </div>
+                     </div>
+                     <div class="form-row">
+                        <div class="form-group">
+                           <label for="whatsapp">WhatsApp Number</label>
+                           <input type="tel" id="whatsapp" class="form-control" required>
                         </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="transport">Mode of Transport</label>
-                                <select id="transport" class="form-control" required>
-                                    <option value="">Select Transport</option>
-                                    <option value="School Transport">School Transport</option>
-                                    <option value="Self">Self</option>
-                                    <option value="With Parents">With Parents</option>
-                                </select>
-                            </div>
-                            
-                            <div class="form-group" id="busNumberGroup">
-                                <label for="busNumber">Bus Number</label>
-                                <input type="text" id="busNumber" class="form-control">
-                            </div>
+                        <div class="form-group">
+                           <label for="house">House</label>
+                           <select id="house" class="form-control" required>
+                              <option value="">Select House</option>
+                              <option value="Ruby">Ruby</option>
+                              <option value="Emerald">Emerald</option>
+                              <option value="Topaz">Topaz</option>
+                              <option value="Sapphire">Sapphire</option>
+                           </select>
                         </div>
-                        
-                        <div class="form-row">
-                            <div class="form-group">
-                                <label for="activity">Activity Chosen</label>
-                                <select id="activity" class="form-control" required>
-                                    <option value="">Select Activity</option>
-                                    <option value="Basketball">Basketball</option>
-                                    <option value="Rollball">Rollball</option>
-                                    <option value="Western Dance">Western Dance</option>
-                                </select>
-                            </div>
+                     </div>
+                     <div class="form-row">
+                        <div class="form-group">
+                           <label for="transport">Mode of Transport</label>
+                           <select id="transport" class="form-control" required>
+                              <option value="">Select Transport</option>
+                              <option value="School Transport">School Transport</option>
+                              <option value="Self">Self</option>
+                              <option value="With Parents">With Parents</option>
+                           </select>
                         </div>
-                        
-                        <div class="form-actions">
-                            <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
-                            <button type="submit" id="saveBtn" class="btn">Save Student</button>
+                        <div class="form-group" id="busNumberGroup">
+                           <label for="busNumber">Bus Number</label>
+                           <input type="text" id="busNumber" class="form-control">
                         </div>
-                    </form>
-                </div>
-                <!-- Add/Edit Test Form -->
-<div id="testForm" class="test-form">
-    <div class="section-title">
-        <span id="testFormTitle">Add New Test/Exam</span>
-    </div>
-    
-    <form id="addEditTestForm">
-        <input type="hidden" id="testId">
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label for="subject">Subject</label>
-                <select id="subject" class="form-control" required>
-                    <option value="English">English</option>
-                    <option value="Hindi">Hindi</option>
-                    <option value="Maths">Maths</option>
-                    <option value="Science">Science</option>
-                    <option value="Social Science">Social Science</option>
-                    <option value="Sanskrit">Sanskrit</option>
-                    <option value="Computer" selected>Computer</option>
-                    <option value="GK">GK</option>
-                </select>
+                     </div>
+                     <div class="form-row">
+                        <div class="form-group">
+                           <label for="activity">Activity Chosen</label>
+                           <select id="activity" class="form-control" required>
+                              <option value="">Select Activity</option>
+                              <option value="Basketball">Basketball</option>
+                              <option value="Rollball">Rollball</option>
+                              <option value="Western Dance">Western Dance</option>
+                           </select>
+                        </div>
+                     </div>
+                     <div class="form-actions">
+                        <button type="button" id="cancelBtn" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" id="saveBtn" class="btn">Save Student</button>
+                     </div>
+                  </form>
+               </div>
+               <!-- Add/Edit Test Form -->
+               <div id="testForm" class="test-form">
+                  <div class="section-title">
+                     <span id="testFormTitle">Add New Test/Exam</span>
+                  </div>
+                  <form id="addEditTestForm">
+                     <input type="hidden" id="testId">
+                     <div class="form-row">
+                        <div class="form-group">
+                           <label for="subject">Subject</label>
+                           <select id="subject" class="form-control" required>
+                              <option value="English">English</option>
+                              <option value="Hindi">Hindi</option>
+                              <option value="Maths">Maths</option>
+                              <option value="Science">Science</option>
+                              <option value="Social Science">Social Science</option>
+                              <option value="Sanskrit">Sanskrit</option>
+                              <option value="Computer" selected>Computer</option>
+                              <option value="GK">GK</option>
+                           </select>
+                        </div>
+                        <div class="form-group">
+                           <label for="testName">Test/Exam Name</label>
+                           <input type="text" id="testName" class="form-control" required>
+                        </div>
+                     </div>
+                     <div class="form-row">
+                        <div class="form-group">
+                           <label for="maxMarks">Max. Marks</label>
+                           <input type="number" id="maxMarks" class="form-control" min="1" step="1" required>
+                        </div>
+                        <div class="form-group">
+                           <label for="conductedOn">Conducted on</label>
+                           <input type="date" id="conductedOn" class="form-control" required>
+                        </div>
+                     </div>
+                     <div class="form-actions">
+                        <button type="button" id="cancelTestBtn" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" id="saveTestBtn" class="btn">Save Test/Exam</button>
+                     </div>
+                  </form>
+               </div>
             </div>
-            
-            <div class="form-group">
-                <label for="testName">Test/Exam Name</label>
-                <input type="text" id="testName" class="form-control" required>
-            </div>
-        </div>
-        
-        <div class="form-row">
-            <div class="form-group">
-                <label for="maxMarks">Max. Marks</label>
-                <input type="number" id="maxMarks" class="form-control" min="1" step="1" required>
-            </div>
-            
-            <div class="form-group">
-                <label for="conductedOn">Conducted on</label>
-                <input type="date" id="conductedOn" class="form-control" required>
-            </div>
-        </div>
-        
-        <div class="form-actions">
-            <button type="button" id="cancelTestBtn" class="btn btn-secondary">Cancel</button>
-            <button type="submit" id="saveTestBtn" class="btn">Save Test/Exam</button>
-        </div>
-    </form>
-</div>
-              
-            </div>
-        </div>
-    </div>
-
-    <!-- Delete Confirmation Modal -->
-    <div id="deleteModal" class="modal-overlay">
-        <div class="modal">
+         </div>
+      </div>
+      <!-- Delete Confirmation Modal -->
+      <div id="deleteModal" class="modal-overlay">
+         <div class="modal">
             <div class="modal-header">
-                <h3 class="modal-title">Confirm Deletion</h3>
-                <button class="close-modal">&times;</button>
+               <h3 class="modal-title">Confirm Deletion</h3>
+               <button class="close-modal">&times;</button>
             </div>
             <div class="modal-body">
-                <p>Are you sure you want to delete this student? This action cannot be undone.</p>
+               <p>Are you sure you want to delete this student? This action cannot be undone.</p>
             </div>
             <div class="form-actions">
-                <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
-                <button id="confirmDelete" class="btn" style="background-color: var(--danger);">Delete</button>
+               <button id="cancelDelete" class="btn btn-secondary">Cancel</button>
+               <button id="confirmDelete" class="btn" style="background-color: var(--danger);">Delete</button>
             </div>
-        </div>
-    </div>
-
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            // Teacher accounts
-            const teachers = [
-                { id: '1', password: '1', name: 'Abhilasha Joshi', class: '8-A2' },
-                { id: 'T002', password: 'pass123', name: 'Mary Johnson', class: '6-A2' },
-                { id: 'T003', password: 'pass123', name: 'Robert Brown', class: '7-B1' }
-            ];
-
-            // DOM Elements
-            const loginScreen = document.getElementById('loginScreen');
-            const appContainer = document.getElementById('appContainer');
-            const loginBtn = document.getElementById('loginBtn');
-            const loginError = document.getElementById('loginError');
-            const logoutBtn = document.getElementById('logoutBtn');
-            const teacherNameEl = document.getElementById('teacherName');
-            const classNameEl = document.getElementById('className');
-
-            const viewStudentsBtn = document.getElementById('viewStudentsBtn');
-            const addStudentBtn = document.getElementById('addStudentBtn');
-            const addTestBtn = document.getElementById('addTestBtn');
-            const studentList = document.getElementById('studentList');
-            const studentForm = document.getElementById('studentForm');
-            const addEditStudentForm = document.getElementById('addEditStudentForm');
-            const testForm = document.getElementById('testForm');
-            const addEditTestForm = document.getElementById('addEditTestForm');
-            const formTitle = document.getElementById('formTitle');
-            const cancelBtn = document.getElementById('cancelBtn');
-            const cancelTestBtn = document.getElementById('cancelTestBtn');
-            const emptyAddBtn = document.getElementById('emptyAddBtn');
-
-            const studentTableBody = document.getElementById('studentTableBody');
-            const emptyState = document.getElementById('emptyState');
-            const studentsTable = document.getElementById('studentsTable');
-
-            const deleteModal = document.getElementById('deleteModal');
-            const cancelDelete = document.getElementById('cancelDelete');
-            const confirmDelete = document.getElementById('confirmDelete');
-            const closeModal = document.querySelector('.close-modal');
-
-            const transport = document.getElementById('transport');
-            const busNumberGroup = document.getElementById('busNumberGroup');
-            const busNumber = document.getElementById('busNumber');
-
-            const totalStudentsEl = document.getElementById('totalStudents');
-            const schoolTransportEl = document.getElementById('schoolTransport');
-            const withParentsEl = document.getElementById('withParents');
-            const selfEl = document.getElementById('self');
-
-            const searchInput = document.getElementById('searchInput');
-            const searchBtn = document.getElementById('searchBtn');
-
-            // Current teacher and students data
-            let currentTeacher = null;
-            let students = [];
-            let currentStudentId = null;
-
-            // Initialize the application
-            function init() {
-                // Load students from localStorage if available
-                loadStudentsData();
-                updateDashboardStats();
-                renderStudentsList();
-
-                // Event Listeners
-                loginBtn.addEventListener('click', handleLogin);
-                logoutBtn.addEventListener('click', handleLogout);
-
-                viewStudentsBtn.addEventListener('click', showStudentsList);
-                addStudentBtn.addEventListener('click', showAddStudentForm);
-                emptyAddBtn.addEventListener('click', showAddStudentForm);
-
-                addTestBtn.addEventListener('click', showAddTestForm);
-
-                cancelBtn.addEventListener('click', showStudentsList);
-                cancelTestBtn.addEventListener('click', showStudentsList);
-                addEditStudentForm.addEventListener('submit', handleSaveStudent);
-
-                cancelDelete.addEventListener('click', hideDeleteModal);
-                closeModal.addEventListener('click', hideDeleteModal);
-                confirmDelete.addEventListener('click', handleDeleteConfirm);
-
-                transport.addEventListener('change', toggleBusNumberField);
-
-                searchBtn.addEventListener('click', handleSearch);
-                searchInput.addEventListener('keyup', function(e) {
-                    if (e.key === 'Enter') {
-                        handleSearch();
-                    }
-                });
-            }
-
-            // Login Handler
-            function handleLogin() {
-                const teacherId = document.getElementById('teacherId').value;
-                const password = document.getElementById('password').value;
-
-                const teacher = teachers.find(t => t.id === teacherId && t.password === password);
-
-                if (teacher) {
-                    currentTeacher = teacher;
-                    teacherNameEl.textContent = teacher.name;
-                    classNameEl.textContent = teacher.class;
-
-                    loginScreen.style.display = 'none';
-                    appContainer.style.display = 'block';
-
-                    // Load students data for this teacher
-                    loadStudentsData();
-                    updateDashboardStats();
-                    renderStudentsList();
-                } else {
-                    loginError.style.display = 'block';
-                }
-            }
-
-            // Logout Handler
-            function handleLogout() {
-                currentTeacher = null;
-                localStorage.removeItem('students_' + classNameEl.textContent.replace('-', '_'));
-                students = [];
-                loginScreen.style.display = 'flex';
-                appContainer.style.display = 'none';
-                document.getElementById('teacherId').value = '';
-                document.getElementById('password').value = '';
-                loginError.style.display = 'none';
-            }
-
-            // Show Students List
-            function showStudentsList() {
-                viewStudentsBtn.classList.add('active');
-                addStudentBtn.classList.remove('active');
-                addTestBtn.classList.remove('active');
-                studentList.style.display = 'block';
-                studentForm.style.display = 'none';
-                testForm.style.display = 'none';
-                renderStudentsList();
-            }
-
-            // Show Add Student Form
-            function showAddStudentForm() {
-                viewStudentsBtn.classList.remove('active');
-                addStudentBtn.classList.add('active');
-                studentList.style.display = 'none';
-                testForm.style.display = 'none';
-                studentForm.style.display = 'block';
-                formTitle.textContent = 'Add New Student';
-                addEditStudentForm.reset();
-                currentStudentId = null;
-                toggleBusNumberField();
-            }
-
-            // Show Add Student Form
-            function showAddTestForm() {
-                viewStudentsBtn.classList.remove('active');
-                addStudentBtn.classList.remove('active');
-                addTestBtn.classList.add('active');
-                studentList.style.display = 'none';
-                studentForm.style.display = 'none';
-                testForm.style.display = 'block';
-                addEditTestForm.reset();
-            }
-
-            // Show Edit Student Form
-            function showEditStudentForm(id) {
-                const student = students.find(s => s.id === id);
-
-                if (!student) return;
-
-                viewStudentsBtn.classList.remove('active');
-                addStudentBtn.classList.add('active');
-                studentList.style.display = 'none';
-                studentForm.style.display = 'block';
-                formTitle.textContent = 'Edit Student';
-
-                // Fill form with student data
-                document.getElementById('studentId').value = student.id;
-                document.getElementById('studentName').value = student.name;
-                document.getElementById('fatherName').value = student.fatherName;
-                document.getElementById('whatsapp').value = student.whatsapp;
-                document.getElementById('house').value = student.house;
-                document.getElementById('transport').value = student.transport;
-                document.getElementById('busNumber').value = student.busNumber || '';
-                document.getElementById('activity').value = student.activity;
-
-                currentStudentId = student.id;
-                toggleBusNumberField();
-            }
-
-            // Toggle Bus Number Field
-            function toggleBusNumberField() {
-                if (transport.value === 'School Transport') {
-                    busNumberGroup.style.display = 'block';
-                    busNumber.setAttribute('required', 'required');
-                } else {
-                    busNumberGroup.style.display = 'none';
-                    busNumber.removeAttribute('required');
-                }
-            }
-
-            // Handle Save Student
-            function handleSaveStudent(e) {
-                e.preventDefault();
-
-                const formData = {
-                    name: document.getElementById('studentName').value,
-                    fatherName: document.getElementById('fatherName').value,
-                    whatsapp: document.getElementById('whatsapp').value,
-                    house: document.getElementById('house').value,
-                    transport: document.getElementById('transport').value,
-                    busNumber: document.getElementById('transport').value === 'School Transport' ? document.getElementById('busNumber').value : '',
-                    activity: document.getElementById('activity').value
-                };
-
-                if (currentStudentId) {
-                    // Edit existing student
-                    const index = students.findIndex(s => s.id === currentStudentId);
-
-                    if (index !== -1) {
-                        students[index] = {
-                            ...students[index],
-                            ...formData
-                        };
-                    }
-                } else {
-                    // Add new student
-                    const newStudent = {
-                        id: generateId(),
-                        ...formData,
-                        class: currentTeacher.class
-                    };
-
-                    students.push(newStudent);
-                }
-
-                // Save to localStorage and update UI
-                saveStudentsData();
-                updateDashboardStats();
-                showStudentsList();
-            }
-
-            // Show Delete Modal
-            function showDeleteModal(id) {
-                currentStudentId = id;
-                deleteModal.style.display = 'flex';
-            }
-
-            // Hide Delete Modal
-            function hideDeleteModal() {
-                deleteModal.style.display = 'none';
-                currentStudentId = null;
-            }
-
-            // Handle Delete Confirmation
-            function handleDeleteConfirm() {
-                students = students.filter(s => s.id !== currentStudentId);
-                saveStudentsData();
-                updateDashboardStats();
-                renderStudentsList();
-                hideDeleteModal();
-            }
-
-            // Render Students List
-            function renderStudentsList(filterText = '') {
-                studentTableBody.innerHTML = '';
-                const filteredStudents = students.filter(student =>
-                    student.name.toLowerCase().includes(filterText.toLowerCase()) ||
-                    student.fatherName.toLowerCase().includes(filterText.toLowerCase()) ||
-                    student.whatsapp.includes(filterText) ||
-                    student.house.toLowerCase().includes(filterText.toLowerCase()) ||
-                    student.transport.toLowerCase().includes(filterText.toLowerCase()) ||
-                    (student.busNumber && student.busNumber.toLowerCase().includes(filterText.toLowerCase())) ||
-                    student.activity.toLowerCase().includes(filterText.toLowerCase())
-                );
-
-                if (filteredStudents.length === 0) {
-                    studentsTable.style.display = 'none';
-                    emptyState.style.display = 'block';
-                } else {
-                    studentsTable.style.display = 'table';
-                    emptyState.style.display = 'none';
-                    filteredStudents.forEach((student, index) => {
-                        const row = studentTableBody.insertRow();
-                        const srNoCell = row.insertCell();
-                        const nameCell = row.insertCell();
-                        const fatherNameCell = row.insertCell();
-                        const whatsappCell = row.insertCell();
-                        const houseCell = row.insertCell();
-                        const transportCell = row.insertCell();
-                        const busNoCell = row.insertCell();
-                        const activityCell = row.insertCell();
-                        const actionsCell = row.insertCell();
-
-                        srNoCell.textContent = index + 1;
-                        nameCell.textContent = student.name;
-                        fatherNameCell.textContent = student.fatherName;
-                        whatsappCell.textContent = student.whatsapp;
-                        houseCell.textContent = student.house;
-                        houseCell.classList.add('house-' + student.house.toLowerCase());
-                        transportCell.textContent = student.transport;
-                        busNoCell.textContent = student.busNumber || '-';
-                        activityCell.textContent = student.activity;
-
-                        actionsCell.classList.add('action-cell');
-                        const editButton = document.createElement('button');
-                        editButton.textContent = 'Edit';
-                        editButton.classList.add('edit-btn');
-                        editButton.addEventListener('click', () => showEditStudentForm(student.id));
-
-                        const deleteButton = document.createElement('button');
-                        deleteButton.textContent = 'Delete';
-                        deleteButton.classList.add('delete-btn');
-                        deleteButton.addEventListener('click', () => showDeleteModal(student.id));
-
-                        actionsCell.appendChild(editButton);
-                        actionsCell.appendChild(deleteButton);
-                    });
-                }
-            }
-
-            // Generate Unique ID
-            function generateId() {
-                return Math.random().toString(36).substring(2, 15);
-            }
-
-            // Save Students Data to Local Storage
-            function saveStudentsData() {
-                if (currentTeacher) {
-                    localStorage.setItem('students_' + currentTeacher.class.replace('-', '_'), JSON.stringify(students));
-                }
-            }
-
-            // Load Students Data from Local Storage
-            function loadStudentsData() {
-                if (currentTeacher) {
-                    const storedStudents = localStorage.getItem('students_' + currentTeacher.class.replace('-', '_'));
-                    if (storedStudents) {
-                        students = JSON.parse(storedStudents);
-                    } else {
-                        students = students.filter(student => student.class === currentTeacher.class);
-                    }
-                }
-            }
-
-            // Update Dashboard Stats
-            function updateDashboardStats() {
-                const currentClassStudents = students.filter(s => s.class === currentTeacher?.class);
-                totalStudentsEl.textContent = currentClassStudents.length;
-                schoolTransportEl.textContent = currentClassStudents.filter(s => s.transport === 'School Transport').length;
-                withParentsEl.textContent = currentClassStudents.filter(s => s.transport === 'With Parents').length;
-                selfEl.textContent = currentClassStudents.filter(s => s.transport === 'Self').length;
-            }
-
-            // Handle Search
-            function handleSearch() {
-                renderStudentsList(searchInput.value);
-            }
-
-            // Initialize the app
-            init();
-        });
-    </script>
-</body>
+         </div>
+      </div>
+      <script>
+         document.addEventListener('DOMContentLoaded', function() {
+             // Teacher accounts
+             const teachers = [
+                 { id: '1', password: '1', name: 'Abhilasha Joshi', class: '8-A2' },
+                 { id: 'T002', password: 'pass123', name: 'Mary Johnson', class: '6-A2' },
+                 { id: 'T003', password: 'pass123', name: 'Robert Brown', class: '7-B1' }
+             ];
+         
+             // DOM Elements
+             const loginScreen = document.getElementById('loginScreen');
+             const appContainer = document.getElementById('appContainer');
+             const loginBtn = document.getElementById('loginBtn');
+             const loginError = document.getElementById('loginError');
+             const logoutBtn = document.getElementById('logoutBtn');
+             const teacherNameEl = document.getElementById('teacherName');
+             const classNameEl = document.getElementById('className');
+         
+             const viewStudentsBtn = document.getElementById('viewStudentsBtn');
+             const addStudentBtn = document.getElementById('addStudentBtn');
+             const addTestBtn = document.getElementById('addTestBtn');
+             const studentList = document.getElementById('studentList');
+             const studentForm = document.getElementById('studentForm');
+             const addEditStudentForm = document.getElementById('addEditStudentForm');
+             const testForm = document.getElementById('testForm');
+             const addEditTestForm = document.getElementById('addEditTestForm');
+             const formTitle = document.getElementById('formTitle');
+             const cancelBtn = document.getElementById('cancelBtn');
+             const cancelTestBtn = document.getElementById('cancelTestBtn');
+             const emptyAddBtn = document.getElementById('emptyAddBtn');
+         
+             const studentTableBody = document.getElementById('studentTableBody');
+             const emptyState = document.getElementById('emptyState');
+             const studentsTable = document.getElementById('studentsTable');
+         
+             const deleteModal = document.getElementById('deleteModal');
+             const cancelDelete = document.getElementById('cancelDelete');
+             const confirmDelete = document.getElementById('confirmDelete');
+             const closeModal = document.querySelector('.close-modal');
+         
+             const transport = document.getElementById('transport');
+             const busNumberGroup = document.getElementById('busNumberGroup');
+             const busNumber = document.getElementById('busNumber');
+         
+             const totalStudentsEl = document.getElementById('totalStudents');
+             const schoolTransportEl = document.getElementById('schoolTransport');
+             const withParentsEl = document.getElementById('withParents');
+             const selfEl = document.getElementById('self');
+         
+             const searchInput = document.getElementById('searchInput');
+             const searchBtn = document.getElementById('searchBtn');
+         
+             // Current teacher and students data
+             let currentTeacher = null;
+             let students = [];
+             let currentStudentId = null;
+         
+             // Initialize the application
+             function init() {
+                 // Load students from localStorage if available
+                 loadStudentsData();
+                 updateDashboardStats();
+                 renderStudentsList();
+         
+                 // Event Listeners
+                 loginBtn.addEventListener('click', handleLogin);
+                 logoutBtn.addEventListener('click', handleLogout);
+         
+                 viewStudentsBtn.addEventListener('click', showStudentsList);
+                 addStudentBtn.addEventListener('click', showAddStudentForm);
+                 emptyAddBtn.addEventListener('click', showAddStudentForm);
+         
+                 addTestBtn.addEventListener('click', showAddTestForm);
+         
+                 cancelBtn.addEventListener('click', showStudentsList);
+                 cancelTestBtn.addEventListener('click', showStudentsList);
+                 addEditStudentForm.addEventListener('submit', handleSaveStudent);
+         
+                 cancelDelete.addEventListener('click', hideDeleteModal);
+                 closeModal.addEventListener('click', hideDeleteModal);
+                 confirmDelete.addEventListener('click', handleDeleteConfirm);
+         
+                 transport.addEventListener('change', toggleBusNumberField);
+         
+                 searchBtn.addEventListener('click', handleSearch);
+                 searchInput.addEventListener('keyup', function(e) {
+                     if (e.key === 'Enter') {
+                         handleSearch();
+                     }
+                 });
+             }
+         
+             // Login Handler
+             function handleLogin() {
+                 const teacherId = document.getElementById('teacherId').value;
+                 const password = document.getElementById('password').value;
+         
+                 const teacher = teachers.find(t => t.id === teacherId && t.password === password);
+         
+                 if (teacher) {
+                     currentTeacher = teacher;
+                     teacherNameEl.textContent = teacher.name;
+                     classNameEl.textContent = teacher.class;
+         
+                     loginScreen.style.display = 'none';
+                     appContainer.style.display = 'block';
+         
+                     // Load students data for this teacher
+                     loadStudentsData();
+                     updateDashboardStats();
+                     renderStudentsList();
+                 } else {
+                     loginError.style.display = 'block';
+                 }
+             }
+         
+             // Logout Handler
+             function handleLogout() {
+                 currentTeacher = null;
+                 localStorage.removeItem('students_' + classNameEl.textContent.replace('-', '_'));
+                 students = [];
+                 loginScreen.style.display = 'flex';
+                 appContainer.style.display = 'none';
+                 document.getElementById('teacherId').value = '';
+                 document.getElementById('password').value = '';
+                 loginError.style.display = 'none';
+             }
+         
+             // Show Students List
+             function showStudentsList() {
+                 viewStudentsBtn.classList.add('active');
+                 addStudentBtn.classList.remove('active');
+                 addTestBtn.classList.remove('active');
+                 studentList.style.display = 'block';
+                 studentForm.style.display = 'none';
+                 testForm.style.display = 'none';
+                 renderStudentsList();
+             }
+         
+             // Show Add Student Form
+             function showAddStudentForm() {
+                 viewStudentsBtn.classList.remove('active');
+                 addStudentBtn.classList.add('active');
+                 studentList.style.display = 'none';
+                 testForm.style.display = 'none';
+                 studentForm.style.display = 'block';
+                 formTitle.textContent = 'Add New Student';
+                 addEditStudentForm.reset();
+                 currentStudentId = null;
+                 toggleBusNumberField();
+             }
+         
+             // Show Add Student Form
+             function showAddTestForm() {
+                 viewStudentsBtn.classList.remove('active');
+                 addStudentBtn.classList.remove('active');
+                 addTestBtn.classList.add('active');
+                 studentList.style.display = 'none';
+                 studentForm.style.display = 'none';
+                 testForm.style.display = 'block';
+                 addEditTestForm.reset();
+             }
+         
+             // Show Edit Student Form
+             function showEditStudentForm(id) {
+                 const student = students.find(s => s.id === id);
+         
+                 if (!student) return;
+         
+                 viewStudentsBtn.classList.remove('active');
+                 addStudentBtn.classList.add('active');
+                 studentList.style.display = 'none';
+                 studentForm.style.display = 'block';
+                 formTitle.textContent = 'Edit Student';
+         
+                 // Fill form with student data
+                 document.getElementById('studentId').value = student.id;
+                 document.getElementById('studentName').value = student.name;
+                 document.getElementById('fatherName').value = student.fatherName;
+                 document.getElementById('whatsapp').value = student.whatsapp;
+                 document.getElementById('house').value = student.house;
+                 document.getElementById('transport').value = student.transport;
+                 document.getElementById('busNumber').value = student.busNumber || '';
+                 document.getElementById('activity').value = student.activity;
+         
+                 currentStudentId = student.id;
+                 toggleBusNumberField();
+             }
+         
+             // Toggle Bus Number Field
+             function toggleBusNumberField() {
+                 if (transport.value === 'School Transport') {
+                     busNumberGroup.style.display = 'block';
+                     busNumber.setAttribute('required', 'required');
+                 } else {
+                     busNumberGroup.style.display = 'none';
+                     busNumber.removeAttribute('required');
+                 }
+             }
+         
+             // Handle Save Student
+             function handleSaveStudent(e) {
+                 e.preventDefault();
+         
+                 const formData = {
+                     name: document.getElementById('studentName').value,
+                     fatherName: document.getElementById('fatherName').value,
+                     whatsapp: document.getElementById('whatsapp').value,
+                     house: document.getElementById('house').value,
+                     transport: document.getElementById('transport').value,
+                     busNumber: document.getElementById('transport').value === 'School Transport' ? document.getElementById('busNumber').value : '',
+                     activity: document.getElementById('activity').value
+                 };
+         
+                 if (currentStudentId) {
+                     // Edit existing student
+                     const index = students.findIndex(s => s.id === currentStudentId);
+         
+                     if (index !== -1) {
+                         students[index] = {
+                             ...students[index],
+                             ...formData
+                         };
+                     }
+                 } else {
+                     // Add new student
+                     const newStudent = {
+                         id: generateId(),
+                         ...formData,
+                         class: currentTeacher.class
+                     };
+         
+                     students.push(newStudent);
+                 }
+         
+                 // Save to localStorage and update UI
+                 saveStudentsData();
+                 updateDashboardStats();
+                 showStudentsList();
+             }
+         
+             // Show Delete Modal
+             function showDeleteModal(id) {
+                 currentStudentId = id;
+                 deleteModal.style.display = 'flex';
+             }
+         
+             // Hide Delete Modal
+             function hideDeleteModal() {
+                 deleteModal.style.display = 'none';
+                 currentStudentId = null;
+             }
+         
+             // Handle Delete Confirmation
+             function handleDeleteConfirm() {
+                 students = students.filter(s => s.id !== currentStudentId);
+                 saveStudentsData();
+                 updateDashboardStats();
+                 renderStudentsList();
+                 hideDeleteModal();
+             }
+         
+             // Render Students List
+             function renderStudentsList(filterText = '') {
+                 studentTableBody.innerHTML = '';
+                 const filteredStudents = students.filter(student =>
+                     student.name.toLowerCase().includes(filterText.toLowerCase()) ||
+                     student.fatherName.toLowerCase().includes(filterText.toLowerCase()) ||
+                     student.whatsapp.includes(filterText) ||
+                     student.house.toLowerCase().includes(filterText.toLowerCase()) ||
+                     student.transport.toLowerCase().includes(filterText.toLowerCase()) ||
+                     (student.busNumber && student.busNumber.toLowerCase().includes(filterText.toLowerCase())) ||
+                     student.activity.toLowerCase().includes(filterText.toLowerCase())
+                 );
+         
+                 if (filteredStudents.length === 0) {
+                     studentsTable.style.display = 'none';
+                     emptyState.style.display = 'block';
+                 } else {
+                     studentsTable.style.display = 'table';
+                     emptyState.style.display = 'none';
+                     filteredStudents.forEach((student, index) => {
+                         const row = studentTableBody.insertRow();
+                         const srNoCell = row.insertCell();
+                         const nameCell = row.insertCell();
+                         const fatherNameCell = row.insertCell();
+                         const whatsappCell = row.insertCell();
+                         const houseCell = row.insertCell();
+                         const transportCell = row.insertCell();
+                         const busNoCell = row.insertCell();
+                         const activityCell = row.insertCell();
+                         const actionsCell = row.insertCell();
+         
+                         srNoCell.textContent = index + 1;
+                         nameCell.textContent = student.name;
+                         fatherNameCell.textContent = student.fatherName;
+                         whatsappCell.textContent = student.whatsapp;
+                         houseCell.textContent = student.house;
+                         houseCell.classList.add('house-' + student.house.toLowerCase());
+                         transportCell.textContent = student.transport;
+                         busNoCell.textContent = student.busNumber || '-';
+                         activityCell.textContent = student.activity;
+         
+                         actionsCell.classList.add('action-cell');
+                         const editButton = document.createElement('button');
+                         editButton.textContent = 'Edit';
+                         editButton.classList.add('edit-btn');
+                         editButton.addEventListener('click', () => showEditStudentForm(student.id));
+         
+                         const deleteButton = document.createElement('button');
+                         deleteButton.textContent = 'Delete';
+                         deleteButton.classList.add('delete-btn');
+                         deleteButton.addEventListener('click', () => showDeleteModal(student.id));
+         
+                         actionsCell.appendChild(editButton);
+                         actionsCell.appendChild(deleteButton);
+                     });
+                 }
+             }
+         
+             // Generate Unique ID
+             function generateId() {
+                 return Math.random().toString(36).substring(2, 15);
+             }
+         
+             // Save Students Data to Local Storage
+             function saveStudentsData() {
+                 if (currentTeacher) {
+                     localStorage.setItem('students_' + currentTeacher.class.replace('-', '_'), JSON.stringify(students));
+                 }
+             }
+         
+             // Load Students Data from Local Storage
+             function loadStudentsData() {
+                 if (currentTeacher) {
+                     const storedStudents = localStorage.getItem('students_' + currentTeacher.class.replace('-', '_'));
+                     if (storedStudents) {
+                         students = JSON.parse(storedStudents);
+                     } else {
+                         students = students.filter(student => student.class === currentTeacher.class);
+                     }
+                 }
+             }
+         
+             // Update Dashboard Stats
+             function updateDashboardStats() {
+                 const currentClassStudents = students.filter(s => s.class === currentTeacher?.class);
+                 totalStudentsEl.textContent = currentClassStudents.length;
+                 schoolTransportEl.textContent = currentClassStudents.filter(s => s.transport === 'School Transport').length;
+                 withParentsEl.textContent = currentClassStudents.filter(s => s.transport === 'With Parents').length;
+                 selfEl.textContent = currentClassStudents.filter(s => s.transport === 'Self').length;
+             }
+         
+             // Handle Search
+             function handleSearch() {
+                 renderStudentsList(searchInput.value);
+             }
+         
+             // Initialize the app
+             init();
+         });
+      </script>
+   </body>
 </html>
