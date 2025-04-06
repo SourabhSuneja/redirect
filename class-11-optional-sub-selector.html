@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Find best subject for you (IP, PE, Psychology) with our quick quiz!">
+
+    <title>Class 11 Subject Selector</title>
+    <style>
+        :root {
+            --primary-color: #4a6fa5;
+            --secondary-color: #6b8cbe;
+            --accent-color: #ff6b6b;
+            --light-color: #f9f9f9;
+            --dark-color: #333;
+            --success-color: #4CAF50;
+            --ip-color: #3498db;
+            --pe-color: #e74c3c;
+            --psy-color: #9b59b6;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            padding: 30px 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .quiz-container {
+            background-color: white;
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .question-container {
+            margin-bottom: 25px;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease;
+        }
+
+        .question-container.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .question {
+            font-size: 1.1rem;
+            font-weight: 500;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .option {
+            padding: 12px 15px;
+            background-color: #f0f5ff;
+            border: 1px solid #d1e0ff;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .option:hover {
+            background-color: #e0ebff;
+            transform: translateY(-2px);
+        }
+
+        .option.selected {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        .progress-container {
+            margin: 20px 0;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .progress-text {
+            font-size: 0.9rem;
+            color: var(--secondary-color);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            flex-grow: 1;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .prev-btn {
+            background-color: #e0e0e0;
+            color: var(--dark-color);
+        }
+
+        .next-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        button:not(:disabled):hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-container {
+            display: none;
+            padding: 20px;
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .results-heading {
+            text-align: center;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .result-bars {
+            margin: 30px 0;
+        }
+
+        .result-bar-container {
+            margin-bottom: 20px;
+        }
+
+        .result-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .result-bar-bg {
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .result-bar {
+            height: 100%;
+            width: 0;
+            transition: width 1s ease;
+            border-radius: 10px;
+        }
+
+        .ip-bar {
+            background-color: var(--ip-color);
+        }
+
+        .pe-bar {
+            background-color: var(--pe-color);
+        }
+
+        .psy-bar {
+            background-color: var(--psy-color);
+        }
+
+        .result-details {
+            margin-top: 30px;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+        }
+
+        .result-recommendation {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+
+        .subject-descriptions {
+            margin-top: 30px;
+        }
+
+        .subject-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .subject-card h3 {
+            margin-bottom: 10px;
+            color: var(--primary-color);
+        }
+
+        .ip-card {
+            border-left-color: var(--ip-color);
+        }
+
+        .pe-card {
+            border-left-color: var(--pe-color);
+        }
+
+        .psy-card {
+            border-left-color: var(--psy-color);
+        }
+
+        .disclaimer {
+            margin-top: 30px;
+            padding: 15px;
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .restart-btn {
+            display: block;
+            margin: 30px auto 0;
+            background-color: var(--accent-color);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+            transition: all 0.2s ease;
+        }
+
+        .restart-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .quiz-container, .results-container {
+                padding: 20px 15px;
+            }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.5s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Class 11 Optional Subject Selector</h1>
+            <p class="subtitle">Find the subject that aligns with your interests and strengths</p>
+        </header>
+
+        <div class="quiz-container" id="quiz-container">
+            <div class="progress-container">
+                <div class="progress-text">
+                    <span id="current-question">1</span>/<span id="total-questions">15</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress" id="progress-bar"></div>
+                </div>
+            </div>
+
+            <div class="question-container active" id="question-container">
+                </div>
+
+            <div class="nav-buttons">
+                <button class="prev-btn" id="prev-btn" disabled>Previous</button>
+                <button class="next-btn" id="next-btn">Next</button>
+            </div>
+        </div>
+
+        <div class="results-container" id="results-container">
+            <h2 class="results-heading">Your Subject Compatibility Results</h2>
+
+            <div class="result-bars">
+                <div class="result-bar-container">
+                    <div class="result-label">
+                        <span>Informatics Practices (IP)</span>
+                        <span id="ip-score">0%</span>
+                    </div>
+                    <div class="result-bar-bg">
+                        <div class="result-bar ip-bar" id="ip-bar"></div>
+                    </div>
+                </div>
+
+                <div class="result-bar-container">
+                    <div class="result-label">
+                        <span>Physical Education (PE)</span>
+                        <span id="pe-score">0%</span>
+                    </div>
+                    <div class="result-bar-bg">
+                        <div class="result-bar pe-bar" id="pe-bar"></div>
+                    </div>
+                </div>
+
+                <div class="result-bar-container">
+                    <div class="result-label">
+                        <span>Psychology</span>
+                        <span id="psy-score">0%</span>
+                    </div>
+                    <div class="result-bar-bg">
+                        <div class="result-bar psy-bar" id="psy-bar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="result-details">
+                <p class="result-recommendation" id="recommendation">Based on your responses, you might be most suited for <span id="top-subject">Subject</span>.</p>
+                <p>Your answers indicate the following strengths and preferences:</p>
+                <ul id="strengths-list">
+                    </ul>
+            </div>
+
+            <div class="subject-descriptions">
+                <div class="subject-card ip-card">
+                    <h3>About Informatics Practices (IP)</h3>
+                    <p>IP focuses on Python programming and MySQL database, teaching students to develop applications and understand data management. It's ideal for students interested in computer science, IT, or data-related fields.</p>
+                </div>
+
+                <div class="subject-card pe-card">
+                    <h3>About Physical Education (PE)</h3>
+                    <p>PE covers sports, fitness, health, and wellness. It combines practical physical activities with theoretical knowledge about the human body, nutrition, and sports psychology. Great for those interested in sports, fitness training, or healthcare.</p>
+                </div>
+
+                <div class="subject-card psy-card">
+                    <h3>About Psychology</h3>
+                    <p>Psychology explores human behavior, mental processes, and emotional development. It introduces concepts of personality, learning, memory, and social influences. Ideal for students interested in understanding people, counseling, or human services.</p>
+                </div>
+            </div>
+
+            <div class="disclaimer">
+                <strong>Disclaimer:</strong> This assessment is designed to provide guidance only. The results are indicative based on your responses and should not be considered as a definitive recommendation. Please use your discretion to make the final decision. Consider consulting with teachers, parents, or school counselors before making your choice.
+            </div>
+
+            <button class="restart-btn" id="restart-btn">Take the Quiz Again</button>
+        </div>
+    </div>
+
+    <script>
+        // Quiz questions and options
+        const questions = [
+            {
+                question: "When faced with a problem, I prefer to...",
+                options: [
+                    { text: "Break it down into steps and solve it systematically", scores: { ip: 3, pe: 1, psy: 2 } },
+                    { text: "Discuss it with others to understand different perspectives", scores: { ip: 1, pe: 2, psy: 3 } },
+                    { text: "Find a practical, hands-on solution", scores: { ip: 2, pe: 3, psy: 1 } }
+                ]
+            },
+            {
+                question: "I learn best when...",
+                options: [
+                    { text: "I can see visual demonstrations and diagrams", scores: { ip: 2, pe: 2, psy: 2 } },
+                    { text: "I can practice and experience things myself", scores: { ip: 1, pe: 3, psy: 2 } },
+                    { text: "I can follow clear, logical instructions", scores: { ip: 3, pe: 1, psy: 1 } }
+                ]
+            },
+            {
+                question: "When learning something new, I get frustrated if...",
+                options: [
+                    { text: "There are too many rules to remember", scores: { ip: 1, pe: 3, psy: 2 } },
+                    { text: "I can't see the practical application", scores: { ip: 2, pe: 2, psy: 2 } },
+                    { text: "The instructions are unclear or inconsistent", scores: { ip: 3, pe: 1, psy: 2 } }
+                ]
+            },
+            {
+                question: "Which activity would you enjoy the most?",
+                options: [
+                    { text: "Creating a computer program or app", scores: { ip: 3, pe: 0, psy: 1 } },
+                    { text: "Playing or coaching a sport", scores: { ip: 0, pe: 3, psy: 1 } },
+                    { text: "Understanding why people behave the way they do", scores: { ip: 1, pe: 1, psy: 3 } }
+                ]
+            },
+            {
+                question: "How do you usually approach learning new skills?",
+                options: [
+                    { text: "Follow tutorials step-by-step until I master it", scores: { ip: 3, pe: 1, psy: 2 } },
+                    { text: "Practice repeatedly until my body remembers it", scores: { ip: 1, pe: 3, psy: 1 } },
+                    { text: "Understand the theory first, then apply it", scores: { ip: 2, pe: 1, psy: 3 } }
+                ]
+            },
+            {
+                question: "If you had an hour of free time, would you rather...",
+                options: [
+                    { text: "Solve puzzles or play strategy games", scores: { ip: 3, pe: 0, psy: 2 } },
+                    { text: "Exercise or play a sport", scores: { ip: 0, pe: 3, psy: 1 } },
+                    { text: "Read about human behavior or watch people-focused documentaries", scores: { ip: 1, pe: 1, psy: 3 } }
+                ]
+            },
+            {
+                question: "When working in a group, I usually...",
+                options: [
+                    { text: "Take charge and organize everyone", scores: { ip: 2, pe: 2, psy: 2 } },
+                    { text: "Help mediate conflicts and understand everyone's perspective", scores: { ip: 1, pe: 1, psy: 3 } },
+                    { text: "Focus on solving the technical aspects of the task", scores: { ip: 3, pe: 1, psy: 1 } }
+                ]
+            },
+            {
+                question: "I find it easy to...",
+                options: [
+                    { text: "Follow detailed instructions precisely", scores: { ip: 3, pe: 1, psy: 2 } },
+                    { text: "Understand and relate to other people's feelings", scores: { ip: 1, pe: 2, psy: 3 } },
+                    { text: "Learn physical movements and sports techniques", scores: { ip: 1, pe: 3, psy: 1 } }
+                ]
+            },
+            {
+                question: "When I'm stuck on a problem, I typically...",
+                options: [
+                    { text: "Try different approaches systematically", scores: { ip: 3, pe: 1, psy: 2 } },
+                    { text: "Take a break and do something physical", scores: { ip: 1, pe: 3, psy: 1 } },
+                    { text: "Talk it through with someone else", scores: { ip: 1, pe: 2, psy: 3 } }
+                ]
+            },
+            {
+                question: "Do you enjoy finding patterns and spotting inconsistencies?",
+                options: [
+                    { text: "Yes, I have a good eye for detail and patterns", scores: { ip: 3, pe: 1, psy: 2 } },
+                    { text: "Sometimes, but I prefer focusing on the bigger picture", scores: { ip: 2, pe: 2, psy: 2 } },
+                    { text: "Not really, I'm more interested in people than patterns", scores: { ip: 1, pe: 2, psy: 3 } }
+                ]
+            },
+            {
+                question: "How do you feel about learning new technical terms and concepts?",
+                options: [
+                    { text: "I enjoy learning precise technical vocabulary", scores: { ip: 3, pe: 1, psy: 2 } },
+                    { text: "I prefer practical knowledge over technical terms", scores: { ip: 1, pe: 3, psy: 1 } },
+                    { text: "I'm interested if it helps me understand people better", scores: { ip: 1, pe: 1, psy: 3 } }
+                ]
+            },
+            {
+                question: "What sounds most appealing as a future career?",
+                options: [
+                    { text: "Working with computers, software, or data", scores: { ip: 3, pe: 0, psy: 1 } },
+                    { text: "Sports, fitness, or physical therapy related fields", scores: { ip: 0, pe: 3, psy: 1 } },
+                    { text: "Counseling, teaching, or social services", scores: { ip: 1, pe: 1, psy: 3 } }
+                ]
+            },
+            {
+                question: "How do you react when you make mistakes?",
+                options: [
+                    { text: "Analyze what went wrong and fix it systematically", scores: { ip: 3, pe: 1, psy: 2 } },
+                    { text: "Practice more until I get it right", scores: { ip: 1, pe: 3, psy: 1 } },
+                    { text: "Reflect on how I feel about it and what I can learn", scores: { ip: 1, pe: 1, psy: 3 } }
+                ]
+            },
+            {
+                question: "When learning something complex, I prefer...",
+                options: [
+                    { text: "Clear step-by-step instructions to follow", scores: { ip: 3, pe: 1, psy: 2 } },
+                    { text: "Demonstrations and physical practice", scores: { ip: 1, pe: 3, psy: 1 } },
+                    { text: "Understanding why and how it applies to people", scores: { ip: 1, pe: 1, psy: 3 } }
+                ]
+            },
+            {
+                question: "Which statement describes you best?",
+                options: [
+                    { text: "I enjoy logic puzzles and figuring out how things work", scores: { ip: 3, pe: 1, psy: 2 } },
+                    { text: "I'm always active and enjoy physical challenges", scores: { ip: 0, pe: 3, psy: 1 } },
+                    { text: "I'm curious about why people think and act the way they do", scores: { ip: 1, pe: 1, psy: 3 } }
+                ]
+            }
+        ];
+
+        // DOM elements
+        const quizContainer = document.getElementById('quiz-container');
+        const resultsContainer = document.getElementById('results-container');
+        const questionContainer = document.getElementById('question-container');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const progressBar = document.getElementById('progress-bar');
+        const currentQuestionSpan = document.getElementById('current-question');
+        const totalQuestionsSpan = document.getElementById('total-questions');
+        const restartBtn = document.getElementById('restart-btn');
+
+        // Result elements
+        const ipBar = document.getElementById('ip-bar');
+        const peBar = document.getElementById('pe-bar');
+        const psyBar = document.getElementById('psy-bar');
+        const ipScore = document.getElementById('ip-score');
+        const peScore = document.getElementById('pe-score');
+        const psyScore = document.getElementById('psy-score');
+        const topSubject = document.getElementById('top-subject');
+        const strengthsList = document.getElementById('strengths-list');
+
+        // Quiz state
+        let currentQuestion = 0;
+        const answers = [];
+        const scores = { ip: 0, pe: 0, psy: 0 };
+
+        // Initialize quiz
+        function initQuiz() {
+            totalQuestionsSpan.textContent = questions.length;
+            showQuestion(currentQuestion);
+
+            // Event listeners
+            prevBtn.addEventListener('click', goToPreviousQuestion);
+            nextBtn.addEventListener('click', goToNextQuestion);
+            restartBtn.addEventListener('click', restartQuiz);
+        }
+
+        // Show current question
+        function showQuestion(index) {
+            questionContainer.innerHTML = '';
+            currentQuestionSpan.textContent = index + 1;
+
+            const questionElement = document.createElement('div');
+            questionElement.classList.add('question');
+            questionElement.textContent = questions[index].question;
+            questionContainer.appendChild(questionElement);
+
+            const optionsElement = document.createElement('div');
+            optionsElement.classList.add('options');
+
+            questions[index].options.forEach((option, optionIndex) => {
+                const optionElement = document.createElement('div');
+                optionElement.classList.add('option');
+                if (answers[index] === optionIndex) {
+                    optionElement.classList.add('selected');
+                }
+                optionElement.textContent = option.text;
+                optionElement.addEventListener('click', () => selectOption(optionIndex));
+                optionsElement.appendChild(optionElement);
+            });
+
+            questionContainer.appendChild(optionsElement);
+            updateProgressBar();
+            updateButtonState();
+
+            // Animate question
+            questionContainer.classList.remove('active');
+            setTimeout(() => {
+                questionContainer.classList.add('active');
+            }, 10);
+        }
+
+        // Select an option
+        function selectOption(optionIndex) {
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            options[optionIndex].classList.add('selected');
+
+            answers[currentQuestion] = optionIndex;
+            updateButtonState();
+        }
+
+        // Update progress bar
+        function updateProgressBar() {
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // Update button states
+        function updateButtonState() {
+            prevBtn.disabled = currentQuestion === 0;
+
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.textContent = 'See Results';
+                // Only enable if an option is selected
+                nextBtn.disabled = answers[currentQuestion] === undefined;
+            } else {
+                nextBtn.textContent = 'Next';
+                nextBtn.disabled = false;
+            }
+        }
+
+        // Go to next question or show results
+        function goToNextQuestion() {
+            if (answers[currentQuestion] === undefined) {
+                alert('Please select an option before proceeding.');
+                return;
+            }
+            if (currentQuestion === questions.length - 1) {
+                calculateResults();
+                showResults();
+            } else {
+                currentQuestion++;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        // Go to previous question
+        function goToPreviousQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        // Calculate quiz results
+        function calculateResults() {
+            // Reset scores
+            scores.ip = 0;
+            scores.pe = 0;
+            scores.psy = 0;
+
+            // Calculate raw scores
+            answers.forEach((answer, index) => {
+                const selectedOption = questions[index].options[answer];
+                scores.ip += selectedOption.scores.ip;
+                scores.pe += selectedOption.scores.pe;
+                scores.psy += selectedOption.scores.psy;
+            });
+
+            // Calculate max possible scores
+            const maxPossible = {
+                ip: questions.reduce((sum, q) => sum + Math.max(...q.options.map(o => o.scores.ip)), 0),
+                pe: questions.reduce((sum, q) => sum + Math.max(...q.options.map(o => o.scores.pe)), 0),
+                psy: questions.reduce((sum, q) => sum + Math.max(...q.options.map(o => o.scores.psy)), 0)
+            };
+
+            // Convert to percentages
+            scores.ipPercent = maxPossible.ip > 0 ? Math.round((scores.ip / maxPossible.ip) * 100) : 0;
+            scores.pePercent = maxPossible.pe > 0 ? Math.round((scores.pe / maxPossible.pe) * 100) : 0;
+            scores.psyPercent = maxPossible.psy > 0 ? Math.round((scores.psy / maxPossible.psy) * 100) : 0;
+        }
+
+        // Show results
+        function showResults() {
+            quizContainer.classList.add('hidden');
+            resultsContainer.classList.add('fade-in');
+            resultsContainer.style.display = 'block';
+
+            // Update score displays
+            ipScore.textContent = `${scores.ipPercent}%`;
+            peScore.textContent = `${scores.pePercent}%`;
+            psyScore.textContent = `${scores.psyPercent}%`;
+
+            // Animate progress bars (after a short delay)
+            setTimeout(() => {
+                ipBar.style.width = `${scores.ipPercent}%`;
+                peBar.style.width = `${scores.pePercent}%`;
+                psyBar.style.width = `${scores.psyPercent}%`;
+            }, 200);
+
+            // Determine top subject
+            const topScore = Math.max(scores.ipPercent, scores.pePercent, scores.psyPercent);
+            let topSubjectName = '';
+
+            if (topScore === scores.ipPercent) {
+                topSubjectName = 'Informatics Practices (IP)';
+            } else if (topScore === scores.pePercent) {
+                topSubjectName = 'Physical Education (PE)';
+            } else {
+                topSubjectName = 'Psychology';
+            }
+
+            topSubject.textContent = topSubjectName;
+
+            // Generate strengths list
+            generateStrengthsList();
+        }
+
+        // Generate list of strengths based on answers
+        function generateStrengthsList() {
+            strengthsList.innerHTML = '';
+
+            // Define potential strengths for each subject
+            const strengths = {
+                ip: [
+                    "Logical thinking and problem-solving skills.",
+                    "A keen eye for detail and precision.",
+                    "An interest in technology and how things work.",
+                    "The ability to follow instructions carefully.",
+                    "Enjoyment of patterns and systematic approaches."
+                ],
+                pe: [
+                    "A natural inclination towards physical activity.",
+                    "Enjoyment of sports and teamwork.",
+                    "A practical and hands-on learning style.",
+                    "Interest in health, fitness, and well-being.",
+                    "Good coordination and physical aptitude."
+                ],
+                psy: [
+                    "Curiosity about human behavior and motivations.",
+                    "Empathy and the ability to understand others' feelings.",
+                    "Strong communication and interpersonal skills.",
+                    "An interest in mental processes and emotions.",
+                    "A desire to help and understand people."
+                ]
+            };
+
+            const relevantStrengths = [];
+
+            answers.forEach((answerIndex, questionIndex) => {
+                const selectedOption = questions[questionIndex].options[answerIndex];
+                if (selectedOption && selectedOption.scores) {
+                    if (selectedOption.scores.ip > selectedOption.scores.pe && selectedOption.scores.ip > selectedOption.scores.psy) {
+                        // Indicate a leaning towards IP
+                        if (questionIndex % strengths.ip.length < strengths.ip.length) {
+                            if (!relevantStrengths.includes(strengths.ip[questionIndex % strengths.ip.length])) {
+                                relevantStrengths.push(strengths.ip[questionIndex % strengths.ip.length]);
+                            }
+                        }
+                    } else if (selectedOption.scores.pe > selectedOption.scores.ip && selectedOption.scores.pe > selectedOption.scores.psy) {
+                        // Indicate a leaning towards PE
+                        if (questionIndex % strengths.pe.length < strengths.pe.length) {
+                            if (!relevantStrengths.includes(strengths.pe[questionIndex % strengths.pe.length])) {
+                                relevantStrengths.push(strengths.pe[questionIndex % strengths.pe.length]);
+                            }
+                        }
+                    } else if (selectedOption.scores.psy > selectedOption.scores.ip && selectedOption.scores.psy > selectedOption.scores.pe) {
+                        // Indicate a leaning towards Psychology
+                        if (questionIndex % strengths.psy.length < strengths.psy.length) {
+                            if (!relevantStrengths.includes(strengths.psy[questionIndex % strengths.psy.length])) {
+                                relevantStrengths.push(strengths.psy[questionIndex % strengths.psy.length]);
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Display up to 5 relevant strengths
+            relevantStrengths.slice(0, 5).forEach(strength => {
+                const li = document.createElement('li');
+                li.textContent = strength;
+                strengthsList.appendChild(li);
+            });
+
+            if (relevantStrengths.length === 0) {
+                const li = document.createElement('li');
+                li.textContent = "Your responses indicate a balanced interest across subjects.";
+                strengthsList.appendChild(li);
+            }
+        }
+
+        // Restart quiz
+        function restartQuiz() {
+            currentQuestion = 0;
+            answers.length = 0;
+            scores.ip = 0;
+            scores.pe = 0;
+            scores.psy = 0;
+            quizContainer.classList.remove('hidden');
+            resultsContainer.classList.remove('fade-in');
+            resultsContainer.style.display = 'none';
+            nextBtn.textContent = 'Next';
+            showQuestion(currentQuestion);
+        }
+
+        // Initialize the quiz when the page loads
+        initQuiz();
+    </script>
+</body>
+</html>
