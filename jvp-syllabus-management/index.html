@@ -792,11 +792,19 @@
          
          return syllabusObj;
          }
+
+         // function to handle live updates
+         function handleLiveUpdate(payload) {
+            reconstructSyllabusObj().then((syllabusObj) => {
+                syllabusData = syllabusObj;
+             });
+         }
                 
          // Handle page load - show login screen initially
          window.onload = function() {
              loginScreen.style.display = 'block';
              dashboard.style.display = 'none';
+             const subscription = subscribeToTable('syllabus', handleLiveUpdate);
              reconstructSyllabusObj().then((syllabusObj) => {
                 syllabusData = syllabusObj;
              });
