@@ -810,9 +810,9 @@
     subject,
     syllabus_text
   };
-});
+}); alert(JSON.stringify(syllabusArray));
 
-upsertData("syllabus", syllabusArray, ["class", "exam", "subject"])
+window.upsertData("syllabus", syllabusArray, ["class", "exam", "subject"])
   .then(result => {
     if (result) {
       console.log("Upsert successful:", result);
