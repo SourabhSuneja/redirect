@@ -839,6 +839,10 @@ window.upsertData("syllabus", syllabusArray, ["class", "exam", "subject"])
             type: 'alert'
          });
       showAlert(syllabusAlert, 'Syllabus saved successfully!', 'success');
+      reconstructSyllabusObj().then((syllabusObj) => {
+      syllabusData = syllabusObj;
+});
+
     } else {
       showDialog({
             title: 'Error',
@@ -848,6 +852,25 @@ window.upsertData("syllabus", syllabusArray, ["class", "exam", "subject"])
     }
   });
         }
+
+        async function reconstructSyllabusObj() {
+  const syllabusData = await selectData("syllabus");
+
+  if (!syllabusData) {
+    console.error("No syllabus data found.");
+    return {};
+  }
+
+  const syllabusObj = {};
+
+  for (const row of syllabusData) {
+    const key = `${row.class}_${row.exam}_${row.subject}`;
+    syllabusObj[key] = row.syllabus_text;
+  }
+
+  return syllabusObj;
+}
+
 
         // Handle page load - show login screen initially
         window.onload = function() {
