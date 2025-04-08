@@ -797,6 +797,7 @@
          function handleLiveUpdate(payload) {
             reconstructSyllabusObj().then((syllabusObj) => {
                 syllabusData = syllabusObj;
+                loadSyllabusView();
              });
          }
                 
