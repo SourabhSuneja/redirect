@@ -1,13 +1,24 @@
 const loadingPhrases = [
-   "Crowning the champions...",
-   "Polishing the trophies...",
-   "Celebrating the winners...",
-   "Crafting the glory...",
-   "Putting up the cheers...",
-   "Warming up the applause...",
-   "Crafting the victory moment...",
-   "Bringing the spotlight...",
-   "Adding sparkles to the leaderboard..."
+  "Dusting off the textbooks...",
+  "Marking lesson boundaries...",
+  "Chalking out the chapters...",
+  "Stacking up study goals...",
+  "Unrolling the academic scroll...",
+  "Whispering secrets to the timetable...",
+  "Filing the knowledge cabinets...",
+  "Packing bags with fresh chapters...",
+  "Assembling learning adventures...",
+  "Highlighting the important stuff...",
+  "Spinning the syllabus wheel...",
+  "Planting ideas for young minds...",
+  "Mapping the journey to excellence...",
+  "Setting the syllabus compass...",
+  "Curating a season of studies...",
+  "Turning pages before they’re opened...",
+  "Hanging subjects on the notice board...",
+  "Warming up the curriculum engines...",
+  "Drawing the blueprint of brilliance...",
+  "Arranging the subjects in perfect harmony..."
 ];
 
 // Function to select a random phrase
