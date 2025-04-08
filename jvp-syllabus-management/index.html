@@ -552,7 +552,7 @@
          const STORAGE_KEY = 'jamna_vidyapeeth_syllabus_data';
          
          // Initialize application state
-         let syllabusData = loadSyllabusData() || {};
+         let syllabusData = {};
          
          // DOM Elements
          const loginScreen = document.getElementById('login-screen');
@@ -740,13 +740,8 @@
              }, 3000);
          }
          
-         function loadSyllabusData() {
-             const data = localStorage.getItem(STORAGE_KEY);
-             return data ? JSON.parse(data) : null;
-         }
-         
          function saveSyllabusData() {
-             const syllabusArray = Object.entries(syllabusData).map(([key, syllabus_text]) => {
+         const syllabusArray = Object.entries(syllabusData).map(([key, syllabus_text]) => {
          const [classNum, exam, subject] = key.split('_');
          return {
          class: parseInt(classNum),
@@ -801,6 +796,9 @@
          window.onload = function() {
              loginScreen.style.display = 'block';
              dashboard.style.display = 'none';
+             reconstructSyllabusObj().then((syllabusObj) => {
+                syllabusData = syllabusObj;
+             });
          };
       </script>
    </body>
