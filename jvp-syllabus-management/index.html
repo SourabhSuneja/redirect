@@ -540,9 +540,16 @@
       <footer>Crafted by Sourabh Sir</footer>
       <script>
          // Global variables
+         // Global credentials for admin and teacher
          const CREDENTIALS = {
-             username: '1',
-             password: '1'
+             admin: {
+                 username: 'admin',
+                 password: 'sun123'
+             },
+             teacher: {
+                 username: 'jvp',
+                 password: 'jvp123'
+             }
          };
          
          const SUBJECTS = [
@@ -597,17 +604,38 @@
          
          // Functions
          function handleLogin() {
-             const username = document.getElementById('username').value;
-             const password = document.getElementById('password').value;
+         const username = document.getElementById('username').value;
+         const password = document.getElementById('password').value;
          
-             if (username === CREDENTIALS.username && password === CREDENTIALS.password) {
-                 loginScreen.style.display = 'none';
-                 dashboard.style.display = 'block';
-                 loginAlert.style.display = 'none';
-             } else {
-                 loginAlert.textContent = 'Invalid username or password. Please try again.';
-                 loginAlert.style.display = 'block';
-             }
+         const loginScreen = document.getElementById('loginScreen');
+         const dashboard = document.getElementById('dashboard');
+         const loginAlert = document.getElementById('loginAlert');
+         const createSyllabusPill = document.getElementById('createSyllabusPill');
+         
+         if (username === CREDENTIALS.admin.username && password === CREDENTIALS.admin.password) {
+         loginScreen.style.display = 'none';
+         dashboard.style.display = 'block';
+         loginAlert.style.display = 'none';
+         
+         // Hide the element for admin
+         if (createSyllabusPill) {
+            createSyllabusPill.style.display = 'none';
+         }
+         
+         } else if (username === CREDENTIALS.teacher.username && password === CREDENTIALS.teacher.password) {
+         loginScreen.style.display = 'none';
+         dashboard.style.display = 'block';
+         loginAlert.style.display = 'none';
+         
+         // Teachers can see the createSyllabusPill
+         if (createSyllabusPill) {
+            createSyllabusPill.style.display = 'block';
+         }
+         
+         } else {
+         loginAlert.textContent = 'Invalid username or password. Please try again.';
+         loginAlert.style.display = 'block';
+         }
          }
          
          function handleLogout() {
@@ -792,7 +820,7 @@
          
          return syllabusObj;
          }
-
+         
          // function to handle live updates
          function handleLiveUpdate(payload) {
             reconstructSyllabusObj().then((syllabusObj) => {
