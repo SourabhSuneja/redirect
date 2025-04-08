@@ -608,6 +608,10 @@
          const username = document.getElementById('username').value;
          const password = document.getElementById('password').value;
          const createSyllabusPill = document.getElementById('createSyllabusPill');
+
+         // Hide all tabs
+         createSyllabusTab.style.display = 'none';
+         viewSyllabusTab.style.display = 'none';
          
          if (username === CREDENTIALS.admin.username && password === CREDENTIALS.admin.password) {
          loginScreen.style.display = 'none';
