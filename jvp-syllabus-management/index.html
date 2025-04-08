@@ -724,7 +724,7 @@
             const key = `${classId}_${exam}_${subject}`;
             syllabusData[key] = content;
 
-            // Save to local storage
+            // Save to server
             saveSyllabusData();
 
             showAlert(syllabusAlert, 'Syllabus saved successfully!', 'success');
@@ -802,7 +802,24 @@
         }
 
         function saveSyllabusData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(syllabusData));
+            const syllabusArray = Object.entries(syllabusData).map(([key, syllabus_text]) => {
+  const [classNum, exam, subject] = key.split('_');
+  return {
+    class: parseInt(classNum),
+    exam,
+    subject,
+    syllabus_text
+  };
+});
+
+upsertData("syllabus", syllabusArray, ["class", "exam", "subject"])
+  .then(result => {
+    if (result) {
+      console.log("Upsert successful:", result);
+    } else {
+      console.log("No data returned or error occurred.");
+    }
+  });
         }
 
         // Handle page load - show login screen initially
