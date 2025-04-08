@@ -744,8 +744,8 @@
 
             // Save to server
             saveSyllabusData();
+            showProcessingDialog();
 
-            showAlert(syllabusAlert, 'Syllabus saved successfully!', 'success');
         }
 
         function loadSyllabusView() {
@@ -833,9 +833,18 @@
 window.upsertData("syllabus", syllabusArray, ["class", "exam", "subject"])
   .then(result => {
     if (result) {
-      console.log("Upsert successful:", result);
+      showDialog({
+            title: 'Success',
+            message: 'Syllabus updated successfully!',
+            type: 'alert'
+         });
+      showAlert(syllabusAlert, 'Syllabus saved successfully!', 'success');
     } else {
-      console.log("No data returned or error occurred.");
+      showDialog({
+            title: 'Error',
+            message: 'Error updating syllabus!',
+            type: 'alert'
+         });
     }
   });
         }
