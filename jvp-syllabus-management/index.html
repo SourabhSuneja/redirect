@@ -753,7 +753,7 @@
 }
 
          async function deleteSyllabusData(subject, classId, exam, key) {
-               const result = await deleteRow('syllabus2', ['class', 'exam', 'subject'], [classId, exam, subject]);
+               const result = await deleteRow('syllabus2222', ['class', 'exam', 'subject'], [classId, exam, subject]);
                if(result) {
                   // Delete from local data structure also
                   delete syllabusData[key];
