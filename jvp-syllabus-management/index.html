@@ -743,11 +743,8 @@
              // Show processing dialog
              showProcessingDialog();
 
-             // Delete from data structure
-             delete syllabusData[key];
-
              // Delete from server
-             deleteSyllabusData(subject, classId, exam);
+             deleteSyllabusData(subject, classId, exam, key);
 
              // Clear the content field
              syllabusContent.value = '';
@@ -755,8 +752,23 @@
              showAlert(syllabusAlert, 'Syllabus deleted successfully.', 'success');
 }
 
-         function deleteSyllabusData(subject, classId, exam) {
-               
+         async function deleteSyllabusData(subject, classId, exam, key) {
+               const result = await deleteRow('syllabus2', ['class', 'exam', 'subject'], [classId, exam, subject]);
+               if(result) {
+                  // Delete from local data structure also
+                  delete syllabusData[key];
+                  showDialog({
+                   title: 'Success',
+                   message: 'Syllabus deleted successfully!',
+                   type: 'alert'
+                   });
+               } else {
+                  showDialog({
+                   title: 'Error',
+                   message: 'Error deleting the syllabus!',
+                   type: 'alert'
+                   });
+               }
          }
          
          function loadSyllabusView() {
