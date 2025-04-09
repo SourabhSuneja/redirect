@@ -467,6 +467,14 @@
                   </span>
                   </button>
                </div>
+               <div class="form-group">
+                 <button id="delete-syllabus-btn" class="btn btn-block" style="background-color: #e74c3c; color: white;">
+                   <span class="icon-text">
+                     <i class="material-icons">delete</i>
+                     <span>Delete Syllabus</span>
+                   </span>
+                 </button>
+               </div>
             </div>
             <!-- View Syllabus Tab -->
             <div id="view-syllabus" class="syllabus-viewer card" style="display: none;">
@@ -579,6 +587,7 @@
          const examSelect = document.getElementById('exam-select');
          const syllabusContent = document.getElementById('syllabus-content');
          const saveSyllabusBtn = document.getElementById('save-syllabus-btn');
+         const deleteSyllabusBtn = document.getElementById('delete-syllabus-btn');
          const syllabusAlert = document.getElementById('syllabus-alert');
          const viewClassSelect = document.getElementById('view-class-select');
          const viewExamSelect = document.getElementById('view-exam-select');
@@ -596,6 +605,7 @@
              pill.addEventListener('click', () => handleTabSwitch(pill.dataset.tab));
          });
          saveSyllabusBtn.addEventListener('click', saveSyllabus);
+         deleteSyllabusBtn.addEventListener('click', deleteSyllabus);
          loadSyllabusBtn.addEventListener('click', loadSyllabusView);
          printSyllabusBtn.addEventListener('click', printSyllabus);
          
