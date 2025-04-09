@@ -746,8 +746,8 @@
              // Delete from data structure
              delete syllabusData[key];
 
-             // Save updated data to server
-             //saveSyllabusData();
+             // Delete from server
+             deleteSyllabusData(subject, classId, exam);
 
              // Clear the content field
              syllabusContent.value = '';
@@ -755,6 +755,9 @@
              showAlert(syllabusAlert, 'Syllabus deleted successfully.', 'success');
 }
 
+         function deleteSyllabusData(subject, classId, exam) {
+               
+         }
          
          function loadSyllabusView() {
              const classId = viewClassSelect.value;
