@@ -267,6 +267,43 @@
          overflow-x: scroll;
          }
          }
+         .teacher-allocation-container {
+         overflow-x: auto;
+         margin-top: 20px;
+         }
+         #teacher-allocation-table th, #teacher-allocation-table td {
+         padding: 10px 15px;
+         text-align: left;
+         font-size: 0.9rem;
+         }
+         #teacher-allocation-table th:nth-child(2),
+         #teacher-allocation-table td:nth-child(2) {
+         min-width: 200px;
+         }
+         .teacher-class-count {
+         display: inline-block;
+         background-color: var(--primary-light);
+         color: var(--primary-dark);
+         border-radius: 4px;
+         padding: 2px 6px;
+         margin: 2px;
+         font-size: 0.8rem;
+         white-space: nowrap;
+         }
+         /* For highlighting the row of the currently selected teacher */
+         #teacher-allocation-table tr.selected {
+         background-color: var(--primary-light);
+         }
+         @media (max-width: 768px) {
+         #teacher-allocation-table th, #teacher-allocation-table td {
+         padding: 8px 10px;
+         font-size: 0.85rem;
+         }
+         .teacher-class-count {
+         padding: 2px 4px;
+         font-size: 0.75rem;
+         }
+         }
       </style>
    </head>
    <body>
@@ -397,6 +434,20 @@
                <!-- Table content will be generated dynamically -->
             </table>
          </div>
+         <!-- Teacher Allocation Display -->
+         <div class="card">
+            <h2><span class="material-icons">person</span> Teacher Allocations</h2>
+            <div class="teacher-allocation-container">
+               <table class="timetable" id="teacher-allocation-table">
+                  <!-- Table content will be generated dynamically -->
+                  <tr>
+                     <th>Teacher</th>
+                     <th>Classes</th>
+                     <th>Total Periods</th>
+                  </tr>
+               </table>
+            </div>
+         </div>
       </div>
       <div id="notification" class="notification">
          <span class="material-icons">info</span>
@@ -416,101 +467,101 @@
          const periods = Array.from({length: 8}, (_, i) => i + 1);
          
          const teachers = [
-  "ACTIVITY TEACHER 1",
-  "ACTIVITY TEACHER 2",
-  "ACTIVITY TEACHER 3",
-  "ACTIVITY TEACHER 4",
-  "ACTIVITY TEACHER 5",
-  "ABHILASHA JOSHI",
-  "AJAY TAILOR",
-  "AKSHIMA SINGH",
-  "AMAN PAREEK",
-  "ANITA PAREEK",
-  "ANJU KUMARI",
-  "ANJU VERMA",
-  "ANJU SAINI",
-  "ANSITA LOHIYA",
-  "ARTI AHUJA",
-  "BHARAT SINGH",
-  "BRIJMOHAN SHARMA",
-  "CHANDNI KUMAWAT",
-  "CHANDRA SHEKHAR SHARMA",
-  "DEEPA PANCHAL",
-  "DEEPA SHARMA",
-  "DEVKINANDAN TIWARI",
-  "DIKSHITA JAIN",
-  "DRISHTI VASHISHT",
-  "GOVERDHAN SHARMA",
-  "HIMANSHI KUMAWAT",
-  "INDRESH KUMAR KAPURPARA",
-  "INDUMATI SHARMA",
-  "JAGRAM JAT",
-  "JHABAR SINGH JAT",
-  "JYOTI LALWANI",
-  "JYOTI SAINI",
-  "JYOTI SAINI PRT",
-  "JYOTI SHARMA",
-  "KAJAL JHA",
-  "KONIKA CHOUDHARY",
-  "KRATIKESHWAR PATHAK",
-  "KRISHAN SINGH",
-  "MAHAVEER BHATI",
-  "MANALI RAJORIYA",
-  "MANGAL SUIWAL",
-  "MANISHA KANWAR",
-  "MANJU JHOPAT",
-  "NAINIKA SHARMA",
-  "NAKUL SANWLODIA",
-  "NARENDRA SINGH",
-  "NEETA SABOO",
-  "NEHA GOYAL",
-  "NIDHI BHATT",
-  "NIKITA JAIN",
-  "PHOOL CHAND JAT",
-  "POONAM SHARMA",
-  "PRASHANT SHARMA",
-  "PREETU PAREEK",
-  "PUNAM SHARMA",
-  "PURVI SAINI",
-  "RAVI",
-  "RAVINDER SINGH",
-  "REKHA PAREEK",
-  "REKHA SHARMA",
-  "RITU DAS",
-  "SANJU SHEKHAWAT",
-  "SAPNA SAINI",
-  "SAROJ JANGID",
-  "SHAILESH CHOUDHARY",
-  "SHAJU MATHEW",
-  "SHANU SHARMA",
-  "SHARMILA CHARAN",
-  "SHEFALI PAREEK",
-  "SHILPA SINGH",
-  "SHIV CHAND VERMA",
-  "SHRADDHA VERMA",
-  "SHUBHAM KUMAR SHARMA",
-  "SITA KUMAWAT",
-  "SNEHA SHARMA",
-  "SNEHLATA SHARMA",
-  "SNIGDHA DAS",
-  "SONIYA AGARWAL",
-  "SOURABH SUNEJA",
-  "SUBHASH SHARMA",
-  "SUMAN MAAN",
-  "SUMITRA CHOUDHARY",
-  "SUNITA SAINI",
-  "SUNITI",
-  "SURESH KUMAR KUMAWAT",
-  "VIKASH JAIN",
-  "VIKRAM SINGH",
-  "VISHAL GOYAL",
-  "YOGESH GURJAR",
-  "YOGESHWARI SHARMA",
-  "ASHISH YADAV",
-  "ANJALI TOMAR",
-  "USHA SHARMA"
-];
-
+         "ACTIVITY TEACHER 1",
+         "ACTIVITY TEACHER 2",
+         "ACTIVITY TEACHER 3",
+         "ACTIVITY TEACHER 4",
+         "ACTIVITY TEACHER 5",
+         "ABHILASHA JOSHI",
+         "AJAY TAILOR",
+         "AKSHIMA SINGH",
+         "AMAN PAREEK",
+         "ANITA PAREEK",
+         "ANJU KUMARI",
+         "ANJU VERMA",
+         "ANJU SAINI",
+         "ANSITA LOHIYA",
+         "ARTI AHUJA",
+         "BHARAT SINGH",
+         "BRIJMOHAN SHARMA",
+         "CHANDNI KUMAWAT",
+         "CHANDRA SHEKHAR SHARMA",
+         "DEEPA PANCHAL",
+         "DEEPA SHARMA",
+         "DEVKINANDAN TIWARI",
+         "DIKSHITA JAIN",
+         "DRISHTI VASHISHT",
+         "GOVERDHAN SHARMA",
+         "HIMANSHI KUMAWAT",
+         "INDRESH KUMAR KAPURPARA",
+         "INDUMATI SHARMA",
+         "JAGRAM JAT",
+         "JHABAR SINGH JAT",
+         "JYOTI LALWANI",
+         "JYOTI SAINI",
+         "JYOTI SAINI PRT",
+         "JYOTI SHARMA",
+         "KAJAL JHA",
+         "KONIKA CHOUDHARY",
+         "KRATIKESHWAR PATHAK",
+         "KRISHAN SINGH",
+         "MAHAVEER BHATI",
+         "MANALI RAJORIYA",
+         "MANGAL SUIWAL",
+         "MANISHA KANWAR",
+         "MANJU JHOPAT",
+         "NAINIKA SHARMA",
+         "NAKUL SANWLODIA",
+         "NARENDRA SINGH",
+         "NEETA SABOO",
+         "NEHA GOYAL",
+         "NIDHI BHATT",
+         "NIKITA JAIN",
+         "PHOOL CHAND JAT",
+         "POONAM SHARMA",
+         "PRASHANT SHARMA",
+         "PREETU PAREEK",
+         "PUNAM SHARMA",
+         "PURVI SAINI",
+         "RAVI",
+         "RAVINDER SINGH",
+         "REKHA PAREEK",
+         "REKHA SHARMA",
+         "RITU DAS",
+         "SANJU SHEKHAWAT",
+         "SAPNA SAINI",
+         "SAROJ JANGID",
+         "SHAILESH CHOUDHARY",
+         "SHAJU MATHEW",
+         "SHANU SHARMA",
+         "SHARMILA CHARAN",
+         "SHEFALI PAREEK",
+         "SHILPA SINGH",
+         "SHIV CHAND VERMA",
+         "SHRADDHA VERMA",
+         "SHUBHAM KUMAR SHARMA",
+         "SITA KUMAWAT",
+         "SNEHA SHARMA",
+         "SNEHLATA SHARMA",
+         "SNIGDHA DAS",
+         "SONIYA AGARWAL",
+         "SOURABH SUNEJA",
+         "SUBHASH SHARMA",
+         "SUMAN MAAN",
+         "SUMITRA CHOUDHARY",
+         "SUNITA SAINI",
+         "SUNITI",
+         "SURESH KUMAR KUMAWAT",
+         "VIKASH JAIN",
+         "VIKRAM SINGH",
+         "VISHAL GOYAL",
+         "YOGESH GURJAR",
+         "YOGESHWARI SHARMA",
+         "ASHISH YADAV",
+         "ANJALI TOMAR",
+         "USHA SHARMA"
+         ];
+         
          
          let timetableData = {};
          
@@ -551,6 +602,9 @@
              
              // Generate initial timetable
              generateTimetable();
+         
+             // Set up teacher allocation interaction
+             setupTeacherAllocationInteraction();
              
              // Event listeners
              scheduleForm.addEventListener("submit", handleScheduleSubmit);
@@ -618,6 +672,9 @@
          
          // Show success notification
          showNotification("Period successfully scheduled", "success");
+         
+         // Generate teacher allocation table
+         generateTeacherAllocationTable();
          }
          
          // Check if there's a teacher clash
@@ -667,6 +724,9 @@
          } else {
          showNotification("No scheduled period found to remove", "error");
          }
+         
+         // Generate teacher allocation table
+         generateTeacherAllocationTable();
          }
          
          // Handle view type change
@@ -696,6 +756,8 @@
                  generateTimetable();
                  showNotification("All timetable data has been reset", "success");
              }
+            // Generate teacher allocation table
+            generateTeacherAllocationTable();
          }
          
          // Generate the timetable
@@ -807,6 +869,9 @@
          
          // Update the table
          timetableElement.innerHTML = tableHTML;
+         
+         // Generate teacher allocation table
+         generateTeacherAllocationTable();
          }
          
          // Show notification
@@ -826,11 +891,120 @@
              if (savedData) {
                  timetableData = JSON.parse(savedData);
              }
+         // Generate teacher allocation table
+         generateTeacherAllocationTable();
          }
          
          // Save data to localStorage
          function saveTimetableData() {
              localStorage.setItem("schoolTimetableData", JSON.stringify(timetableData));
+         }
+         
+         // Function to generate teacher allocation table
+         function generateTeacherAllocationTable() {
+         const teacherAllocationTable = document.getElementById("teacher-allocation-table");
+         
+         // Calculate teacher allocations
+         const teacherAllocations = calculateTeacherAllocations();
+         
+         // Sort teachers by total number of periods (descending)
+         const sortedTeachers = Object.keys(teacherAllocations).sort((a, b) => {
+         return teacherAllocations[b].totalPeriods - teacherAllocations[a].totalPeriods;
+         });
+         
+         // Create table header
+         let tableHTML = "<tr><th>Teacher</th><th>Classes</th><th>Total Periods</th></tr>";
+         
+         // Add rows for each teacher
+         sortedTeachers.forEach(teacher => {
+         const allocation = teacherAllocations[teacher];
+         const selectedClass = viewType.value === "teacher" && viewTeacher.value === teacher ? "selected" : "";
+         
+         // Skip teachers with 0 periods
+         if (allocation.totalPeriods === 0) return;
+         
+         tableHTML += `<tr class="${selectedClass}">
+         <td>${teacher}</td>
+         <td>`;
+         
+         // Add class allocations
+         Object.keys(allocation.classes).sort().forEach(className => {
+         tableHTML += `<span class="teacher-class-count">${className}: ${allocation.classes[className]}</span>`;
+         });
+         
+         tableHTML += `</td>
+         <td>${allocation.totalPeriods}</td>
+         </tr>`;
+         });
+         
+         // Update the table
+         teacherAllocationTable.innerHTML = tableHTML;
+         }
+         
+         // Calculate teacher allocations from timetable data
+         function calculateTeacherAllocations() {
+         const allocations = {};
+         
+         // Initialize allocations for all teachers
+         teachers.forEach(teacher => {
+         allocations[teacher] = {
+         classes: {},
+         totalPeriods: 0
+         };
+         });
+         
+         // Go through timetable data and count periods for each teacher
+         for (const className in timetableData) {
+         for (const period in timetableData[className]) {
+         for (const weekday in timetableData[className][period]) {
+         const teacherName = timetableData[className][period][weekday].teacher;
+         
+         // Make sure the teacher exists in our allocations
+         if (!allocations[teacherName]) {
+          allocations[teacherName] = {
+            classes: {},
+            totalPeriods: 0
+          };
+         }
+         
+         // Increment class-specific count
+         if (!allocations[teacherName].classes[className]) {
+          allocations[teacherName].classes[className] = 1;
+         } else {
+          allocations[teacherName].classes[className]++;
+         }
+         
+         // Increment total
+         allocations[teacherName].totalPeriods++;
+         }
+         }
+         }
+         
+         return allocations;
+         }
+         
+         // Add teacher allocation selection functionality
+         function setupTeacherAllocationInteraction() {
+         const teacherAllocationTable = document.getElementById("teacher-allocation-table");
+         
+         teacherAllocationTable.addEventListener("click", (e) => {
+         // Find closest table row
+         const row = e.target.closest("tr");
+         if (!row || !row.cells || !row.cells[0]) return;
+         
+         // Get teacher name from first cell
+         const teacherName = row.cells[0].textContent;
+         if (!teacherName || teacherName === "Teacher") return;
+         
+         // Switch view to teacher view
+         viewType.value = "teacher";
+         viewTeacherContainer.style.display = "block";
+         viewClassContainer.style.display = "none";
+         viewTeacher.value = teacherName;
+         
+         // Update timetable
+         generateTimetable();
+         });
          }
          
          // Initialize when the DOM is loaded
