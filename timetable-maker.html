@@ -1,739 +1,743 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Easily create and manage school timetables with our smart, user-friendly Timetable Generator app. Perfect for teachers and administrators.">
-    <title>School Timetable Generator</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <style>
-        :root {
-            --primary-color: #3f51b5;
-            --primary-dark: #303f9f;
-            --primary-light: #c5cae9;
-            --accent-color: #ff4081;
-            --text-primary: #212121;
-            --text-secondary: #757575;
-            --divider-color: #bdbdbd;
-            --background: #f5f5f5;
-            --white: #ffffff;
-            --error: #f44336;
-            --success: #4caf50;
-            --warning: #ff9800;
-        }
-        
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            max-height: 999999999px;
-        }
-        
-        body {
-            font-family: 'Poppins', sans-serif;
-            background-color: var(--background);
-            color: var(--text-primary);
-            line-height: 1.6;
-        }
-        
-        .container {
-            max-width: 1400px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        
-        .header {
-            background-color: var(--primary-color);
-            color: var(--white);
-            padding: 20px 0;
-            text-align: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-            margin-bottom: 30px;
-        }
-        
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: 600;
-        }
-        
-        .header p {
-            font-size: 1.1rem;
-            opacity: 0.9;
-        }
-        
-        .card {
-            background: var(--white);
-            border-radius: 8px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            margin-bottom: 30px;
-        }
-        
-        .card h2 {
-            color: var(--primary-color);
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-        }
-        
-        .card h2 .material-icons {
-            margin-right: 10px;
-        }
-        
-        .grid-form {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-        }
-        
-        .input-group {
-            margin-bottom: 10px;
-        }
-        
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--text-secondary);
-        }
-        
-        .input-group input, .input-group select {
-            width: 100%;
-            padding: 12px 15px;
-            border: 1px solid var(--divider-color);
-            border-radius: 4px;
-            font-size: 1rem;
-            font-family: 'Poppins', sans-serif;
-        }
-        
-        .input-group input:focus, .input-group select:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px var(--primary-light);
-        }
-        
-        .btn {
-            background-color: var(--primary-color);
-            color: var(--white);
-            border: none;
-            padding: 12px 20px;
-            border-radius: 4px;
-            font-size: 1rem;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background-color 0.3s;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-right: 10px;
-            margin-bottom: 10px;
-        }
-        
-        .btn:hover {
-            background-color: var(--primary-dark);
-        }
-        
-        .btn .material-icons {
-            margin-right: 8px;
-        }
-        
-        .btn-success {
-            background-color: var(--success);
-        }
-        
-        .btn-success:hover {
-            background-color: #388e3c;
-        }
-        
-        .btn-secondary {
-            background-color: var(--text-secondary);
-        }
-        
-        .btn-secondary:hover {
-            background-color: #616161;
-        }
-
-        .btn-accent {
-            background-color: var(--accent-color);
-        }
-        
-        .btn-accent:hover {
-            background-color: #f50057;
-        }
-
-        .btn-warning {
-            background-color: var(--warning);
-        }
-        
-        .btn-warning:hover {
-            background-color: #e68a00;
-        }
-        
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-        
-        .timetable-container {
-            overflow-x: auto;
-            margin-top: 30px;
-        }
-        
-        .timetable {
-            width: 100%;
-            border-collapse: collapse;
-            background: var(--white);
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-        }
-        
-        .timetable th, .timetable td {
-            border: 1px solid var(--divider-color);
-            padding: 10px;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-        
-        .timetable th {
-            background-color: var(--primary-color);
-            color: var(--white);
-            font-weight: 500;
-        }
-        
-        .timetable tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        
-        .filter-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        
-        .filter-container .input-group {
-            flex: 1;
-            min-width: 200px;
-            margin-bottom: 0;
-        }
-        
-        .notification {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            padding: 15px 20px;
-            border-radius: 4px;
-            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
-            transform: translateX(120%);
-            transition: transform 0.3s ease;
-            z-index: 1000;
-            display: flex;
-            align-items: center;
-        }
-        
-        .notification.success {
-            background-color: var(--success);
-            color: white;
-        }
-        
-        .notification.error {
-            background-color: var(--error);
-            color: white;
-        }
-        
-        .notification.show {
-            transform: translateX(0);
-        }
-        
-        .notification .material-icons {
-            margin-right: 10px;
-        }
-
-        .clash-detected {
-            background-color: #ffebee !important;
-        }
-
-        footer {
-            margin: 15px;
-            padding: 14px;
-            text-align: center;
-            background: var(--primary-color);
-            color: white;
-            border-radius: 6px;
-        }
-
-        @media print {
-            .card.control-panel, .actions, .filter-container {
-                display: none;
-            }
-            
-            body {
-                background-color: white;
-            }
-            
-            .container {
-                max-width: 100%;
-                padding: 0;
-            }
-            
-            .timetable {
-                box-shadow: none;
-            }
-            
-            @page {
-                size: landscape;
-                margin: 1cm;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .grid-form {
-                grid-template-columns: 1fr;
-            }
-            
-            .filter-container {
-                flex-direction: column;
-            }
-            
-            .filter-container .input-group {
-                width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-    <div class="header">
-        <h1>School Timetable Generator</h1>
-        <p>Create and manage class schedules</p>
-    </div>
-    
-    <div class="container">
-        <!-- Control Panel -->
-        <div class="card control-panel">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Easily create and manage school timetables with our smart, user-friendly Timetable Generator app. Perfect for teachers and administrators.">
+      <title>School Timetable Generator</title>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <style>
+         :root {
+         --primary-color: #3f51b5;
+         --primary-dark: #303f9f;
+         --primary-light: #c5cae9;
+         --accent-color: #ff4081;
+         --text-primary: #212121;
+         --text-secondary: #757575;
+         --divider-color: #bdbdbd;
+         --background: #f5f5f5;
+         --white: #ffffff;
+         --error: #f44336;
+         --success: #4caf50;
+         --warning: #ff9800;
+         }
+         * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         max-height: 999999999px;
+         }
+         body {
+         font-family: 'Poppins', sans-serif;
+         background-color: var(--background);
+         color: var(--text-primary);
+         line-height: 1.6;
+         }
+         .container {
+         max-width: 1400px;
+         margin: 0 auto;
+         padding: 20px;
+         }
+         .header {
+         background-color: var(--primary-color);
+         color: var(--white);
+         padding: 20px 0;
+         text-align: center;
+         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+         margin-bottom: 30px;
+         }
+         .header h1 {
+         font-size: 1.8rem;
+         font-weight: 600;
+         }
+         .header p {
+         font-size: 1.1rem;
+         opacity: 0.9;
+         }
+         .card {
+         background: var(--white);
+         border-radius: 8px;
+         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+         padding: 25px;
+         margin-bottom: 30px;
+         }
+         .card h2 {
+         color: var(--primary-color);
+         margin-bottom: 20px;
+         display: flex;
+         align-items: center;
+         }
+         .card h2 .material-icons {
+         margin-right: 10px;
+         }
+         .grid-form {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+         gap: 20px;
+         }
+         .input-group {
+         margin-bottom: 10px;
+         }
+         .input-group label {
+         display: block;
+         margin-bottom: 8px;
+         font-weight: 500;
+         color: var(--text-secondary);
+         }
+         .input-group input, .input-group select {
+         width: 100%;
+         padding: 12px 15px;
+         border: 1px solid var(--divider-color);
+         border-radius: 4px;
+         font-size: 1rem;
+         font-family: 'Poppins', sans-serif;
+         }
+         .input-group input:focus, .input-group select:focus {
+         outline: none;
+         border-color: var(--primary-color);
+         box-shadow: 0 0 0 2px var(--primary-light);
+         }
+         .btn {
+         background-color: var(--primary-color);
+         color: var(--white);
+         border: none;
+         padding: 12px 20px;
+         border-radius: 4px;
+         font-size: 1rem;
+         font-weight: 500;
+         cursor: pointer;
+         transition: background-color 0.3s;
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+         margin-right: 10px;
+         margin-bottom: 10px;
+         }
+         .btn:hover {
+         background-color: var(--primary-dark);
+         }
+         .btn .material-icons {
+         margin-right: 8px;
+         }
+         .btn-success {
+         background-color: var(--success);
+         }
+         .btn-success:hover {
+         background-color: #388e3c;
+         }
+         .btn-secondary {
+         background-color: var(--text-secondary);
+         }
+         .btn-secondary:hover {
+         background-color: #616161;
+         }
+         .btn-accent {
+         background-color: var(--accent-color);
+         }
+         .btn-accent:hover {
+         background-color: #f50057;
+         }
+         .btn-warning {
+         background-color: var(--warning);
+         }
+         .btn-warning:hover {
+         background-color: #e68a00;
+         }
+         .actions {
+         display: flex;
+         flex-wrap: wrap;
+         margin-top: 20px;
+         }
+         .timetable-container {
+         overflow-x: auto;
+         margin-top: 30px;
+         }
+         .timetable {
+         width: 100%;
+         border-collapse: collapse;
+         background: var(--white);
+         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+         }
+         .timetable th, .timetable td {
+         border: 1px solid var(--divider-color);
+         padding: 10px;
+         text-align: center;
+         font-size: 0.9rem;
+         }
+         .timetable th {
+         background-color: var(--primary-color);
+         color: var(--white);
+         font-weight: 500;
+         }
+         .timetable tr:nth-child(even) {
+         background-color: #f9f9f9;
+         }
+         .filter-container {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 15px;
+         margin-bottom: 20px;
+         }
+         .filter-container .input-group {
+         flex: 1;
+         min-width: 200px;
+         margin-bottom: 0;
+         }
+         .notification {
+         position: fixed;
+         bottom: 20px;
+         right: 20px;
+         padding: 15px 20px;
+         border-radius: 4px;
+         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+         transform: translateX(120%);
+         transition: transform 0.3s ease;
+         z-index: 1000;
+         display: flex;
+         align-items: center;
+         }
+         .notification.success {
+         background-color: var(--success);
+         color: white;
+         }
+         .notification.error {
+         background-color: var(--error);
+         color: white;
+         }
+         .notification.show {
+         transform: translateX(0);
+         }
+         .notification .material-icons {
+         margin-right: 10px;
+         }
+         .clash-detected {
+         background-color: #ffebee !important;
+         }
+         footer {
+         margin: 15px;
+         padding: 14px;
+         text-align: center;
+         background: var(--primary-color);
+         color: white;
+         border-radius: 6px;
+         }
+         @media print {
+         .card.control-panel, .actions, .filter-container {
+         display: none;
+         }
+         body {
+         background-color: white;
+         }
+         .container {
+         max-width: 100%;
+         padding: 0;
+         }
+         .timetable {
+         box-shadow: none;
+         }
+         @page {
+         size: landscape;
+         margin: 1cm;
+         }
+         }
+         @media (max-width: 768px) {
+         .grid-form {
+         grid-template-columns: 1fr;
+         }
+         .filter-container {
+         flex-direction: column;
+         }
+         .filter-container .input-group {
+         width: 100%;
+         }
+         }
+         .timetable th, .timetable td {
+         min-width: 80px;
+         max-width: 120px;
+         border: 1px solid var(--divider-color);
+         padding: 8px 5px;
+         text-align: center;
+         font-size: 0.85rem;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         }
+         @media (max-width: 1200px) {
+         .timetable-container {
+         overflow-x: scroll;
+         }
+         }
+      </style>
+   </head>
+   <body>
+      <div class="header">
+         <h1>School Timetable Generator</h1>
+         <p>Create and manage class schedules</p>
+      </div>
+      <div class="container">
+         <!-- Control Panel -->
+         <div class="card control-panel">
             <h2><span class="material-icons">schedule</span> Schedule Period</h2>
             <form id="schedule-form">
-                <div class="grid-form">
-                    <div class="input-group">
-                        <label for="class-select">Class</label>
-                        <select id="class-select" required>
-                            <option value="">Select Class</option>
-                            <!-- Will be populated dynamically -->
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="period-select">Period</label>
-                        <select id="period-select" required>
-                            <option value="">Select Period</option>
-                            <!-- Will be populated dynamically -->
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="subject-select">Subject</label>
-                        <select id="subject-select" required>
-                            <option value="">Select Subject</option>
-                            <option value="English">English</option>
-                            <option value="Hindi">Hindi</option>
-                            <option value="Mathematics">Mathematics</option>
-                            <option value="Science">Science</option>
-                            <option value="Social Science">Social Science</option>
-                            <option value="Physics">Physics</option>
-                            <option value="Chemistry">Chemistry</option>
-                            <option value="Biology">Biology</option>
-                            <option value="Computer Science">Computer Science</option>
-                            <option value="Physical Education">Physical Education</option>
-                            <option value="Art">Art</option>
-                            <option value="Music">Music</option>
-                        </select>
-                    </div>
-                    <div class="input-group">
-                        <label for="teacher-select">Teacher</label>
-                        <select id="teacher-select" required>
-                            <option value="">Select Teacher</option>
-                            <!-- Will be populated dynamically -->
-                        </select>
-                    </div>
-                </div>
-                <div class="actions">
-                    <button type="submit" class="btn btn-success">
-                        <span class="material-icons">add</span> Add to Schedule
-                    </button>
-                    <button type="button" id="remove-btn" class="btn btn-secondary">
-                        <span class="material-icons">remove</span> Remove Period
-                    </button>
-                </div>
-            </form>
-        </div>
-        
-        <!-- Filter Options -->
-        <div class="card">
-            <h2><span class="material-icons">filter_list</span> View Options</h2>
-            <div class="filter-container">
-                <div class="input-group">
-                    <label for="view-type">View By</label>
-                    <select id="view-type">
-                        <option value="all">All Classes</option>
-                        <option value="class">Specific Class</option>
-                        <option value="teacher">Specific Teacher</option>
-                    </select>
-                </div>
-                <div class="input-group" id="view-class-container" style="display: none;">
-                    <label for="view-class">Select Class</label>
-                    <select id="view-class">
+               <div class="grid-form">
+                  <div class="input-group">
+                     <label for="class-select">Class</label>
+                     <select id="class-select" required>
                         <option value="">Select Class</option>
                         <!-- Will be populated dynamically -->
-                    </select>
-                </div>
-                <div class="input-group" id="view-teacher-container" style="display: none;">
-                    <label for="view-teacher">Select Teacher</label>
-                    <select id="view-teacher">
+                     </select>
+                  </div>
+                  <div class="input-group">
+                     <label for="period-select">Period</label>
+                     <select id="period-select" required>
+                        <option value="">Select Period</option>
+                        <!-- Will be populated dynamically -->
+                     </select>
+                  </div>
+                  <div class="input-group">
+                     <label for="weekday-select">Day</label>
+                     <select id="weekday-select" required>
+                        <option value="">Select Day</option>
+                        <option value="Mon">Monday</option>
+                        <option value="Tue">Tuesday</option>
+                        <option value="Wed">Wednesday</option>
+                        <option value="Thu">Thursday</option>
+                        <option value="Fri">Friday</option>
+                        <option value="Sat">Saturday</option>
+                     </select>
+                  </div>
+                  <div class="input-group">
+                     <label for="subject-select">Subject</label>
+                     <select id="subject-select" required>
+                        <option value="">Select Subject</option>
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="Social Science">Social Science</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="Physical Education">Physical Education</option>
+                        <option value="Art">Art</option>
+                        <option value="Music">Music</option>
+                     </select>
+                  </div>
+                  <div class="input-group">
+                     <label for="teacher-select">Teacher</label>
+                     <select id="teacher-select" required>
                         <option value="">Select Teacher</option>
                         <!-- Will be populated dynamically -->
-                    </select>
-                </div>
+                     </select>
+                  </div>
+               </div>
+               <div class="actions">
+                  <button type="submit" class="btn btn-success">
+                  <span class="material-icons">add</span> Add to Schedule
+                  </button>
+                  <button type="button" id="remove-btn" class="btn btn-secondary">
+                  <span class="material-icons">remove</span> Remove Period
+                  </button>
+               </div>
+            </form>
+         </div>
+         <!-- Filter Options -->
+         <div class="card">
+            <h2><span class="material-icons">filter_list</span> View Options</h2>
+            <div class="filter-container">
+               <div class="input-group">
+                  <label for="view-type">View By</label>
+                  <select id="view-type">
+                     <option value="all">All Classes</option>
+                     <option value="class">Specific Class</option>
+                     <option value="teacher">Specific Teacher</option>
+                  </select>
+               </div>
+               <div class="input-group" id="view-class-container" style="display: none;">
+                  <label for="view-class">Select Class</label>
+                  <select id="view-class">
+                     <option value="">Select Class</option>
+                     <!-- Will be populated dynamically -->
+                  </select>
+               </div>
+               <div class="input-group" id="view-teacher-container" style="display: none;">
+                  <label for="view-teacher">Select Teacher</label>
+                  <select id="view-teacher">
+                     <option value="">Select Teacher</option>
+                     <!-- Will be populated dynamically -->
+                  </select>
+               </div>
             </div>
             <div class="actions">
-                <button type="button" id="print-btn" class="btn btn-accent">
-                    <span class="material-icons">print</span> Print Timetable
-                </button>
-                <button type="button" id="reset-btn" class="btn btn-warning">
-                    <span class="material-icons">delete</span> Reset All Data
-                </button>
+               <button type="button" id="print-btn" class="btn btn-accent">
+               <span class="material-icons">print</span> Print Timetable
+               </button>
+               <button type="button" id="reset-btn" class="btn btn-warning">
+               <span class="material-icons">delete</span> Reset All Data
+               </button>
             </div>
-        </div>
-        
-        <!-- Timetable Display -->
-        <div class="timetable-container">
+         </div>
+         <!-- Timetable Display -->
+         <div class="timetable-container">
             <table class="timetable" id="timetable">
-                <!-- Table content will be generated dynamically -->
+               <!-- Table content will be generated dynamically -->
             </table>
-        </div>
-    </div>
-    
-    <div id="notification" class="notification">
-        <span class="material-icons">info</span>
-        <span id="notification-message"></span>
-    </div>
-
-    <footer>Crafted by Sourabh Sir</footer>
-    
-    <script>
-        // Global Variables
-        const classes = [];
-        for (let i = 1; i <= 12; i++) {
-            for (let j = 1; j <= 4; j++) {
-                classes.push(`${i}-A${j}`);
-            }
-        }
-        
-        const periods = Array.from({length: 8}, (_, i) => i + 1);
-        
-        const teachers = [
-            'Abhilasha Joshi',
-            'C.S. Sharma',
-            'Prashant Dadhich',
-            'Ashish Yadav',
-            'Nakul Sharma',
-            'Shailesh Choudhary',
-            'Ritu Das',
-            'Sneha Sharma',
-            'Deepa Panchal',
-            'Preetu Pareek'
-        ];
-        
-        let timetableData = {};
-        
-        // DOM Elements
-        const classSelect = document.getElementById("class-select");
-        const periodSelect = document.getElementById("period-select");
-        const subjectSelect = document.getElementById("subject-select");
-        const teacherSelect = document.getElementById("teacher-select");
-        const scheduleForm = document.getElementById("schedule-form");
-        const removeBtn = document.getElementById("remove-btn");
-        const timetableElement = document.getElementById("timetable");
-        const viewType = document.getElementById("view-type");
-        const viewClass = document.getElementById("view-class");
-        const viewClassContainer = document.getElementById("view-class-container");
-        const viewTeacher = document.getElementById("view-teacher");
-        const viewTeacherContainer = document.getElementById("view-teacher-container");
-        const printBtn = document.getElementById("print-btn");
-        const resetBtn = document.getElementById("reset-btn");
-        const notification = document.getElementById("notification");
-        const notificationMessage = document.getElementById("notification-message");
-        
-        // Initialize the page
-        function init() {
-            // Populate class dropdowns
-            populateSelectOptions(classSelect, classes);
-            populateSelectOptions(viewClass, classes);
-            
-            // Populate period dropdown
-            populateSelectOptions(periodSelect, periods);
-            
-            // Populate teacher dropdown
-            populateSelectOptions(teacherSelect, teachers);
-            populateSelectOptions(viewTeacher, teachers);
-            
-            // Load saved data
-            loadTimetableData();
-            
-            // Generate initial timetable
-            generateTimetable();
-            
-            // Event listeners
-            scheduleForm.addEventListener("submit", handleScheduleSubmit);
-            removeBtn.addEventListener("click", handleRemovePeriod);
-            viewType.addEventListener("change", handleViewTypeChange);
-            viewClass.addEventListener("change", generateTimetable);
-            viewTeacher.addEventListener("change", generateTimetable);
-            printBtn.addEventListener("click", () => window.print());
-            resetBtn.addEventListener("click", handleResetData);
-        }
-        
-        // Helper function to populate select dropdowns
-        function populateSelectOptions(selectElement, optionsArray) {
-            selectElement.innerHTML = '<option value="">Select</option>';
-            optionsArray.forEach(option => {
-                const optionElement = document.createElement("option");
-                optionElement.value = option;
-                optionElement.textContent = option;
-                selectElement.appendChild(optionElement);
-            });
-        }
-        
-        // Handle schedule form submission
-        function handleScheduleSubmit(e) {
-            e.preventDefault();
-            
-            const selectedClass = classSelect.value;
-            const selectedPeriod = periodSelect.value;
-            const selectedSubject = subjectSelect.value;
-            const selectedTeacher = teacherSelect.value;
-            
-            if (!selectedClass || !selectedPeriod || !selectedSubject || !selectedTeacher) {
-                showNotification("Please fill in all fields", "error");
-                return;
-            }
-            
-            // Check for teacher clash
-            if (hasTeacherClash(selectedClass, selectedPeriod, selectedTeacher)) {
-                showNotification("Teacher clash detected! This teacher is already teaching another class in this period.", "error");
-                return;
-            }
-            
-            // Initialize class object if it doesn't exist
-            if (!timetableData[selectedClass]) {
-                timetableData[selectedClass] = {};
-            }
-            
-            // Add period data
-            timetableData[selectedClass][selectedPeriod] = {
-                subject: selectedSubject,
-                teacher: selectedTeacher
-            };
-            
-            // Save to localStorage
-            saveTimetableData();
-            
-            // Regenerate timetable
-            generateTimetable();
-            
-            // Show success notification
-            showNotification("Period successfully scheduled", "success");
-            
-            // Reset form fields (optional)
-            // scheduleForm.reset();
-        }
-        
-        // Check if there's a teacher clash
-        function hasTeacherClash(currentClass, period, teacher) {
-            for (const className in timetableData) {
-                if (className !== currentClass && 
-                    timetableData[className][period] && 
-                    timetableData[className][period].teacher === teacher) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        // Handle remove period
-        function handleRemovePeriod() {
-            const selectedClass = classSelect.value;
-            const selectedPeriod = periodSelect.value;
-            
-            if (!selectedClass || !selectedPeriod) {
-                showNotification("Please select a class and period to remove", "error");
-                return;
-            }
-            
-            if (timetableData[selectedClass] && timetableData[selectedClass][selectedPeriod]) {
-                delete timetableData[selectedClass][selectedPeriod];
-                
-                // If class has no periods, remove the class entry
-                if (Object.keys(timetableData[selectedClass]).length === 0) {
-                    delete timetableData[selectedClass];
-                }
-                
-                // Save and regenerate
-                saveTimetableData();
-                generateTimetable();
-                showNotification("Period successfully removed", "success");
-            } else {
-                showNotification("No scheduled period found to remove", "error");
-            }
-        }
-        
-        // Handle view type change
-        function handleViewTypeChange() {
-            const selectedView = viewType.value;
-            
-            // Hide all view containers first
-            viewClassContainer.style.display = "none";
-            viewTeacherContainer.style.display = "none";
-            
-            // Show the appropriate container based on selection
-            if (selectedView === "class") {
-                viewClassContainer.style.display = "block";
-            } else if (selectedView === "teacher") {
-                viewTeacherContainer.style.display = "block";
-            }
-            
-            // Regenerate the timetable
-            generateTimetable();
-        }
-        
-        // Handle reset data
-        function handleResetData() {
-            if (confirm("Are you sure you want to clear all timetable data? This cannot be undone.")) {
-                timetableData = {};
-                localStorage.removeItem("schoolTimetableData");
-                generateTimetable();
-                showNotification("All timetable data has been reset", "success");
-            }
-        }
-        
-        // Generate the timetable
-        function generateTimetable() {
-            const selectedView = viewType.value;
-            const selectedClassFilter = viewClass.value;
-            const selectedTeacherFilter = viewTeacher.value;
-            
-            let tableHTML = "";
-            
-            // Filter classes based on view options
-            let displayClasses = [];
-            
-            if (selectedView === "class" && selectedClassFilter) {
-                displayClasses = [selectedClassFilter];
-            } else if (selectedView === "teacher" && selectedTeacherFilter) {
-                // For teacher view, we need all classes where the teacher teaches
-                displayClasses = classes.filter(className => {
-                    if (!timetableData[className]) return false;
-                    
-                    for (const period in timetableData[className]) {
-                        if (timetableData[className][period].teacher === selectedTeacherFilter) {
-                            return true;
-                        }
-                    }
-                    return false;
-                });
-            } else {
-                // Show all classes that have data or at least the first 10 if none have data
-                displayClasses = Object.keys(timetableData).length > 0 
-                    ? Object.keys(timetableData).sort() 
-                    : classes.slice(0, 10);
-            }
-            
-            // Create table header with periods
-            tableHTML = "<tr><th>Class / Period</th>";
-            for (let period = 1; period <= 8; period++) {
-                tableHTML += `<th>Period ${period}</th>`;
-            }
-            tableHTML += "</tr>";
-            
-            // Add rows for each class
-            displayClasses.forEach(className => {
-                tableHTML += `<tr><th>${className}</th>`;
-                
-                for (let period = 1; period <= 8; period++) {
-                    const periodData = timetableData[className] && timetableData[className][period];
-                    
-                    // Check for clash when viewing by teacher
-                    let hasClash = false;
-                    if (periodData && selectedView === "teacher" && selectedTeacherFilter) {
-                        if (periodData.teacher === selectedTeacherFilter) {
-                            // Check if this teacher is teaching in any other class in this period
-                            for (const otherClass in timetableData) {
-                                if (otherClass !== className && 
-                                    timetableData[otherClass][period] && 
-                                    timetableData[otherClass][period].teacher === selectedTeacherFilter) {
-                                    hasClash = true;
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    
-                    // Check if we need to highlight this cell for a teacher view
-                    const isHighlighted = selectedView === "teacher" && 
-                                         selectedTeacherFilter && 
-                                         periodData && 
-                                         periodData.teacher === selectedTeacherFilter;
-                    
-                    const cellClass = hasClash ? "clash-detected" : (isHighlighted ? "highlighted" : "");
-                    
-                    if (periodData) {
-                        tableHTML += `<td class="${cellClass}">${periodData.subject}<br><small>${periodData.teacher}</small></td>`;
-                    } else {
-                        tableHTML += `<td class="${cellClass}">-</td>`;
-                    }
-                }
-                
-                tableHTML += "</tr>";
-            });
-            
-            // If no classes to display, show a message
-            if (displayClasses.length === 0) {
-                if (selectedView === "teacher" && selectedTeacherFilter) {
-                    tableHTML = `<tr><th colspan="9">No classes scheduled for ${selectedTeacherFilter}</th></tr>`;
-                } else if (selectedView === "class") {
-                    tableHTML = `<tr><th colspan="9">Please select a class to view</th></tr>`;
-                } else {
-                    tableHTML = `<tr><th colspan="9">No classes have been scheduled yet</th></tr>`;
-                }
-            }
-            
-            // Update the table
-            timetableElement.innerHTML = tableHTML;
-        }
-        
-        // Show notification
-        function showNotification(message, type) {
-            notification.className = "notification " + type;
-            notificationMessage.textContent = message;
-            notification.classList.add("show");
-            
-            setTimeout(() => {
-                notification.classList.remove("show");
-            }, 3000);
-        }
-        
-        // Load data from localStorage
-        function loadTimetableData() {
-            const savedData = localStorage.getItem("schoolTimetableData");
-            if (savedData) {
-                timetableData = JSON.parse(savedData);
-            }
-        }
-        
-        // Save data to localStorage
-        function saveTimetableData() {
-            localStorage.setItem("schoolTimetableData", JSON.stringify(timetableData));
-        }
-        
-        // Initialize when the DOM is loaded
-        document.addEventListener("DOMContentLoaded", init);
-    </script>
-</body>
+         </div>
+      </div>
+      <div id="notification" class="notification">
+         <span class="material-icons">info</span>
+         <span id="notification-message"></span>
+      </div>
+      <footer>Crafted by Sourabh Sir</footer>
+      <script>
+         // Global Variables
+         const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+         const classes = [];
+         for (let i = 1; i <= 12; i++) {
+             for (let j = 1; j <= 4; j++) {
+                 classes.push(`${i}-A${j}`);
+             }
+         }
+         
+         const periods = Array.from({length: 8}, (_, i) => i + 1);
+         
+         const teachers = [
+             'Abhilasha Joshi',
+             'C.S. Sharma',
+             'Prashant Dadhich',
+             'Ashish Yadav',
+             'Nakul Sharma',
+             'Shailesh Choudhary',
+             'Ritu Das',
+             'Sneha Sharma',
+             'Deepa Panchal',
+             'Preetu Pareek'
+         ];
+         
+         let timetableData = {};
+         
+         // DOM Elements
+         const classSelect = document.getElementById("class-select");
+         const periodSelect = document.getElementById("period-select");
+         const weekdaySelect = document.getElementById("weekday-select");
+         const subjectSelect = document.getElementById("subject-select");
+         const teacherSelect = document.getElementById("teacher-select");
+         const scheduleForm = document.getElementById("schedule-form");
+         const removeBtn = document.getElementById("remove-btn");
+         const timetableElement = document.getElementById("timetable");
+         const viewType = document.getElementById("view-type");
+         const viewClass = document.getElementById("view-class");
+         const viewClassContainer = document.getElementById("view-class-container");
+         const viewTeacher = document.getElementById("view-teacher");
+         const viewTeacherContainer = document.getElementById("view-teacher-container");
+         const printBtn = document.getElementById("print-btn");
+         const resetBtn = document.getElementById("reset-btn");
+         const notification = document.getElementById("notification");
+         const notificationMessage = document.getElementById("notification-message");
+         
+         // Initialize the page
+         function init() {
+             // Populate class dropdowns
+             populateSelectOptions(classSelect, classes);
+             populateSelectOptions(viewClass, classes);
+             
+             // Populate period dropdown
+             populateSelectOptions(periodSelect, periods);
+             
+             // Populate teacher dropdown
+             populateSelectOptions(teacherSelect, teachers);
+             populateSelectOptions(viewTeacher, teachers);
+             
+             // Load saved data
+             loadTimetableData();
+             
+             // Generate initial timetable
+             generateTimetable();
+             
+             // Event listeners
+             scheduleForm.addEventListener("submit", handleScheduleSubmit);
+             removeBtn.addEventListener("click", handleRemovePeriod);
+             viewType.addEventListener("change", handleViewTypeChange);
+             viewClass.addEventListener("change", generateTimetable);
+             viewTeacher.addEventListener("change", generateTimetable);
+             printBtn.addEventListener("click", () => window.print());
+             resetBtn.addEventListener("click", handleResetData);
+         }
+         
+         // Helper function to populate select dropdowns
+         function populateSelectOptions(selectElement, optionsArray) {
+             selectElement.innerHTML = '<option value="">Select</option>';
+             optionsArray.forEach(option => {
+                 const optionElement = document.createElement("option");
+                 optionElement.value = option;
+                 optionElement.textContent = option;
+                 selectElement.appendChild(optionElement);
+             });
+         }
+         
+         // Handle schedule form submission
+         function handleScheduleSubmit(e) {
+         e.preventDefault();
+         
+         const selectedClass = classSelect.value;
+         const selectedPeriod = periodSelect.value;
+         const selectedWeekday = weekdaySelect.value;
+         const selectedSubject = subjectSelect.value;
+         const selectedTeacher = teacherSelect.value;
+         
+         if (!selectedClass || !selectedPeriod || !selectedWeekday || !selectedSubject || !selectedTeacher) {
+         showNotification("Please fill in all fields", "error");
+         return;
+         }
+         
+         // Check for teacher clash
+         if (hasTeacherClash(selectedClass, selectedPeriod, selectedWeekday, selectedTeacher)) {
+         showNotification("Teacher clash detected! This teacher is already teaching another class in this period on the same day.", "error");
+         return;
+         }
+         
+         // Initialize class object if it doesn't exist
+         if (!timetableData[selectedClass]) {
+         timetableData[selectedClass] = {};
+         }
+         
+         // Initialize period object if it doesn't exist
+         if (!timetableData[selectedClass][selectedPeriod]) {
+         timetableData[selectedClass][selectedPeriod] = {};
+         }
+         
+         // Add period data
+         timetableData[selectedClass][selectedPeriod][selectedWeekday] = {
+         subject: selectedSubject,
+         teacher: selectedTeacher
+         };
+         
+         // Save to localStorage
+         saveTimetableData();
+         
+         // Regenerate timetable
+         generateTimetable();
+         
+         // Show success notification
+         showNotification("Period successfully scheduled", "success");
+         }
+         
+         // Check if there's a teacher clash
+         function hasTeacherClash(currentClass, period, weekday, teacher) {
+         for (const className in timetableData) {
+         if (className !== currentClass && 
+             timetableData[className][period] && 
+             timetableData[className][period][weekday] &&
+             timetableData[className][period][weekday].teacher === teacher) {
+             return true;
+         }
+         }
+         return false;
+         }
+         
+         // Handle remove period
+         function handleRemovePeriod() {
+         const selectedClass = classSelect.value;
+         const selectedPeriod = periodSelect.value;
+         const selectedWeekday = weekdaySelect.value;
+         
+         if (!selectedClass || !selectedPeriod || !selectedWeekday) {
+         showNotification("Please select a class, period, and day to remove", "error");
+         return;
+         }
+         
+         if (timetableData[selectedClass] && 
+         timetableData[selectedClass][selectedPeriod] && 
+         timetableData[selectedClass][selectedPeriod][selectedWeekday]) {
+         
+         delete timetableData[selectedClass][selectedPeriod][selectedWeekday];
+         
+         // If period has no weekdays, remove the period entry
+         if (Object.keys(timetableData[selectedClass][selectedPeriod]).length === 0) {
+             delete timetableData[selectedClass][selectedPeriod];
+             
+             // If class has no periods, remove the class entry
+             if (Object.keys(timetableData[selectedClass]).length === 0) {
+                 delete timetableData[selectedClass];
+             }
+         }
+         
+         // Save and regenerate
+         saveTimetableData();
+         generateTimetable();
+         showNotification("Period successfully removed", "success");
+         } else {
+         showNotification("No scheduled period found to remove", "error");
+         }
+         }
+         
+         // Handle view type change
+         function handleViewTypeChange() {
+             const selectedView = viewType.value;
+             
+             // Hide all view containers first
+             viewClassContainer.style.display = "none";
+             viewTeacherContainer.style.display = "none";
+             
+             // Show the appropriate container based on selection
+             if (selectedView === "class") {
+                 viewClassContainer.style.display = "block";
+             } else if (selectedView === "teacher") {
+                 viewTeacherContainer.style.display = "block";
+             }
+             
+             // Regenerate the timetable
+             generateTimetable();
+         }
+         
+         // Handle reset data
+         function handleResetData() {
+             if (confirm("Are you sure you want to clear all timetable data? This cannot be undone.")) {
+                 timetableData = {};
+                 localStorage.removeItem("schoolTimetableData");
+                 generateTimetable();
+                 showNotification("All timetable data has been reset", "success");
+             }
+         }
+         
+         // Generate the timetable
+         function generateTimetable() {
+         const selectedView = viewType.value;
+         const selectedClassFilter = viewClass.value;
+         const selectedTeacherFilter = viewTeacher.value;
+         
+         let tableHTML = "";
+         
+         // Filter classes based on view options
+         let displayClasses = [];
+         
+         if (selectedView === "class" && selectedClassFilter) {
+         displayClasses = [selectedClassFilter];
+         } else if (selectedView === "teacher" && selectedTeacherFilter) {
+         // For teacher view, we need all classes where the teacher teaches
+         displayClasses = classes.filter(className => {
+             if (!timetableData[className]) return false;
+             
+             for (const period in timetableData[className]) {
+                 for (const weekday in timetableData[className][period]) {
+                     if (timetableData[className][period][weekday].teacher === selectedTeacherFilter) {
+                         return true;
+                     }
+                 }
+             }
+             return false;
+         });
+         } else {
+         // Show all classes that have data or at least the first 10 if none have data
+         displayClasses = Object.keys(timetableData).length > 0 
+             ? Object.keys(timetableData).sort() 
+             : classes.slice(0, 10);
+         }
+         
+         // Create table header with periods and days
+         tableHTML = "<tr><th rowspan='2'>Class / Period</th>";
+         for (let period = 1; period <= 8; period++) {
+         tableHTML += `<th colspan='6'>Period ${period}</th>`;
+         }
+         tableHTML += "</tr><tr>";
+         
+         // Add weekday headers for each period
+         for (let period = 1; period <= 8; period++) {
+         weekdays.forEach(day => {
+             tableHTML += `<th>${day}</th>`;
+         });
+         }
+         tableHTML += "</tr>";
+         
+         // Add rows for each class
+         displayClasses.forEach(className => {
+         tableHTML += `<tr><th>${className}</th>`;
+         
+         for (let period = 1; period <= 8; period++) {
+             const periodData = timetableData[className] && timetableData[className][period];
+             
+             // Add cells for each weekday
+             weekdays.forEach(weekday => {
+                 const weekdayData = periodData && periodData[weekday];
+                 
+                 // Check for clash when viewing by teacher
+                 let hasClash = false;
+                 if (weekdayData && selectedView === "teacher" && selectedTeacherFilter) {
+                     if (weekdayData.teacher === selectedTeacherFilter) {
+                         // Check if this teacher is teaching in any other class in this period on this day
+                         for (const otherClass in timetableData) {
+                             if (otherClass !== className && 
+                                 timetableData[otherClass][period] && 
+                                 timetableData[otherClass][period][weekday] && 
+                                 timetableData[otherClass][period][weekday].teacher === selectedTeacherFilter) {
+                                 hasClash = true;
+                                 break;
+                             }
+                         }
+                     }
+                 }
+                 
+                 // Check if we need to highlight this cell for a teacher view
+                 const isHighlighted = selectedView === "teacher" && 
+                                      selectedTeacherFilter && 
+                                      weekdayData && 
+                                      weekdayData.teacher === selectedTeacherFilter;
+                 
+                 const cellClass = hasClash ? "clash-detected" : (isHighlighted ? "highlighted" : "");
+                 
+                 if (weekdayData) {
+                     tableHTML += `<td class="${cellClass}">${weekdayData.subject}<br><small>${weekdayData.teacher}</small></td>`;
+                 } else {
+                     tableHTML += `<td class="${cellClass}">-</td>`;
+                 }
+             });
+         }
+         
+         tableHTML += "</tr>";
+         });
+         
+         // If no classes to display, show a message
+         if (displayClasses.length === 0) {
+         if (selectedView === "teacher" && selectedTeacherFilter) {
+             tableHTML = `<tr><th colspan="${8*6+1}">No classes scheduled for ${selectedTeacherFilter}</th></tr>`;
+         } else if (selectedView === "class") {
+             tableHTML = `<tr><th colspan="${8*6+1}">Please select a class to view</th></tr>`;
+         } else {
+             tableHTML = `<tr><th colspan="${8*6+1}">No classes have been scheduled yet</th></tr>`;
+         }
+         }
+         
+         // Update the table
+         timetableElement.innerHTML = tableHTML;
+         }
+         
+         // Show notification
+         function showNotification(message, type) {
+             notification.className = "notification " + type;
+             notificationMessage.textContent = message;
+             notification.classList.add("show");
+             
+             setTimeout(() => {
+                 notification.classList.remove("show");
+             }, 3000);
+         }
+         
+         // Load data from localStorage
+         function loadTimetableData() {
+             const savedData = localStorage.getItem("schoolTimetableData");
+             if (savedData) {
+                 timetableData = JSON.parse(savedData);
+             }
+         }
+         
+         // Save data to localStorage
+         function saveTimetableData() {
+             localStorage.setItem("schoolTimetableData", JSON.stringify(timetableData));
+         }
+         
+         // Initialize when the DOM is loaded
+         document.addEventListener("DOMContentLoaded", init);
+      </script>
+   </body>
 </html>
