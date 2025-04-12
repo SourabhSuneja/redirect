@@ -13,6 +13,196 @@
          max-height: 999999999px;
       }
    </style>
+   <style>
+   /* Base styling enhancements */
+   * {
+      max-height: 999999999px;
+      box-sizing: border-box;
+   }
+
+   body {
+      background: linear-gradient(120deg, #f0f4f9, #e6f0ff);
+      font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+   }
+
+   /* Header styling */
+   header h1 {
+      background: linear-gradient(90deg, #3b82f6, #2563eb);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      font-size: 2.25rem;
+      letter-spacing: -0.5px;
+      text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+   }
+
+   header p {
+      max-width: 600px;
+      margin: 0 auto;
+      font-style: italic;
+   }
+
+   /* Form container styling */
+   .bg-white {
+      border-radius: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.07);
+      border: 1px solid rgba(226, 232, 240, 0.8);
+   }
+
+   /* Form element styling */
+   input, select, textarea {
+      transition: all 0.3s ease;
+      border-width: 1px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+   }
+
+   input:focus, select:focus, textarea:focus {
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+      border-color: #3b82f6;
+      outline: none;
+   }
+
+   label {
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 6px;
+   }
+
+   /* Button styling */
+   button[type="submit"] {
+      background: linear-gradient(to right, #3b82f6, #2563eb);
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      padding: 0.75rem 2rem;
+      transform: translateY(0);
+      transition: all 0.2s ease;
+   }
+
+   button[type="submit"]:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 15px rgba(59, 130, 246, 0.4);
+   }
+
+   button[type="submit"]:active {
+      transform: translateY(0);
+   }
+
+   #addHolidayBtn {
+      display: inline-flex;
+      align-items: center;
+      font-weight: 500;
+      transition: all 0.2s ease;
+   }
+
+   #addHolidayBtn:hover {
+      transform: translateY(-1px);
+   }
+
+   /* Loading animation enhancement */
+   #loadingContainer .animate-spin {
+      border-top-width: 5px;
+      border-bottom-width: 5px;
+      border-color: #3b82f6;
+      box-shadow: 0 0 15px rgba(59, 130, 246, 0.5);
+   }
+
+   /* Fancy section dividers */
+   .border-t {
+      border-image: linear-gradient(to right, transparent, #e5e7eb, transparent) 1;
+      padding-top: 1.5rem;
+   }
+
+   /* Result container styling */
+   #promptPreview {
+      background-color: #f8fafc;
+      border-radius: 8px;
+      padding: 1rem;
+      font-family: 'Consolas', 'Monaco', monospace;
+      line-height: 1.6;
+   }
+
+   /* Button effects */
+   #copyPromptBtn, #viewLessonPlanBtn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.2s ease;
+      font-weight: 500;
+   }
+
+   #copyPromptBtn:hover, #viewLessonPlanBtn:hover {
+      transform: translateY(-2px);
+   }
+
+   #copyPromptBtn {
+      border: 1px solid #e2e8f0;
+   }
+
+   #viewLessonPlanBtn {
+      background: linear-gradient(to right, #10b981, #059669);
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+   }
+
+   #viewLessonPlanBtn:hover {
+      box-shadow: 0 6px 15px rgba(16, 185, 129, 0.4);
+   }
+
+   /* Modal/overlay styling */
+   #iframeOverlay {
+      backdrop-filter: blur(3px);
+   }
+
+   #iframeOverlay .bg-white {
+      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+   }
+
+   /* Footer styling */
+   footer {
+      background: linear-gradient(to right, #f0f4f9, #e6f0ff);
+      border-top: 1px solid rgba(226, 232, 240, 0.8);
+      padding: 1rem 0;
+   }
+
+   footer div {
+      font-weight: 500;
+      letter-spacing: 0.5px;
+   }
+
+   /* Holiday entries styling */
+   .holiday-entry {
+      background-color: #f8fafc;
+      border-radius: 8px;
+      padding: 0.75rem;
+      border: 1px solid #e5e7eb;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.03);
+   }
+
+   .remove-holiday {
+      color: #ef4444;
+      transition: all 0.2s ease;
+   }
+
+   .remove-holiday:hover {
+      color: #dc2626;
+      transform: scale(1.1);
+   }
+
+   /* Responsive adjustments */
+   @media (max-width: 768px) {
+      header h1 {
+         font-size: 1.875rem;
+      }
+
+      .container {
+         padding-left: 1rem;
+         padding-right: 1rem;
+      }
+   }
+</style>
    </head>
    <body class="bg-gray-50 min-h-screen">
       <div class="container mx-auto px-4 py-8 max-w-4xl">
