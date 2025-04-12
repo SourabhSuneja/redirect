@@ -249,7 +249,10 @@
              document.getElementById('iframeOverlay').classList.remove('hidden');
              
              // Extract HTML from response
-             const extractedHTML = extractHTMLFromResponse(response);
+             let extractedHTML = extractHTMLFromResponse(response);
+
+             // Modify the HTML to make body contenteditable
+             extractedHTML = extractedHTML.replace('<body', '<body contenteditable="true"');
              
              // Set iframe content with extracted HTML
              const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
