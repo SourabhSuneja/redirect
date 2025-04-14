@@ -335,49 +335,48 @@ function resetAdditionalRoles() {
    additionalRolesDiv.classList.add('hidden');
 }
 
-function showAiSuggestions(type) {
+async function showAiSuggestions(type) {
    aiOptions.innerHTML = '';
    let title = '';
    let description = '';
    let suggestions = [];
+   let prompt = '';
+   let theme = document.getElementById('theme').value.trim();
+
+   showProcessingDialog();
+   
 
    switch (type) {
       case 'theme':
          title = 'Assembly Theme Suggestions';
          description = 'Select a theme for your assembly:';
-         suggestions = [
-            'Environmental Awareness: Reduce, Reuse, Recycle',
-            'Unity in Diversity: Celebrating Our Differences',
-            'Digital Citizenship: Being Responsible Online',
-            'Health and Wellness: Mind, Body, and Spirit',
-            'Leadership and Teamwork: Together We Achieve More'
-         ];
+         prompt = 'Suggest some themes for the school assembly.';
          break;
 
       case 'thought':
          title = 'Thought of the Day Suggestions';
          description = 'Select a thought for your assembly:';
-         suggestions = [
-            'Education is not the filling of a pail, but the lighting of a fire.',
-            'The future belongs to those who believe in the beauty of their dreams.',
-            'The only way to do great work is to love what you do.',
-            'Success is not final, failure is not fatal: It is the courage to continue that counts.',
-            'Be the change that you wish to see in the world.'
-         ];
+         prompt = theme 
+  ? `Give some suggestions on "Thought of the Day" related to the theme "${theme}".` 
+  : `Give some suggestions on "Thought of the Day".`;
          break;
 
       case 'word':
          title = 'Word of the Day Suggestions';
          description = 'Select a word for your assembly:';
-         suggestions = [
-            'Perseverance - Persistence in doing something despite difficulty or delay in achieving success.',
-            'Integrity - The quality of being honest and having strong moral principles.',
-            'Resilience - The capacity to recover quickly from difficulties; toughness.',
-            'Empathy - The ability to understand and share the feelings of another.',
-            'Innovation - The action or process of innovating; a new method, idea, product, etc.'
-         ];
+         prompt = theme 
+  ? `Give some suggestions on "Word of the Day" related to the theme "${theme}".` 
+  : `Give some suggestions on "Word of the Day".`;
          break;
    }
+
+
+
+   const response = await window.fetchResponse(prompt, 'assemblyElementHelp'); 
+ 
+   suggestions = extractSuggestions(response);
+
+   hideProcessingDialog();
 
    aiModalTitle.textContent = title;
    aiModalDescription.textContent = description;
@@ -411,7 +410,7 @@ function selectAiSuggestion(type, suggestion) {
          break;
 
       case 'word':
-         const wordPart = suggestion.split(' - ')[0];
+         const wordPart = suggestion.split(':')[0];
          document.getElementById('word').value = wordPart;
          break;
    }
@@ -686,6 +685,24 @@ function getPrompt(assistanceType, assemblyData) {
       default:
          return null;
    }
+}
+
+function extractSuggestions(aiText) {
+  try {
+    // Extract the JSON string using regex
+    const match = aiText.match(/```json\s*([\s\S]*?)\s*```/);
+    if (!match) return [];
+
+    const jsonString = match[1];
+    const parsed = JSON.parse(jsonString);
+
+    if (Array.isArray(parsed.suggestions)) {
+      return parsed.suggestions;
+    }
+    return [];
+  } catch (error) {
+    return [];
+  }
 }
 
 window.onload = function () {
