@@ -453,8 +453,6 @@ function handleAiAssistantOption(optionType) {
    // Hide the modal after selection
    hideAiAssistantModal();
 
-   // Show a message to indicate that the request is being processed
-   showToast('Processing your AI assistance request...', 'success');
 }
 
 async function requestAiAssistance(assemblyData, assistanceType) {
