@@ -28,7 +28,7 @@ async function checkAuth() {
 
          // authentication successful
          return true;
-         
+
       } else {
          // User is not signed in
          return false;
@@ -165,7 +165,9 @@ async function upsertData(tableName, data, conflictColumns = []) {
          error
       } = await supabase
          .from(tableName)
-         .upsert(data, { onConflict: conflictColumns })
+         .upsert(data, {
+            onConflict: conflictColumns
+         })
          .select();
 
       if (error) throw error;
@@ -184,27 +186,35 @@ async function selectData(
    matchColumns = [],
    matchValues = [],
    orderByColumn = null,
-   orderDirection = "asc" // Default sort direction is ascending
+   orderDirection = "asc",
+   customFilters = []
 ) {
    try {
       let query = supabase.from(tableName).select(columns);
 
-      // Apply filters for matching columns and values using "and"
+      // Apply exact match filters
       if (matchColumns.length > 0 && matchValues.length > 0) {
          if (matchColumns.length !== matchValues.length) {
             throw new Error("matchColumns and matchValues arrays must have the same length.");
          }
-
-         // Create an object with column-value pairs for the "and" filter
          const matchConditions = {};
          for (let i = 0; i < matchColumns.length; i++) {
             matchConditions[matchColumns[i]] = matchValues[i];
          }
-
-         query = query.match(matchConditions); // Apply "and" filter
+         query = query.match(matchConditions);
       }
 
-      // Apply sorting if orderByColumn is provided
+      // Apply custom filters (e.g., gte, lte, etc.)
+      for (const filter of customFilters) {
+         if (filter.operator === "gte") query = query.gte(filter.column, filter.value);
+         else if (filter.operator === "lte") query = query.lte(filter.column, filter.value);
+         else if (filter.operator === "eq") query = query.eq(filter.column, filter.value);
+         else if (filter.operator === "lt") query = query.lt(filter.column, filter.value);
+         else if (filter.operator === "gt") query = query.gt(filter.column, filter.value);
+         // Add more operators if needed
+      }
+
+      // Apply sorting
       if (orderByColumn) {
          query = query.order(orderByColumn, {
             ascending: orderDirection.toLowerCase() === "asc"
