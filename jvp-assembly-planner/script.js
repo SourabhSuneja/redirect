@@ -352,7 +352,7 @@ async function showAiSuggestions(type) {
       case 'theme':
          title = 'Assembly Theme Suggestions';
          description = 'Select a theme for your assembly:';
-         prompt = 'Suggest some themes for the school assembly.';
+         prompt = 'Suggest some unique themes for the school assembly, different from the previously suggested ones.';
          break;
 
       case 'thought':
