@@ -12,3 +12,5 @@ CREATE TABLE assemblies (
     additional_roles JSONB,  -- stores an array of { role, student } objects
     created_at TIMESTAMP DEFAULT NOW()
 );
+
+ALTER TABLE assemblies ADD CONSTRAINT unique_date UNIQUE (date);
