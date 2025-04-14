@@ -375,6 +375,77 @@
          .empty-state p {
          color: var(--text);
          }
+         /* Add these styles to your existing CSS */
+         .modal-lg {
+         max-width: 800px;
+         width: 90%;
+         max-height: 90vh;
+         display: flex;
+         flex-direction: column;
+         }
+         .response-content {
+         background-color: #f9fafb;
+         border: 1px solid var(--border);
+         border-radius: 6px;
+         padding: 1.5rem;
+         margin-top: 1rem;
+         max-height: 60vh;
+         overflow-y: auto;
+         white-space: pre-wrap;
+         font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+         line-height: 1.6;
+         }
+         .response-actions {
+         display: flex;
+         justify-content: flex-end;
+         margin-top: 1rem;
+         }
+         /* For the copy button feedback */
+         .copy-feedback {
+         color: var(--success);
+         margin-left: 0.5rem;
+         opacity: 0;
+         transition: opacity 0.3s ease-in-out;
+         }
+         .copy-feedback.show {
+         opacity: 1;
+         }
+         /* Subtitle for response context */
+         .response-subtitle {
+         font-size: 0.9rem;
+         color: var(--text);
+         opacity: 0.8;
+         margin-top: 0.25rem;
+         }
+         /* Loading spinner for waiting for AI response */
+         .spinner {
+         display: inline-block;
+         width: 50px;
+         height: 50px;
+         border: 3px solid rgba(0, 0, 0, 0.1);
+         border-radius: 50%;
+         border-top-color: var(--primary);
+         animation: spin 1s ease-in-out infinite;
+         margin: 2rem auto;
+         }
+         @keyframes spin {
+         to { transform: rotate(360deg); }
+         }
+         .loading-container {
+         display: flex;
+         flex-direction: column;
+         align-items: center;
+         justify-content: center;
+         padding: 2rem;
+         text-align: center;
+         }
+         .loading-text {
+         margin-top: 1rem;
+         color: var(--text);
+         }
+         #closeAiResponseModal, #closeAiAssistantModal {
+         z-index: 20000;
+         }
       </style>
    </head>
    <body class="light-theme">
@@ -511,6 +582,41 @@
             </div>
          </div>
       </div>
+      <div class="modal" id="aiAssistantModal">
+         <div class="modal-content">
+            <span class="modal-close" id="closeAiAssistantModal">&times;</span>
+            <h2>AI Assistant</h2>
+            <p>How would you like me to help with this assembly?</p>
+            <div class="ai-options">
+               <div class="ai-option" id="scriptOption">
+                  <h3><i class="fas fa-microphone"></i> Help with Anchoring Script</h3>
+                  <p>Get assistance drafting an anchoring script for this assembly.</p>
+               </div>
+               <div class="ai-option" id="skitOption">
+                  <h3><i class="fas fa-theater-masks"></i> Help with Skit</h3>
+                  <p>Get ideas and script for a skit related to the assembly theme.</p>
+               </div>
+               <div class="ai-option" id="suggestionOption">
+                  <h3><i class="fas fa-lightbulb"></i> Assembly Enhancement Suggestions</h3>
+                  <p>Get suggestions to make this assembly more engaging and exciting.</p>
+               </div>
+            </div>
+         </div>
+      </div>
+      <div class="modal" id="aiResponseModal">
+         <div class="modal-content modal-lg">
+            <span class="modal-close" id="closeAiResponseModal">&times;</span>
+            <h2 id="aiResponseTitle">AI Response</h2>
+            <div class="response-actions">
+               <button class="btn btn-secondary" id="copyResponseBtn">
+               <i class="fas fa-copy"></i> Copy to Clipboard
+               </button>
+            </div>
+            <div class="response-content" id="aiResponseContent">
+               <!-- AI response will be displayed here -->
+            </div>
+         </div>
+      </div>
       <div class="toast" id="toast"></div>
       <!-- Dialog Overlay Starts -->
       <div id="dialog-overlay" class="dialog-overlay">
@@ -523,417 +629,7 @@
          </div>
       </div>
       <!-- Dialog Overlay Ends -->
-      <script>
-         const PASSKEY = "1";
-         let assemblies = [];
-         let additionalRolesCount = 0;
-         
-         const authForm = document.getElementById('authForm');
-         const schedulerForm = document.getElementById('schedulerForm');
-         const upcomingAssemblies = document.getElementById('upcomingAssemblies');
-         const passKeyInput = document.getElementById('passkey');
-         const authenticateBtn = document.getElementById('authenticateBtn');
-         const assemblyForm = document.getElementById('assemblyForm');
-         const conductingClassSelect = document.getElementById('conductingClass');
-         const addRoleBtn = document.getElementById('addRoleBtn');
-         const additionalRolesDiv = document.getElementById('additionalRoles');
-         const assembliesTableBody = document.getElementById('assembliesTableBody');
-         const emptyState = document.getElementById('emptyState');
-         const aiModal = document.getElementById('aiModal');
-         const closeAiModal = document.getElementById('closeAiModal');
-         const aiOptions = document.getElementById('aiOptions');
-         const aiModalTitle = document.getElementById('aiModalTitle');
-         const aiModalDescription = document.getElementById('aiModalDescription');
-         const toast = document.getElementById('toast');
-         const suggestThemeBtn = document.getElementById('suggestThemeBtn');
-         const suggestThoughtBtn = document.getElementById('suggestThoughtBtn');
-         const suggestWordBtn = document.getElementById('suggestWordBtn');
-         
-         async function init() {
-             populateClasses();
-             await loadAssembliesFromServer();
-             updateAssembliesTable();
-             setupEventListeners();
-         }
-         
-         function populateClasses() {
-             const classes = [];
-             for (let grade = 1; grade <= 12; grade++) {
-                 for (let section = 1; section <= 4; section++) {
-                     classes.push(`${grade}-A${section}`);
-                 }
-             }
-         
-             classes.forEach(className => {
-                 const option = document.createElement('option');
-                 option.value = className;
-                 option.textContent = className;
-                 conductingClassSelect.appendChild(option);
-             });
-         }
-         
-         async function loadAssembliesFromServer() {
-             const today = new Date().toISOString().split("T")[0]; // Format: YYYY-MM-DD
-         
-         assemblies = await selectData(
-         "assemblies",
-         false,
-         "*",
-         [], 
-         [],
-         "date",
-         "asc",
-         [
-         { column: "date", operator: "gte", value: today }
-         ]
-         );
-         }
-         
-         async function saveAssembliesToServer(newAssemblyData) {
-             showProcessingDialog();
-             const result = await upsertData("assemblies", newAssemblyData, ["date"]);
-         
-              if(result) {
-                 await showDialog({
-              title: 'Success',
-              message: 'Assembly schedule updated successfully!',
-              type: 'alert'
-           });
-           showToast('Assembly schedule updated successfully!');
-              } else {
-          await showDialog({
-              title: 'Error',
-              message: 'Error updating assembly schedule!',
-              type: 'alert'
-           });
-           showToast('Error updating assembly schedule!', 'error');
-              }
-         return result;
-         }
-         
-         async function deleteFromServer(dateToDelete) {
-             showProcessingDialog();
-             const result = await deleteRow('assemblies', ['date'], [dateToDelete]);
-         
-              if(result) {
-                 await showDialog({
-              title: 'Success',
-              message: 'Assembly deleted successfully!',
-              type: 'alert'
-           });
-           showToast('Assembly deleted successfully!');
-              } else {
-          await showDialog({
-              title: 'Error',
-              message: 'Error updating assembly schedule!',
-              type: 'alert'
-           });
-           showToast('Error updating assembly schedule!', 'error');
-              }           
-         return result;
-         }
-         
-         function updateAssembliesTable() {
-             assembliesTableBody.innerHTML = '';
-         
-             const sortedAssemblies = [...assemblies].sort((a, b) => new Date(a.date) - new Date(b.date));
-             const today = new Date();
-             today.setHours(0, 0, 0, 0);
-             const futureAssemblies = sortedAssemblies.filter(assembly => new Date(assembly.date) >= today);
-             const upcomingAssemblies = futureAssemblies.slice(0, 10);
-         
-             if (upcomingAssemblies.length === 0) {
-                 emptyState.classList.remove('hidden');
-             } else {
-                 emptyState.classList.add('hidden');
-             }
-         
-             upcomingAssemblies.forEach((assembly, index) => {
-                 const row = document.createElement('tr');
-                 const date = new Date(assembly.date);
-                 const formattedDate = date.toLocaleDateString('en-US', {
-                     weekday: 'short',
-                     year: 'numeric',
-                     month: 'short',
-                     day: 'numeric'
-                 });
-         
-                 let additionalRolesHTML = '';
-                 if (assembly.additional_roles && assembly.additional_roles.length > 0) {
-                     additionalRolesHTML = assembly.additional_roles.map(role => `<span class="badge badge-secondary">${role.role}: ${role.student}</span>`).join(' ');
-                 } else {
-                     additionalRolesHTML = '—';
-                 }
-         
-                 row.innerHTML = `
-                     <td>${formattedDate}</td>
-                     <td>${assembly.theme}</td>
-                     <td><span class="badge badge-primary">${assembly.conducting_class}</span></td>
-                     <td>${assembly.anchoring_by || '—'}</td>
-                     <td>${assembly.thought || '—'}</td>
-                     <td>${assembly.word_of_the_day || '—'}</td>
-                     <td>${assembly.news_by || '—'}</td>
-                     <td>${additionalRolesHTML}</td>
-                     <td>
-                         <button class="btn btn-danger btn-sm" onclick="deleteAssembly('${assembly.date}')"><i class="fas fa-trash"></i></button>
-                     </td>
-                 `;
-                 assembliesTableBody.appendChild(row);
-             });
-         }
-         
-         function setupEventListeners() {
-             authenticateBtn.addEventListener('click', handleAuthentication);
-             assemblyForm.addEventListener('submit', handleFormSubmit);
-             addRoleBtn.addEventListener('click', addRole);
-             suggestThemeBtn.addEventListener('click', () => showAiSuggestions('theme'));
-             suggestThoughtBtn.addEventListener('click', () => showAiSuggestions('thought'));
-             suggestWordBtn.addEventListener('click', () => showAiSuggestions('word'));
-             closeAiModal.addEventListener('click', hideAiModal);
-         }
-         
-         function handleAuthentication() {
-             const enteredPasskey = passKeyInput.value.trim();
-             if (enteredPasskey === PASSKEY) {
-                 authForm.classList.add('hidden');
-                 schedulerForm.classList.remove('hidden');
-                 upcomingAssemblies.classList.remove('hidden');
-                 showToast('Authentication successful!');
-             } else {
-                 showToast('Invalid passkey! Please try again.', 'error');
-                 passKeyInput.value = '';
-                 passKeyInput.focus();
-             }
-         }
-         
-         async function handleFormSubmit(event) {
-             event.preventDefault();
-         
-             const assemblyDate = document.getElementById('assemblyDate').value;
-             const existingIndex = assemblies.findIndex(assembly => assembly.date === assemblyDate);
-         
-         
-         if (assemblyDate) {
-         const selectedDate = new Date(assemblyDate);
-         const today = new Date();
-         
-         // Set the time portion to 00:00:00 for accurate date comparison
-         selectedDate.setHours(0, 0, 0, 0);
-         today.setHours(0, 0, 0, 0);
-         
-         if (selectedDate < today) {
-         showDialog({
-              title: 'Error',
-              message: "You can't schedule an assembly for a past date!",
-              type: 'alert'
-           });
-         showToast("Can't schedule an assembly for a past date!", 'error');
-         return;
-         } 
-         }
-         
-             const newAssemblyData = {
-                 date: assemblyDate,
-                 theme: document.getElementById('theme').value.trim(),
-                 conducting_class: document.getElementById('conductingClass').value.trim(),
-                 anchoring_by: document.getElementById('anchorStudent').value.trim() || null,
-                 thought_by: document.getElementById('thoughtStudent').value.trim() || null,
-                 thought: document.getElementById('thought').value.trim() || null,
-                 word_student: document.getElementById('wordStudent').value.trim()  || null,
-                 word_of_the_day: document.getElementById('word').value.trim() || null,
-                 news_by: document.getElementById('newsStudent').value.trim() || null,
-                 additional_roles: []
-             };
-         
-             const roleEntries = document.querySelectorAll('.role-entry');
-             roleEntries.forEach(entry => {
-                 const roleInput = entry.querySelector('.role-name');
-                 const studentInput = entry.querySelector('.role-student');
-         
-                 if (roleInput.value && studentInput.value) {
-                     newAssemblyData.additional_roles.push({
-                         role: roleInput.value,
-                         student: studentInput.value
-                     });
-                 }
-             });
-         
-         const success = await saveAssembliesToServer(newAssemblyData);
-         
-            if(!success) {
-                 return
-            }
-         
-             if (existingIndex !== -1) {
-                 assemblies[existingIndex] = newAssemblyData;
-             } else {
-                 assemblies.push(newAssemblyData);
-             }
-         
-             updateAssembliesTable();
-             assemblyForm.reset();
-             resetAdditionalRoles();
-         }
-         
-         async function deleteAssembly(dateToDelete) {
-         
-         const date = new Date(dateToDelete);
-         const day = date.getDate();
-         const month = date.toLocaleString('default', { month: 'long' });
-         const year = date.getFullYear();
-         
-         // Function to get ordinal suffix
-         const getOrdinal = (n) => {
-         const s = ["th", "st", "nd", "rd"];
-         const v = n % 100;
-         return n + (s[(v - 20) % 10] || s[v] || s[0]);
-         };
-         
-         const formattedDate = `${getOrdinal(day)} ${month}, ${year}`;
-         const message = 'Are you sure you want to delete the assembly scheduled for ' + formattedDate + '?';
-         
-             const confirmDelete = await showDialog({
-             			         title: 'Confirm Delete',
-            			            message: message,
-             			         type: 'confirm'
-          			            });
-         
-             if (confirmDelete) {
-                 const success = deleteFromServer(dateToDelete);
-                  if(success) {
-                     assemblies = assemblies.filter(assembly => assembly.date !== dateToDelete);
-                   } else {
-                      return;
-                    }
-                 updateAssembliesTable();
-             }
-         }
-         
-         function addRole() {
-             additionalRolesCount++;
-             if (additionalRolesDiv.classList.contains('hidden')) {
-                 additionalRolesDiv.classList.remove('hidden');
-             }
-             const roleEntry = document.createElement('div');
-             roleEntry.className = 'role-entry';
-             roleEntry.innerHTML = `
-                 <input type="text" class="role-name" placeholder="Role Name" required>
-                 <input type="text" class="role-student" placeholder="Student Name" required>
-                 <span class="role-remove" onclick="removeRole(this)">
-                     <i class="fas fa-times-circle"></i>
-                 </span>
-             `;
-             additionalRolesDiv.appendChild(roleEntry);
-         }
-         
-         function removeRole(element) {
-             const roleEntry = element.parentElement;
-             roleEntry.remove();
-             additionalRolesCount--;
-             if (additionalRolesCount === 0) {
-                 additionalRolesDiv.classList.add('hidden');
-             }
-         }
-         
-         function resetAdditionalRoles() {
-             additionalRolesDiv.innerHTML = '';
-             additionalRolesCount = 0;
-             additionalRolesDiv.classList.add('hidden');
-         }
-         
-         function showAiSuggestions(type) {
-             aiOptions.innerHTML = '';
-             let title = '';
-             let description = '';
-             let suggestions = [];
-         
-             switch (type) {
-                 case 'theme':
-                     title = 'Assembly Theme Suggestions';
-                     description = 'Select a theme for your assembly:';
-                     suggestions = [
-                         'Environmental Awareness: Reduce, Reuse, Recycle',
-                         'Unity in Diversity: Celebrating Our Differences',
-                         'Digital Citizenship: Being Responsible Online',
-                         'Health and Wellness: Mind, Body, and Spirit',
-                         'Leadership and Teamwork: Together We Achieve More'
-                     ];
-                     break;
-         
-                 case 'thought':
-                     title = 'Thought of the Day Suggestions';
-                     description = 'Select a thought for your assembly:';
-                     suggestions = [
-                         'Education is not the filling of a pail, but the lighting of a fire.',
-                         'The future belongs to those who believe in the beauty of their dreams.',
-                         'The only way to do great work is to love what you do.',
-                         'Success is not final, failure is not fatal: It is the courage to continue that counts.',
-                         'Be the change that you wish to see in the world.'
-                     ];
-                     break;
-         
-                 case 'word':
-                     title = 'Word of the Day Suggestions';
-                     description = 'Select a word for your assembly:';
-                     suggestions = [
-                         'Perseverance - Persistence in doing something despite difficulty or delay in achieving success.',
-                         'Integrity - The quality of being honest and having strong moral principles.',
-                         'Resilience - The capacity to recover quickly from difficulties; toughness.',
-                         'Empathy - The ability to understand and share the feelings of another.',
-                         'Innovation - The action or process of innovating; a new method, idea, product, etc.'
-                     ];
-                     break;
-             }
-         
-             aiModalTitle.textContent = title;
-             aiModalDescription.textContent = description;
-         
-             suggestions.forEach((suggestion, index) => {
-                 const option = document.createElement('div');
-                 option.className = 'ai-option';
-                 option.textContent = suggestion;
-                 option.addEventListener('click', () => {
-                     selectAiSuggestion(type, suggestion);
-                     hideAiModal();
-                 });
-                 aiOptions.appendChild(option);
-             });
-         
-             aiModal.style.display = 'flex';
-         }
-         
-         function hideAiModal() {
-             aiModal.style.display = 'none';
-         }
-         
-         function selectAiSuggestion(type, suggestion) {
-             switch (type) {
-                 case 'theme':
-                     document.getElementById('theme').value = suggestion;
-                     break;
-         
-                 case 'thought':
-                     document.getElementById('thought').value = suggestion;
-                     break;
-         
-                 case 'word':
-                     const wordPart = suggestion.split(' - ')[0];
-                     document.getElementById('word').value = wordPart;
-                     break;
-             }
-         }
-         
-         function showToast(message, type = 'success') {
-             toast.textContent = message;
-             toast.className = `toast show ${type === 'error' ? 'toast-error' : ''}`;
-             setTimeout(() => {
-                 toast.classList.remove('show');
-             }, 3000);
-         }
-         
-         window.onload = function () {
-         init();
-         };
-      </script>
+      <!-- Reference the main script -->
+      <script src="script.js"></script>
    </body>
 </html>
