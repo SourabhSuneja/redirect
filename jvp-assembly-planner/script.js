@@ -1,4 +1,4 @@
-const PASSKEY = "1";
+const PASSKEY = "jvp123";
 let assemblies = [];
 let additionalRolesCount = 0;
 
