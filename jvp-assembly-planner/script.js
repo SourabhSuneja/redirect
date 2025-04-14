@@ -516,7 +516,7 @@ function formatResponse(text) {
       .replace(/</g, '<')
       .replace(/>/g, '>')
       .replace(/"/g, '"')
-      .replace(/'/g, ''');
+      .replace(/'/g, "'");
 
    // Step 2: Convert line breaks to <br> tags
    formatted = formatted.replace(/\n/g, '<br>');
