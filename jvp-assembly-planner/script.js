@@ -156,7 +156,9 @@ function updateAssembliesTable() {
     <td><span class="badge badge-primary">${assembly.conducting_class}</span></td>
     <td>${assembly.anchoring_by || '—'}</td>
     <td>${assembly.thought || '—'}</td>
+    <td>${assembly.thought_by || '—'}</td>
     <td>${assembly.word_of_the_day || '—'}</td>
+    <td>${assembly.word_student || '—'}</td>
     <td>${assembly.news_by || '—'}</td>
     <td>${additionalRolesHTML}</td>
     <td>
