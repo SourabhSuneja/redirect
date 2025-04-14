@@ -457,7 +457,7 @@ function handleAiAssistantOption(optionType) {
    showToast('Processing your AI assistance request...', 'success');
 }
 
-function requestAiAssistance(assemblyData, assistanceType) {
+async function requestAiAssistance(assemblyData, assistanceType) {
    console.log('Assembly Data:', assemblyData);
    console.log('Assistance Type:', assistanceType);
 
@@ -470,32 +470,13 @@ function requestAiAssistance(assemblyData, assistanceType) {
       assistanceType: assistanceType
    };
 
-   // Here's where you would make your actual API call to your AI service
-   // For demonstration, we'll simulate a response after a delay
-   // In your actual implementation, replace this with your API call
+   // Making call to AI Service
 
-   // Simulated API call with timeout to mimic network delay
-   setTimeout(() => {
-      // This is where you would normally process the response from your AI service
-      // For demo purposes, we'll just show a sample response
-      const sampleResponse = getSampleResponse(assistanceType, assemblyData);
+   const prompt = getPrompt(assistanceType, assemblyData);
 
-      // Update the modal with the response
-      showAiResponseModal(assistanceType, sampleResponse, assemblyData);
-   }, 2000);
+   const response = await window.fetchResponse(prompt);
 
-   // In your actual implementation:
-   /*
-   fetchFromAiService(requestData)
-       .then(response => {
-           showAiResponseModal(assistanceType, response.content, assemblyData);
-       })
-       .catch(error => {
-           console.error('Error fetching AI response:', error);
-           showToast('Failed to get AI response. Please try again.', 'error');
-           hideAiResponseModal();
-       });
-   */
+   showAiResponseModal(assistanceType, response, assemblyData);
 }
 
 function showAiResponseModal(responseType, responseContent, assemblyData) {
@@ -528,10 +509,71 @@ function showAiResponseModal(responseType, responseContent, assemblyData) {
    aiResponseModal.style.display = 'flex';
 }
 
-function formatResponse(content) {
-   // Convert line breaks to <br> tags and preserve formatting
-   // This is a simple implementation - you may want to enhance it based on your needs
-   return content.replace(/\n/g, '<br>');
+function formatResponse(text) {
+   if (!text) return '';
+
+   // Step 1: Escape HTML special characters to prevent XSS
+   let formatted = text
+      .replace(/&/g, '&')
+      .replace(/</g, '<')
+      .replace(/>/g, '>')
+      .replace(/"/g, '"')
+      .replace(/'/g, ''');
+
+   // Step 2: Convert line breaks to <br> tags
+   formatted = formatted.replace(/\n/g, '<br>');
+
+   // Step 3: Format paragraphs (double line breaks)
+   formatted = formatted.replace(/(<br>){2,}/g, '</p><p>');
+   formatted = '<p>' + formatted + '</p>';
+   formatted = formatted.replace(/<p><\/p>/g, '<br>'); // Clean up empty paragraphs
+
+   // Step 4: Handle numbered lists
+   const numberedListRegex = /<br>(\d+\.)\s(.*?)(?=<br>\d+\.|$)/gs;
+   if (formatted.match(numberedListRegex)) {
+      formatted = formatted.replace(numberedListRegex, (match, number, content) => {
+         return `<br><ol start="${number.replace('.', '')}"><li>${content}</li></ol>`;
+      });
+   }
+
+   // Step 5: Handle bullet points
+   const bulletPointRegex = /<br>(\*|-|\•)\s(.*?)(?=<br>(\*|-|\•)|$)/gs;
+   if (formatted.match(bulletPointRegex)) {
+      formatted = formatted.replace(bulletPointRegex, '<br><ul><li>$2</li></ul>');
+   }
+
+   // Step 6: Format bold text (** or __ markdown style)
+   formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+   formatted = formatted.replace(/__(.*?)__/g, '<strong>$1</strong>');
+
+   // Step 7: Format italic text (* or _ markdown style)
+   formatted = formatted.replace(/\*(.*?)\*/g, '<em>$1</em>');
+   formatted = formatted.replace(/_(.*?)_/g, '<em>$1</em>');
+
+   // Step 8: Format code blocks (``` markdown style)
+   formatted = formatted.replace(/```(.*?)```/gs, '<pre><code>$1</code></pre>');
+
+   // Step 9: Format inline code (` markdown style)
+   formatted = formatted.replace(/`(.*?)`/g, '<code>$1</code>');
+
+   // Step 10: Format headings (markdown # style)
+   formatted = formatted.replace(/<br>#{6}\s+(.*?)(?=<br>|$)/g, '<br><h6>$1</h6>');
+   formatted = formatted.replace(/<br>#{5}\s+(.*?)(?=<br>|$)/g, '<br><h5>$1</h5>');
+   formatted = formatted.replace(/<br>#{4}\s+(.*?)(?=<br>|$)/g, '<br><h4>$1</h4>');
+   formatted = formatted.replace(/<br>#{3}\s+(.*?)(?=<br>|$)/g, '<br><h3>$1</h3>');
+   formatted = formatted.replace(/<br>#{2}\s+(.*?)(?=<br>|$)/g, '<br><h2>$1</h2>');
+   formatted = formatted.replace(/<br>#{1}\s+(.*?)(?=<br>|$)/g, '<br><h1>$1</h1>');
+
+   // Step 11: Format links [text](url)
+   formatted = formatted.replace(/\[(.*?)\]\((.*?)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+
+   // Step 12: Format horizontal rules
+   formatted = formatted.replace(/<br>(\-{3,}|\*{3,}|_{3,})(<br>|$)/g, '<hr>');
+
+   // Step 13: Clean up any trailing <br> tags
+   formatted = formatted.replace(/<br>$/g, '');
+
+   return formatted;
 }
 
 function hideAiResponseModal() {
@@ -632,135 +674,19 @@ function showLoadingInResponseModal(assistanceType, assemblyData) {
 
 // Function to get sample responses for demonstration purposes
 // Replace this with your actual AI response handling
-function getSampleResponse(assistanceType, assemblyData) {
+function getPrompt(assistanceType, assemblyData) {
    switch (assistanceType) {
       case 'script':
-         return `# Anchoring Script for "${assemblyData.theme}" Assembly
-
-Good morning respected Principal, teachers, and my dear friends!
-
-Welcome to today's special assembly on "${assemblyData.theme}". I, ${assemblyData.anchoring_by || '[Student Name]'}, from class ${assemblyData.conducting_class}, will be your anchor for today.
-
-Let's begin our assembly with a moment of silence and prayer...
-
-[Pause for prayer]
-
-Thank you. Now, I invite ${assemblyData.thought_by || '[Student Name]'} to share today's thought of the day.
-
-[After thought of the day]
-
-Thank you for that insightful thought. Now, let's welcome ${assemblyData.word_student || '[Student Name]'} to introduce us to today's Word of the Day.
-
-[After word of the day]
-
-Now, let's stay updated with what's happening around the world. I invite ${assemblyData.news_by || '[Student Name]'} to present today's news headlines.
-
-[After news presentation]
-
-Thank you for keeping us informed. Now, we have a special presentation related to our theme "${assemblyData.theme}".
-
-[Main presentation/skit]
-
-Thank you to all the participants for that wonderful presentation. Before we conclude, I would like to remind everyone about...
-
-[School announcements if any]
-
-With this, we come to the end of today's assembly. Let's all stand for the National Anthem.
-
-[National Anthem]
-
-Thank you everyone. Have a wonderful day ahead!`;
+         return 'Write a school assembly script based on the following JSON data: \n' + JSON.stringify(assemblyData);
 
       case 'skit':
-         return `# Skit for "${assemblyData.theme}" Assembly
-
-## Scene Setup
-[Classroom setup with 5-6 students. One table at the front represents the teacher's desk]
-
-## Characters
-- Narrator
-- Student 1 (Leader)
-- Student 2
-- Student 3
-- Student 4
-- Teacher
-
-## Script
-
-**Narrator:** [Enters from stage left] Our story today explores ${assemblyData.theme}. Watch how our characters learn an important lesson about this theme. [Exits]
-
-**Student 1:** [Entering excitedly] Hey everyone! I've got a great idea for our class project!
-
-**Student 2:** [Looking up from book] What is it this time?
-
-**Student 1:** Let's create a presentation about ${assemblyData.theme.split(':')[0]}! It's so important these days.
-
-**Student 3:** [Skeptically] Why should we care about that? That sounds boring.
-
-**Student 4:** [Enthusiastically] Actually, I read something about this last week. It's really fascinating!
-
-[Students engage in a discussion/debate about the theme, with conflict arising]
-
-**Teacher:** [Enters from stage right] I couldn't help overhearing your discussion. Why don't we explore this topic together?
-
-[Interactive scene where students discover the importance of the theme through activity/discussion]
-
-**Student 3:** [Having a realization] I never thought about it that way before! This really matters to all of us.
-
-**Student 2:** We could make a real difference if we all work together on this.
-
-**Student 1:** That's what I was trying to say! When we unite for a cause, we can achieve so much more.
-
-**Teacher:** I'm proud of how you've all come together to understand ${assemblyData.theme}. Remember this lesson as you go forward.
-
-[All students stand together at the front of the stage]
-
-**All Students:** [In unison] Together we learn, together we grow, together we make a difference!
-
-[Curtain/End]
-
-## Props Needed:
-- Books for students
-- Simple classroom decorations
-- Posters related to the theme (optional)
-
-## Notes for Director:
-- Keep the performance under 7 minutes
-- Encourage students to add their own creativity to the characters
-- Practice projection so everyone in the assembly can hear clearly`;
+         return 'Write a skit based on the following JSON data: \n' + JSON.stringify(assemblyData);
 
       case 'suggestions':
-         return `# Enhancement Suggestions for "${assemblyData.theme}" Assembly
-
-## Interactive Elements
-1. **Theme-Based Quiz:** Start with a quick 3-question quiz about the theme to engage the audience immediately.
-2. **Audience Participation:** Include call-and-response moments where the audience repeats a key phrase related to the theme.
-3. **Live Poll:** Conduct a quick show-of-hands poll about a question related to the theme.
-
-## Visual Enhancements
-1. **Props and Costumes:** Use simple props or color-coordinated clothing related to the theme.
-2. **Digital Presentation:** Create a short slideshow with impactful images to display during relevant parts.
-3. **Themed Decorations:** Decorate the assembly area with items representing the theme.
-
-## Content Suggestions
-1. **Real-Life Examples:** Include stories of how this theme has impacted real people or communities.
-2. **Actionable Takeaways:** End with 3 specific actions students can take related to the theme.
-3. **Guest Speaker:** Invite someone from the community with expertise on the theme (perhaps a parent or local professional).
-
-## Follow-up Activities
-1. **Theme Challenge:** Issue a week-long challenge related to the theme for students to complete.
-2. **Reflection Board:** Set up a board where students can post their thoughts or learnings about the theme throughout the week.
-3. **Class Discussions:** Provide questions for teachers to continue theme discussions in classrooms.
-
-## Surprise Elements
-1. **Flash Mob:** Arrange for a small group to perform a surprise dance or song related to the theme.
-2. **Hidden Talents:** Showcase unexpected talents of students related to the theme.
-3. **Mystery Box:** Have a mystery box revealed during the assembly containing something symbolic of the theme.
-
-Remember to keep the assembly moving at a good pace - aim for no segment longer than 5 minutes to maintain attention and engagement. Good luck with your assembly!`;
+         return 'Write assembly enhancement suggestions based on the following JSON data: \n' + JSON.stringify(assemblyData);
 
       default:
-         return "No content generated. Please try again.";
+         return null;
    }
 }
 
