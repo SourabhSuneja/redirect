@@ -743,7 +743,7 @@ document.getElementById('assemblyDate').addEventListener('change', function () {
          additionalRolesDiv.classList.add('hidden');
       }
    } else {
-      form.reset();
+      //form.reset();
       resetAdditionalRoles();
       additionalRolesDiv.classList.add('hidden');
    }
