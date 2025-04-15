@@ -707,6 +707,48 @@ function extractSuggestions(aiText) {
   }
 }
 
+document.getElementById('assemblyDate').addEventListener('change', function () {
+   const selectedDate = this.value;
+   const foundAssembly = assemblies.find(a => a.date === selectedDate);
+
+   const form = document.getElementById('assemblyForm');
+   const conductingClassSelect = document.getElementById('conductingClass');
+   const additionalRolesDiv = document.getElementById('additionalRoles');
+
+   if (foundAssembly) {
+      document.getElementById('theme').value = foundAssembly.theme || '';
+      document.getElementById('anchorStudent').value = foundAssembly.anchoring_by || '';
+      document.getElementById('thoughtStudent').value = foundAssembly.thought_by || '';
+      document.getElementById('thought').value = foundAssembly.thought || '';
+      document.getElementById('wordStudent').value = foundAssembly.word_student || '';
+      document.getElementById('word').value = foundAssembly.word_of_the_day || '';
+      document.getElementById('newsStudent').value = foundAssembly.news_by || '';
+
+      // Auto-select class if it exists
+      const classExists = Array.from(conductingClassSelect.options)
+         .some(option => option.value === foundAssembly.conducting_class);
+      conductingClassSelect.value = classExists ? foundAssembly.conducting_class : '';
+
+      resetAdditionalRoles();
+
+      if (foundAssembly.additional_roles && foundAssembly.additional_roles.length > 0) {
+         additionalRolesDiv.classList.remove('hidden');
+         foundAssembly.additional_roles.forEach(roleObj => {
+            addRole();
+            const lastRoleEntry = additionalRolesDiv.lastElementChild;
+            lastRoleEntry.querySelector('.role-name').value = roleObj.role || '';
+            lastRoleEntry.querySelector('.role-student').value = roleObj.student || '';
+         });
+      } else {
+         additionalRolesDiv.classList.add('hidden');
+      }
+   } else {
+      form.reset();
+      resetAdditionalRoles();
+      additionalRolesDiv.classList.add('hidden');
+   }
+});
+
 window.onload = function () {
    init();
 };
