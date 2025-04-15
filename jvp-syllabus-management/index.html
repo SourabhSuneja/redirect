@@ -365,6 +365,68 @@
          .logout-btn:hover {
          color: var(--error-color);
          }
+         .completion-section {
+         margin-top: 20px;
+         padding-top: 15px;
+         border-top: 1px solid var(--divider-color);
+         }
+         .completion-title {
+         font-weight: 600;
+         margin-bottom: 12px;
+         color: var(--primary-color);
+         }
+         .progress-bar-container {
+         width: 100%;
+         height: 20px;
+         background-color: #e0e0e0;
+         border-radius: 10px;
+         margin-bottom: 15px;
+         overflow: hidden;
+         }
+         .progress-bar {
+         height: 100%;
+         background-color: var(--success-color);
+         border-radius: 10px;
+         transition: width 0.3s ease;
+         }
+         .completion-info {
+         display: flex;
+         align-items: center;
+         gap: 5px;
+         margin-bottom: 8px;
+         font-size: 14px;
+         color: var(--text-secondary);
+         }
+         .completion-info i {
+         font-size: 18px;
+         }
+         /* For the subject card to show completion status */
+         .subject-card-header {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 12px;
+         }
+         .completion-badge {
+         background-color: var(--primary-light);
+         color: var(--primary-dark);
+         padding: 4px 8px;
+         border-radius: 12px;
+         font-size: 12px;
+         font-weight: 500;
+         }
+         .completion-badge.complete {
+         background-color: #e8f5e9;
+         color: var(--success-color);
+         }
+         .completion-notes {
+         margin-top: 12px;
+         padding: 8px;
+         background-color: #f5f5f5;
+         border-left: 3px solid var(--primary-color);
+         font-style: italic;
+         font-size: 14px;
+         }
       </style>
    </head>
    <body>
@@ -477,6 +539,28 @@
                <div class="form-group">
                   <label for="syllabus-content">Syllabus Content</label>
                   <textarea id="syllabus-content" class="form-control syllabus-editor" placeholder="Enter syllabus details here..." rows="10"></textarea>
+                  <!-- Add this after the syllabus content textarea -->
+                  <div class="completion-section">
+                     <div class="completion-title">Syllabus Completion Status</div>
+                     <div class="form-group">
+                        <label for="completion-percentage">Completion Percentage</label>
+                        <div class="flex-row">
+                           <input type="range" id="completion-percentage" class="form-control" min="0" max="100" value="0" style="flex: 3;">
+                           <input type="number" id="completion-percentage-display" class="form-control" min="0" max="100" value="0" style="flex: 1;">
+                        </div>
+                        <div class="progress-bar-container">
+                           <div class="progress-bar" id="completion-progress-bar" style="width: 0%"></div>
+                        </div>
+                     </div>
+                     <div class="form-group" id="expected-completion-container">
+                        <label for="expected-completion-date">Expected Completion Date</label>
+                        <input type="date" id="expected-completion-date" class="form-control">
+                     </div>
+                     <div class="form-group">
+                        <label for="completion-notes">Completion Notes</label>
+                        <textarea id="completion-notes" class="form-control" rows="3" placeholder="Add any notes regarding syllabus progress or challenges..."></textarea>
+                     </div>
+                  </div>
                </div>
                <div class="form-group">
                   <button id="save-syllabus-btn" class="btn btn-block">
@@ -487,12 +571,12 @@
                   </button>
                </div>
                <div class="form-group">
-                 <button id="delete-syllabus-btn" class="btn btn-block">
-                   <span class="icon-text">
-                     <i class="material-icons">delete</i>
-                     <span>Delete Syllabus</span>
-                   </span>
-                 </button>
+                  <button id="delete-syllabus-btn" class="btn btn-block">
+                  <span class="icon-text">
+                  <i class="material-icons">delete</i>
+                  <span>Delete Syllabus</span>
+                  </span>
+                  </button>
                </div>
             </div>
             <!-- View Syllabus Tab -->
@@ -635,12 +719,15 @@
          classSelect.addEventListener('change', loadExistingSyllabus);
          examSelect.addEventListener('change', loadExistingSyllabus);
          
+         document.getElementById('completion-percentage').addEventListener('input', updateProgressBar);
+         document.getElementById('completion-percentage-display').addEventListener('input', updateProgressBarFromInput);
+         
          // Functions
          function handleLogin() {
          const username = document.getElementById('username').value;
          const password = document.getElementById('password').value;
          const createSyllabusPill = document.getElementById('createSyllabusPill');
-
+         
          // Hide all tabs
          createSyllabusTab.style.display = 'none';
          viewSyllabusTab.style.display = 'none';
@@ -695,64 +782,147 @@
              });
          }
          
-         function loadExistingSyllabus() {
-             const subject = subjectSelect.value;
-             const classId = classSelect.value;
-             const exam = examSelect.value;
+         // Add before loadExistingSyllabus function
+         function updateProgressBar() {
+         const percentage = document.getElementById('completion-percentage').value;
+         document.getElementById('completion-percentage-display').value = percentage;
+         document.getElementById('completion-progress-bar').style.width = percentage + '%';
          
-             if (subject && classId && exam) {
-                 const key = `${classId}_${exam}_${subject}`;
-                 if (syllabusData[key]) {
-                     syllabusContent.value = syllabusData[key];
-                 } else {
-                     syllabusContent.value = '';
-                 }
-             }
+         // Show/hide expected completion date field based on completion status
+         const expectedCompletionContainer = document.getElementById('expected-completion-container');
+         if (percentage == 100) {
+         expectedCompletionContainer.style.display = 'none';
+         } else {
+         expectedCompletionContainer.style.display = 'block';
+         }
+         }
+         
+         function updateProgressBarFromInput() {
+         const inputValue = document.getElementById('completion-percentage-display').value;
+         // Ensure value is between 0-100
+         const percentage = Math.min(100, Math.max(0, inputValue));
+         document.getElementById('completion-percentage').value = percentage;
+         document.getElementById('completion-progress-bar').style.width = percentage + '%';
+         
+         // Show/hide expected completion date field
+         const expectedCompletionContainer = document.getElementById('expected-completion-container');
+         if (percentage == 100) {
+         expectedCompletionContainer.style.display = 'none';
+         } else {
+         expectedCompletionContainer.style.display = 'block';
+         }
+         }
+         
+         function loadExistingSyllabus() {
+         const subject = subjectSelect.value;
+         const classId = classSelect.value;
+         const exam = examSelect.value;
+         
+         if (subject && classId && exam) {
+         const key = `${classId}_${exam}_${subject}`;
+         if (syllabusData[key]) {
+         // If data exists in the new format (object with syllabus_text property)
+         if (typeof syllabusData[key] === 'object') {
+         syllabusContent.value = syllabusData[key].syllabus_text || '';
+         
+         // Set completion data
+         const completionPercentage = syllabusData[key].completion_percentage || 0;
+         document.getElementById('completion-percentage').value = completionPercentage;
+         document.getElementById('completion-percentage-display').value = completionPercentage;
+         document.getElementById('completion-progress-bar').style.width = completionPercentage + '%';
+         
+         if (syllabusData[key].expected_completion_date) {
+          document.getElementById('expected-completion-date').value = syllabusData[key].expected_completion_date;
+         } else {
+          document.getElementById('expected-completion-date').value = '';
+         }
+         
+         document.getElementById('completion-notes').value = syllabusData[key].completion_notes || '';
+         
+         // Show/hide expected completion date field
+         const expectedCompletionContainer = document.getElementById('expected-completion-container');
+         if (completionPercentage == 100) {
+          expectedCompletionContainer.style.display = 'none';
+         } else {
+          expectedCompletionContainer.style.display = 'block';
+         }
+         } 
+         // Backward compatibility with old data format (just a string)
+         else if (typeof syllabusData[key] === 'string') {
+         syllabusContent.value = syllabusData[key];
+         // Reset completion fields
+         document.getElementById('completion-percentage').value = 0;
+         document.getElementById('completion-percentage-display').value = 0;
+         document.getElementById('completion-progress-bar').style.width = '0%';
+         document.getElementById('expected-completion-date').value = '';
+         document.getElementById('completion-notes').value = '';
+         document.getElementById('expected-completion-container').style.display = 'block';
+         }
+         } else {
+         // No data exists
+         syllabusContent.value = '';
+         // Reset completion fields
+         document.getElementById('completion-percentage').value = 0;
+         document.getElementById('completion-percentage-display').value = 0;
+         document.getElementById('completion-progress-bar').style.width = '0%';
+         document.getElementById('expected-completion-date').value = '';
+         document.getElementById('completion-notes').value = '';
+         document.getElementById('expected-completion-container').style.display = 'block';
+         }
+         }
          }
          
          function saveSyllabus() {
-             const subject = subjectSelect.value;
-             const classId = classSelect.value;
-             const exam = examSelect.value;
-             const content = syllabusContent.value.trim();
+         const subject = subjectSelect.value;
+         const classId = classSelect.value;
+         const exam = examSelect.value;
+         const content = syllabusContent.value.trim();
+         const completionPercentage = parseInt(document.getElementById('completion-percentage').value);
+         const expectedCompletionDate = document.getElementById('expected-completion-date').value;
+         const completionNotes = document.getElementById('completion-notes').value.trim();
          
-             if (!subject || !classId || !exam) {
-                 showAlert(syllabusAlert, 'Please select subject, class, and exam.', 'error');
-                 return;
-             }
-         
-             if (!content) {
-                 showAlert(syllabusAlert, 'Please enter syllabus content.', 'error');
-                 return;
-             }
-         
-             // Save to data structure
-             const key = `${classId}_${exam}_${subject}`;
-             syllabusData[key] = content;
-         
-             // Save to server
-             saveSyllabusData();
-             showProcessingDialog();
-         
+         if (!subject || !classId || !exam) {
+         showAlert(syllabusAlert, 'Please select subject, class, and exam.', 'error');
+         return;
          }
-
+         
+         if (!content) {
+         showAlert(syllabusAlert, 'Please enter syllabus content.', 'error');
+         return;
+         }
+         
+         // Save to data structure
+         const key = `${classId}_${exam}_${subject}`;
+         syllabusData[key] = {
+         syllabus_text: content,
+         completion_percentage: completionPercentage,
+         expected_completion_date: completionPercentage < 100 ? expectedCompletionDate : '',
+         completion_notes: completionNotes,
+         last_updated: new Date().toISOString()
+         };
+         
+         // Save to server
+         saveSyllabusData();
+         showProcessingDialog();
+         }
+         
          async function deleteSyllabus() {
              const subject = subjectSelect.value;
              const classId = classSelect.value;
              const exam = examSelect.value;
-
+         
              if (!subject || !classId || !exam) {
                  showAlert(syllabusAlert, 'Please select subject, class, and exam.', 'error');
                  return;
              }
-
+         
              const key = `${classId}_${exam}_${subject}`;
-
+         
              if (!syllabusData[key]) {
                  showAlert(syllabusAlert, 'No syllabus found to delete for the selected subject, class, and exam.', 'error');
                  return;
              }
-
+         
              // Confirm before deleting
              const confirmDelete = await showDialog({
             			         title: 'Confirm Delete',
@@ -760,17 +930,17 @@
             			         type: 'confirm'
          			            });
              if (!confirmDelete) return;
-
+         
              // Show processing dialog
              showProcessingDialog();
-
+         
              // Delete from server
              deleteSyllabusData(subject, classId, exam, key);
-
+         
              // Clear the content field
              syllabusContent.value = '';
-}
-
+         }
+         
          async function deleteSyllabusData(subject, classId, exam, key) {
                const result = await deleteRow('syllabus', ['class', 'exam', 'subject'], [classId, exam, subject]);
                if(result) {
@@ -792,47 +962,103 @@
          }
          
          function loadSyllabusView() {
-             const classId = viewClassSelect.value;
-             const exam = viewExamSelect.value;
+         const classId = viewClassSelect.value;
+         const exam = viewExamSelect.value;
          
-             if (!classId || !exam) {
-                 alert('Please select both class and exam.');
-                 return;
-             }
+         if (!classId || !exam) {
+         alert('Please select both class and exam.');
+         return;
+         }
          
-             displayClass.textContent = classId;
-             displayExam.textContent = exam;
+         displayClass.textContent = classId;
+         displayExam.textContent = exam;
          
-             // Clear existing content
-             subjectsContainer.innerHTML = '';
+         // Clear existing content
+         subjectsContainer.innerHTML = '';
          
-             // Load syllabus for each subject
-             let hasSyllabus = false;
-             SUBJECTS.forEach(subject => {
-                 const key = `${classId}_${exam}_${subject}`;
-                 if (syllabusData[key]) {
-                     hasSyllabus = true;
-                     const subjectCard = document.createElement('div');
-                     subjectCard.className = 'subject-card';
-                     
-                     const subjectTitle = document.createElement('h3');
-                     subjectTitle.textContent = subject;
-                     
-                     const subjectContent = document.createElement('p');
-                     subjectContent.textContent = syllabusData[key];
-                     
-                     subjectCard.appendChild(subjectTitle);
-                     subjectCard.appendChild(subjectContent);
-                     subjectsContainer.appendChild(subjectCard);
-                 }
-             });
+         // Load syllabus for each subject
+         let hasSyllabus = false;
+         SUBJECTS.forEach(subject => {
+         const key = `${classId}_${exam}_${subject}`;
+         if (syllabusData[key]) {
+         hasSyllabus = true;
+         const subjectCard = document.createElement('div');
+         subjectCard.className = 'subject-card';
          
-             if (!hasSyllabus) {
-                 const noDataMsg = document.createElement('div');
-                 noDataMsg.className = 'alert alert-error';
-                 noDataMsg.textContent = 'No syllabus data available for this class and exam.';
-                 subjectsContainer.appendChild(noDataMsg);
-             }
+         // Create header with subject name and completion status
+         const subjectHeader = document.createElement('div');
+         subjectHeader.className = 'subject-card-header';
+         
+         const subjectTitle = document.createElement('h3');
+         subjectTitle.textContent = subject;
+         
+         // Add completion badge
+         const completionBadge = document.createElement('div');
+         
+         // Handle both old format (string) and new format (object)
+         let completionPercentage = 0;
+         let completionNotes = '';
+         let expectedDate = '';
+         let syllabusText = '';
+         
+         if (typeof syllabusData[key] === 'object') {
+         completionPercentage = syllabusData[key].completion_percentage || 0;
+         completionNotes = syllabusData[key].completion_notes || '';
+         expectedDate = syllabusData[key].expected_completion_date || '';
+         syllabusText = syllabusData[key].syllabus_text || '';
+         } else {
+         syllabusText = syllabusData[key];
+         }
+         
+         completionBadge.textContent = `${completionPercentage}% Complete`;
+         completionBadge.className = completionPercentage == 100 ? 
+         'completion-badge complete' : 'completion-badge';
+         
+         // Append elements to header
+         subjectHeader.appendChild(subjectTitle);
+         subjectHeader.appendChild(completionBadge);
+         
+         // Create content paragraph
+         const subjectContent = document.createElement('p');
+         subjectContent.textContent = syllabusText;
+         
+         // Build card
+         subjectCard.appendChild(subjectHeader);
+         subjectCard.appendChild(subjectContent);
+         
+         // Add expected completion date if not 100%
+         if (completionPercentage < 100 && expectedDate) {
+         const expectedCompletionInfo = document.createElement('div');
+         expectedCompletionInfo.className = 'completion-info';
+         expectedCompletionInfo.innerHTML = `<i class="material-icons">event</i> Expected completion: ${formatDate(expectedDate)}`;
+         subjectCard.appendChild(expectedCompletionInfo);
+         }
+         
+         // Add completion notes if available
+         if (completionNotes) {
+         const notesElement = document.createElement('div');
+         notesElement.className = 'completion-notes';
+         notesElement.textContent = completionNotes;
+         subjectCard.appendChild(notesElement);
+         }
+         
+         subjectsContainer.appendChild(subjectCard);
+         }
+         });
+         
+         if (!hasSyllabus) {
+         const noDataMsg = document.createElement('div');
+         noDataMsg.className = 'alert alert-error';
+         noDataMsg.textContent = 'No syllabus data available for this class and exam.';
+         subjectsContainer.appendChild(noDataMsg);
+         }
+         }
+         
+         // Helper function to format date
+         function formatDate(dateString) {
+         if (!dateString) return '';
+         const date = new Date(dateString);
+         return date.toLocaleDateString();
          }
          
          function printSyllabus() {
@@ -858,35 +1084,51 @@
          }
          
          function saveSyllabusData() {
-         const syllabusArray = Object.entries(syllabusData).map(([key, syllabus_text]) => {
+         const syllabusArray = Object.entries(syllabusData).map(([key, data]) => {
          const [classNum, exam, subject] = key.split('_');
+         
+         // Handle both old format (string) and new format (object)
+         if (typeof data === 'string') {
          return {
          class: parseInt(classNum),
          exam,
          subject,
-         syllabus_text
+         syllabus_text: data,
+         completion_percentage: 0,
+         expected_completion_date: null,
+         completion_notes: null
          };
+         } else {
+         return {
+         class: parseInt(classNum),
+         exam,
+         subject,
+         syllabus_text: data.syllabus_text,
+         completion_percentage: data.completion_percentage || 0,
+         expected_completion_date: data.expected_completion_date || null,
+         completion_notes: data.completion_notes || null
+         };
+         }
          });
-         
+         //document.write(JSON.stringify(syllabusArray));
          window.upsertData("syllabus", syllabusArray, ["class", "exam", "subject"])
          .then(result => {
          if (result) {
          showDialog({
-             title: 'Success',
-             message: 'Syllabus updated successfully!',
-             type: 'alert'
-          });
+         title: 'Success',
+         message: 'Syllabus updated successfully!',
+         type: 'alert'
+         });
          showAlert(syllabusAlert, 'Syllabus saved successfully!', 'success');
          reconstructSyllabusObj().then((syllabusObj) => {
          syllabusData = syllabusObj;
          });
-         
          } else {
          showDialog({
-             title: 'Error',
-             message: 'Error updating syllabus!',
-             type: 'alert'
-          });
+         title: 'Error',
+         message: 'Error updating syllabus!',
+         type: 'alert'
+         });
          }
          });
          }
@@ -903,7 +1145,13 @@
          
          for (const row of syllabusData) {
          const key = `${row.class}_${row.exam}_${row.subject}`;
-         syllabusObj[key] = row.syllabus_text;
+         syllabusObj[key] = {
+         syllabus_text: row.syllabus_text,
+         completion_percentage: row.completion_percentage || 0,
+         expected_completion_date: row.expected_completion_date || '',
+         completion_notes: row.completion_notes || '',
+         last_updated: row.last_updated || new Date().toISOString()
+         };
          }
          
          return syllabusObj;
