@@ -743,7 +743,16 @@ document.getElementById('assemblyDate').addEventListener('change', function () {
          additionalRolesDiv.classList.add('hidden');
       }
    } else {
-      //form.reset();
+      // Reset form elements
+      document.getElementById('theme').value = '';
+      document.getElementById('anchorStudent').value = '';
+      document.getElementById('thoughtStudent').value = '';
+      document.getElementById('thought').value = '';
+      document.getElementById('wordStudent').value = '';
+      document.getElementById('word').value = '';
+      document.getElementById('newsStudent').value = '';
+      conductingClassSelect.value = '';
+
       resetAdditionalRoles();
       additionalRolesDiv.classList.add('hidden');
    }
