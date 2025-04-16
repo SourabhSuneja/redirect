@@ -780,10 +780,19 @@
          return a.subject.localeCompare(b.subject); // Then sort by subject alphabetically
          });
          }
+
+         // function to handle live updates
+         async function handleLiveUpdate(payload) {
+            const result = await selectData('syllabus');
+            syllabus = sortByClassAndSubject(result);
+            renderSyllabus(syllabus);
+            updateDashboard(syllabus);
+         }
          
          window.onload = async function() {
-                const result = await selectData("syllabus");
+                const result = await selectData('syllabus');
                 syllabus = sortByClassAndSubject(result);
+                const subscription = subscribeToTable('syllabus', handleLiveUpdate);
          }
       </script>
    </body>
