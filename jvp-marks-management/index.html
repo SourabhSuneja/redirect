@@ -500,24 +500,28 @@
                      </div>
                   </div>
                </div>
-               <!-- Add Exam Modal -->
-               <div id="exam-modal" class="modal hidden">
-                  <div class="modal-content">
-                     <h3>Add New Exam</h3>
-                     <div class="form-group">
-                        <label for="new-exam-name">Exam Name</label>
-                        <input type="text" id="new-exam-name" placeholder="e.g. CT (Ch-1)">
-                     </div>
-                     <div class="form-group">
-                        <label for="new-exam-marks">Maximum Marks</label>
-                        <input type="number" id="new-exam-marks" min="1" max="100" value="20">
-                     </div>
-                     <div class="form-actions">
-                        <button id="cancel-exam-btn">Cancel</button>
-                        <button id="save-exam-btn" class="btn-secondary">Save</button>
-                     </div>
-                  </div>
-               </div>
+            </div>
+         </div>
+      </div>
+      <!-- Add Exam Modal -->
+      <div id="exam-modal" class="modal hidden">
+         <div class="modal-content">
+            <h3>Add New Exam</h3>
+            <div class="form-group">
+               <label for="new-exam-name">Exam Name</label>
+               <input type="text" id="new-exam-name" placeholder="e.g. Test 1">
+            </div>
+            <div class="form-group">
+               <label for="new-exam-marks">Maximum Marks</label>
+               <input type="number" id="new-exam-marks" min="1" max="100" value="20">
+            </div>
+            <div class="form-group">
+               <label>This exam will be added for:</label>
+               <p id="exam-class-subject-info">Class: [Selected Class], Subject: [Selected Subject]</p>
+            </div>
+            <div class="form-actions">
+               <button id="cancel-exam-btn">Cancel</button>
+               <button id="save-exam-btn" class="btn-secondary">Save</button>
             </div>
          </div>
       </div>
@@ -567,6 +571,9 @@
              {'name': 'Term-2', 'mm': 70},
          ];
          
+         // Array to hold custom class-subject specific exams
+         let customExams = [];
+         
          // Initialize empty marks array
          let marks = [];
          
@@ -598,8 +605,24 @@
          const cancelExamBtn = document.getElementById('cancel-exam-btn');
          const maxMarksInput = document.getElementById('max-marks-input');
          
-         // Show/hide exam modal
+         // Show/hide exam modal with class and subject info
          addExamBtn.addEventListener('click', () => {
+         const selectedClass = classSelect.value;
+         const selectedSubject = subjectSelect.value;
+         
+         if (!selectedClass || !selectedSubject) {
+         showDialog({
+            title: 'Warning',
+            message: 'Please select both class and subject before adding a custom exam.',
+            type: 'alert'
+         });
+         return;
+         }
+         
+         // Update the modal with selected class and subject
+         document.getElementById('exam-class-subject-info').textContent = 
+         `Class: ${selectedClass}, Subject: ${selectedSubject}`;
+         
          examModal.classList.remove('hidden');
          newExamName.focus();
          });
@@ -608,29 +631,68 @@
          examModal.classList.add('hidden');
          });
          
-         // Save new exam
-         saveExamBtn.addEventListener('click', () => {
+         // Save new custom exam
+         saveExamBtn.addEventListener('click', async () => {
          const examName = newExamName.value.trim();
          const maxMarks = parseInt(newExamMarks.value, 10);
+         const selectedClass = classSelect.value;
+         const selectedSubject = subjectSelect.value;
          
          if (!examName || isNaN(maxMarks) || maxMarks <= 0) {
-         alert('Please enter a valid exam name and maximum marks');
+         showDialog({
+         title: 'Warning',
+         message: 'Please enter a valid exam name and maximum marks.',
+         type: 'alert'
+         });
          return;
          }
          
-         // Check if exam already exists
+         // Check if exam already exists in common exams
          if (exams.some(exam => exam.name === examName)) {
-         alert('An exam with this name already exists');
+         showDialog({
+         title: 'Error',
+         message: 'An exam with this name already exists in common exams.',
+         type: 'alert'
+         });
          return;
          }
          
-         // Add new exam
-         exams.push({ 'name': examName, 'mm': maxMarks });
+         // Check if custom exam already exists for this class and subject
+         if (customExams.some(exam => 
+         exam.name === examName && 
+         exam.class === selectedClass && 
+         exam.subject === selectedSubject)) {
+         showDialog({
+         title: 'Error',
+         message: 'An exam with this name already exists for the chosen class and subject.',
+         type: 'alert'
+         });
+         return;
+         }
+         
+         showLoading();
+         
+         // Create new custom exam object
+         const newCustomExam = {
+         'name': examName,
+         'mm': maxMarks,
+         'class': selectedClass,
+         'subject': selectedSubject
+         };
+         
+         // Insert data into Supabase
+         const insertedData = await insertData('custom_exams', newCustomExam);
+         
+         // Only proceed if data was successfully inserted
+         if (insertedData) {
+         // Add to customExams array (use the data returned from Supabase which may include IDs)
+         customExams.push(insertedData[0] || newCustomExam);
          
          // Add to dropdown
          const option = document.createElement('option');
          option.value = examName;
          option.textContent = examName;
+         option.dataset.custom = 'true'; // Mark as custom exam
          examSelect.appendChild(option);
          
          // Select the new exam
@@ -644,8 +706,25 @@
          newExamName.value = '';
          newExamMarks.value = '20';
          
+         hideLoading();
+         
+         // Show success message
+         await showDialog({
+         title: 'Success',
+         message: 'Exam added successfully!',
+         type: 'alert'
+         });
+         
          // Trigger change event to update the form
          examSelect.dispatchEvent(new Event('change'));
+         } else {
+         // Show error message if data insertion failed
+         showDialog({
+         title: 'Database Error',
+         message: 'Failed to save the custom exam. Please try again later.',
+         type: 'alert'
+         });
+         }
          });
          
          // Update max marks when exam changes
@@ -728,6 +807,10 @@
          
          // Optionally store the user ID or other data
          window.userId = data.user.id;
+         
+         // Pre-load all custom exams
+         await preloadCustomExams();
+         
          } catch (error) {
          // Handle login error
          loginError.textContent = error.message || 'Invalid email or password!';
@@ -768,7 +851,8 @@
          const isAuthenticated = await checkAuth();
          
          if (isAuthenticated) {
-            // User is already logged in, show the app
+            // User is already logged in, pre-load custom exams and show the app
+            await preloadCustomExams();
             loginSection.classList.add('hidden');
             appSection.classList.remove('hidden');
          } else {
@@ -788,39 +872,91 @@
          }
          });
          
+         // Function to update exam dropdown based on class and subject selection
+         function updateExamDropdown(className, subjectName, preserveSelection = false) {
+         // Store current selection if needed
+         const currentSelection = preserveSelection ? examSelect.value : null;
+         
+         // Clear existing options (except the placeholder)
+         while (examSelect.options.length > 1) {
+         examSelect.remove(1);
+         }
+         
+         // Add common exams (these are always available)
+         exams.forEach(exam => {
+         const option = document.createElement('option');
+         option.value = exam.name;
+         option.textContent = exam.name;
+         examSelect.appendChild(option);
+         });
+         
+         // Add custom exams for this class and subject
+         if (className && subjectName) {
+         const relevantCustomExams = customExams.filter(
+            exam => exam.class === className && exam.subject === subjectName
+         );
+         
+         relevantCustomExams.forEach(exam => {
+            const option = document.createElement('option');
+            option.value = exam.name;
+            option.textContent = exam.name;
+            option.dataset.custom = 'true'; // Mark as custom exam
+            examSelect.appendChild(option);
+         });
+         }
+         
+         // Restore previous selection if it exists in the new options
+         if (preserveSelection && currentSelection) {
+         // Find if the current selection still exists in the options
+         for (let i = 0; i < examSelect.options.length; i++) {
+            if (examSelect.options[i].value === currentSelection) {
+                examSelect.value = currentSelection;
+                return currentSelection;
+            }
+         }
+         } 
+         return null;
+         }
+         
          // Handle class, subject and exam selection
-         async function handleSelectionChange() {
+         async function handleSelectionChange(event) {
          const selectedClass = classSelect.value;
-         const selectedExam = examSelect.value;
          const selectedSubject = subjectSelect.value;
+         let selectedExam = examSelect.value;
+         
+         // Only update the exam dropdown when class or subject changes, not when exam changes
+         if ((event.target === classSelect || event.target === subjectSelect) && 
+         selectedClass && selectedSubject) {
+         selectedExam = updateExamDropdown(selectedClass, selectedSubject, true);
+         }
          
          if (selectedClass && selectedExam && selectedSubject) {
-         
          showLoading();
          const syncSuccess = await syncMarksData(selectedClass, selectedExam, selectedSubject);
          
          if(syncSuccess) {
-               hideLoading();
+            hideLoading();
          } else {
-         await showDialog({
-         title: 'Error',
-         message: 'Error syncing with database. Please try again.',
-         type: 'alert'
-         });
-         return;
+            await showDialog({
+                title: 'Error',
+                message: 'Error syncing with database. Please try again.',
+                type: 'alert'
+            });
+            return;
          }
          renderStudentsList(selectedClass, selectedExam, selectedSubject);
          marksFormContainer.classList.remove('hidden');
          
          // Display maximum marks
-         const examObj = exams.find(exam => exam.name === selectedExam);
-         if (examObj) {
-          maxMarksDisplay.textContent = `Maximum Marks: ${examObj.mm}`;
-          maxMarksInput.value = examObj.mm;
+         const maxMarks = getMaxMarks(selectedExam);
+         if (maxMarks) {
+            maxMarksDisplay.textContent = `Maximum Marks: ${maxMarks}`;
+            maxMarksInput.value = maxMarks;
          }
          } else {
          marksFormContainer.classList.add('hidden');
          }
+         
          if (selectedSubject) {
          document.getElementById('subject-header').textContent = `${selectedSubject} Marks`;
          } else {
@@ -828,6 +964,7 @@
          }
          }
          
+         // Add event listeners with the event object passed to the handler
          classSelect.addEventListener('change', handleSelectionChange);
          examSelect.addEventListener('change', handleSelectionChange);
          subjectSelect.addEventListener('change', handleSelectionChange);
@@ -925,9 +1062,22 @@
          }
          
          // Helper functions
+         // Function to get max marks considering both regular and custom exams
          function getMaxMarks(examName) {
-             const exam = exams.find(e => e.name === examName);
-             return exam ? exam.mm : 0;
+         // First check common exams
+         const commonExam = exams.find(e => e.name === examName);
+         if (commonExam) return commonExam.mm;
+         
+         // Then check custom exams
+         const selectedClass = classSelect.value;
+         const selectedSubject = subjectSelect.value;
+         
+         const customExam = customExams.find(e => 
+         e.name === examName && 
+         e.class === selectedClass && 
+         e.subject === selectedSubject);
+         
+         return customExam ? customExam.mm : 0;
          }
          
          function getPerformanceRemark(marks, examName) {
@@ -1178,6 +1328,11 @@
          console.error("Error syncing marks data:", error.message);
          return false;
          }
+         }
+         
+         async function preloadCustomExams() {
+                     // Pre-load all custom exams
+         customExams = await selectData('custom_exams') || [];
          }
       </script>
    </body>
