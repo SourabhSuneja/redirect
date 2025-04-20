@@ -385,8 +385,10 @@
          @keyframes spin {
          to { transform: rotate(360deg); }
          }
-         #add-exam-btn {
-         margin-top: 8px;
+         #add-exam-btn, #score-insight-btn {
+         margin-top: 10px;
+         min-width: 180px;
+         display: inline-block;
          }
          .input-group {
          position: relative;
@@ -474,10 +476,11 @@
                      <option value="">-- Select Exam --</option>
                   </select>
                   <div class="form-group">
-                     <label for="max-marks-input">Maximum Marks</label>
-                     <input type="number" id="max-marks-input" min="1" max="100" value="20">
+                     <label for="max-marks-input" class="hidden">Maximum Marks</label>
+                     <input type="number" id="max-marks-input" min="1" max="100" value="20" class="hidden">
                   </div>
                   <button id="add-exam-btn" class="btn-secondary">Add New Exam</button>
+                  <button id="score-insight-btn" class="btn-secondary" data-class="" data-exam="" data-sub="" style="display: none">Score Insight</button>
                </div>
             </div>
             <div id="marks-form-container" class="hidden">
@@ -616,6 +619,7 @@
          const feedbackMessage = document.getElementById('feedback-message');
          const statsContainer = document.getElementById('stats-container');
          const subjectSelect = document.getElementById('subject-select');
+         const scoreInsightBtn = document.getElementById('score-insight-btn');
          
          // Add exam functionality
          const addExamBtn = document.getElementById('add-exam-btn');
@@ -783,6 +787,18 @@
          }
          });
          
+         scoreInsightBtn.addEventListener("click", function () {
+         const classValue = scoreInsightBtn.dataset.class;
+         const examValue = scoreInsightBtn.dataset.exam;
+         const subValue = scoreInsightBtn.dataset.sub;
+         
+         if (classValue && examValue && subValue) {
+         const url = `dashboard.html?class=${encodeURIComponent(classValue)}&sub=${encodeURIComponent(subValue)}&exam=${encodeURIComponent(examValue)}`;
+         window.open(url, "_blank");
+         }
+         
+         });
+         
          // Initialize the form
          async function initializeForm() {
              // Fetch students list
@@ -946,6 +962,9 @@
          const selectedSubject = subjectSelect.value;
          let selectedExam = examSelect.value;
          
+          // Hide score insight button at first
+         scoreInsightBtn.style.display = 'none';
+         
          // Only update the exam dropdown when class or subject changes, not when exam changes
          if ((event.target === classSelect || event.target === subjectSelect) && 
          selectedClass && selectedSubject) {
@@ -953,6 +972,15 @@
          }
          
          if (selectedClass && selectedExam && selectedSubject) {
+         
+         // Make score insight button visible
+         scoreInsightBtn.style.display = 'inline-block';
+         
+         // Set exam, class & subject as data attributes of the score insight button
+         scoreInsightBtn.dataset.exam = selectedExam;
+         scoreInsightBtn.dataset.sub = selectedSubject;
+         scoreInsightBtn.dataset.class = selectedClass;
+         
          showLoading();
          const syncSuccess = await syncMarksData(selectedClass, selectedExam, selectedSubject);
          
