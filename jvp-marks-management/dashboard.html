@@ -563,6 +563,9 @@
          // Marks data (will be loaded from the server)
          let marks = [];
          
+         // Global variable to store the exam name (coming from URL, if any)
+         let examParamInURL = null;
+         
          // List of all classes
          const classes = ['6-A1', '6-A2', '6-A3', '6-A4', '7-A1', '7-A2', '7-A2', '8-A1', '8-A2', '8-A3', '9-A1', '9-A2', '9-A3', '10-A1', '10-A2'];
          
@@ -947,7 +950,8 @@
          // Function to update exam dropdown based on class and subject selection
          function updateExamDropdown(className, subjectName, preserveSelection = false) {
          // Store current selection if needed
-         const currentSelection = preserveSelection ? examSelect.value : null;
+         const selectedVal = examParamInURL || examSelect.value;
+         const currentSelection = preserveSelection ? selectedVal : null;
          
          // Clear existing options (except the placeholder)
          while (examSelect.options.length > 1) {
@@ -1044,6 +1048,7 @@
          classSelect.value = classVal;
          subjectSelect.value = subVal;
          examSelect.value = examVal;
+         examParamInURL = examVal;
          
          // Dispatch change event
          const event = new Event('change', { bubbles: true });
