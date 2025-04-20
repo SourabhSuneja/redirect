@@ -1,12 +1,17 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="light-theme">
    <head>
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>JVP - Marks Dashboard</title>
+      <!-- Google Fonts -->
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
       <!-- Supabase CRUD Functions -->
       <script type="module" src="supabase-crud.js"></script>
+      <!-- Dialog Box Styles -->
+      <link rel="stylesheet" href="dialog.css">
+      <!-- Dialog Box Scripts -->
+      <script src="dialog.js"></script>
       <style>
          :root {
          --primary: #4f46e5;
@@ -151,12 +156,16 @@
          display: none !important;
          }
          .alert {
-         padding: 12px;
+         padding: 16px;
+         margin-bottom: 24px;
          border-radius: 8px;
-         margin-bottom: 20px;
-         background-color: #fee2e2;
-         color: #b91c1c;
-         border: 1px solid #f87171;
+         color: white;
+         background-color: var(--danger);
+         animation: fadeIn 0.3s ease;
+         }
+         @keyframes fadeIn {
+         from { opacity: 0; transform: translateY(-10px); }
+         to { opacity: 1; transform: translateY(0); }
          }
          .input-group {
          position: relative;
@@ -254,6 +263,10 @@
          td:nth-child(3),
          td:nth-child(4) {
          text-align: right;
+         }
+         th:nth-child(2),
+         td:nth-child(2) {
+         width: 200px;
          }
          th:first-child,
          td:first-child {
@@ -450,6 +463,14 @@
                   <label for="subject-select">Subject</label>
                   <select id="subject-select">
                      <option value="">Select Subject</option>
+                     <option value="English">English</option>
+                     <option value="Hindi">Hindi</option>
+                     <option value="Science">Science</option>
+                     <option value="Maths">Maths</option>
+                     <option value="Social Science">Social Science</option>
+                     <option value="Sanskrit">Sanskrit</option>
+                     <option value="Computer">Computer</option>
+                     <option value="GK">GK</option>
                   </select>
                </div>
                <div class="form-group">
@@ -505,6 +526,17 @@
             </table>
          </div>
       </div>
+      <!-- Dialog Overlay Starts -->
+      <div id="dialog-overlay" class="dialog-overlay">
+         <div class="dialog-box" id="dialog-box">
+            <div class="dialog-header" id="dialog-header">Title</div>
+            <div class="dialog-message" id="dialog-message">Message goes here</div>
+            <div class="dialog-buttons" id="dialog-buttons">
+               <!-- Buttons will be added dynamically -->
+            </div>
+         </div>
+      </div>
+      <!-- Dialog Overlay Ends -->
       <script>
          // DOM elements
          const loginSection = document.getElementById('login-section');
@@ -528,15 +560,11 @@
          const printSubtitle = document.getElementById('print-subtitle');
          const printBody = document.getElementById('print-body');
          
-         // Sample marks data (in a real application, this would come from a database)
-         const marksData = [
-             {"id":"82f56b98-f0ba-43e3-a636-c3aade2199ea","exam":"CT","subject":"Computer","student":"YASHASVI KUMAWAT","class":"8-A2","marks":null,"updated_at":"2025-04-19T16:18:12.362"},
-             {"id":"4b2197a0-cbc6-4fdc-81df-d2f0fdcea0e7","exam":"Test (Ch-1)","subject":"Computer","student":"AANYA SHARMA","class":"8-A2","marks":4,"updated_at":"2025-04-19T17:40:12.926"},
-             {"id":"a1790d78-7ab2-4342-aced-f664aca04d1a","exam":"Test (Ch-1)","subject":"Computer","student":"ATHARVA SHARMA","class":"8-A2","marks":5,"updated_at":"2025-04-19T17:40:12.927"},
-             {"id":"a4ef84f2-332e-4145-a6f3-e80c2f7c6428","exam":"Test (Ch-1)","subject":"Computer","student":"BHAVYA CHOUDHARY","class":"8-A2","marks":10,"updated_at":"2025-04-19T17:40:12.927"},
-             {"id":"fcd5714a-be57-4dc9-ad51-ebeb7338f515","exam":"Test (Ch-1)","subject":"Computer","student":"BHUMIKA RATHI","class":"8-A2","marks":8,"updated_at":"2025-04-19T17:40:12.927"},
-             {"id":"00fd0f25-a632-432d-9a21-c578d9371082","exam":"Test (Ch-1)","subject":"Computer","student":"CHITRANSH AGRAWAL","class":"8-A2","marks":2,"updated_at":"2025-04-19T17:40:12.927"}
-         ];
+         // Marks data (will be loaded from the server)
+         let marks = [];
+         
+         // List of all classes
+         const classes = ['6-A1', '6-A2', '6-A3', '6-A4', '7-A1', '7-A2', '7-A2', '8-A1', '8-A2', '8-A3', '9-A1', '9-A2', '9-A3', '10-A1', '10-A2'];
          
          // Exam data for calculating percentages
          const exams = [
@@ -548,10 +576,7 @@
              {'name': 'Term-2', 'mm': 70},
          ];
          
-         const customExams = [
-             {'name': 'CT', 'mm': 20, 'class': '8-A2', 'subject': 'Computer'},
-             {'name': 'Test (Ch-1)', 'mm': 10, 'class': '8-A2', 'subject': 'Computer'},
-         ];
+         let customExams = [];
          
          // Helper functions
          function showLoading() {
@@ -627,20 +652,26 @@
          
          // Initialize the form
          async function initializeForm() {
-             // Extract unique classes, subjects, and exams from marks data
-             const classes = getUniqueValues(marksData, 'class');
-             const subjects = getUniqueValues(marksData, 'subject');
-             const examNames = getUniqueValues(marksData, 'exam');
+             // Populate class dropdown
+             for (const className of classes) {
+                 const option = document.createElement('option');
+                 option.value = className;
+                 option.textContent = className;
+                 classSelect.appendChild(option);
+             }
              
-             // Populate select elements
-             populateSelect(classSelect, classes);
-             populateSelect(subjectSelect, subjects);
-             populateSelect(examSelect, examNames);
+             // Populate exam dropdown
+             exams.forEach(exam => {
+                 const option = document.createElement('option');
+                 option.value = exam.name;
+                 option.textContent = exam.name;
+                 examSelect.appendChild(option);
+             });
              
              // Add event listeners for select elements
-             classSelect.addEventListener('change', updateMarksTable);
-             subjectSelect.addEventListener('change', updateMarksTable);
-             examSelect.addEventListener('change', updateMarksTable);
+             classSelect.addEventListener('change', handleSelectionChange);
+             subjectSelect.addEventListener('change', handleSelectionChange);
+             examSelect.addEventListener('change', handleSelectionChange);
              
              // Add event listener for print button
              printBtn.addEventListener('click', printMarks);
@@ -660,11 +691,22 @@
              }
              
              // Filter marks data based on selections
-             const filteredData = marksData.filter(item => 
+             const filteredData = marks.filter(item => 
                  item.class === selectedClass && 
                  item.subject === selectedSubject && 
                  item.exam === selectedExam
              );
+         
+             // If no records found for the selected class, subject and exam, hide the marks container and return
+              if(filteredData.length === 0) {
+                marksContainer.classList.add('hidden');
+                showDialog({
+                title: 'Error',
+                message: 'No marks records found for the selected exam, class and subject.',
+                type: 'alert'
+            });
+                return;
+            }
              
              // Update the marks title and subtitle
              marksTitle.textContent = `Marks Statement: ${selectedExam}`;
@@ -725,7 +767,7 @@
          }
          
          // Filter marks data based on selections
-         const filteredData = marksData.filter(item => 
+         const filteredData = marks.filter(item => 
          item.class === selectedClass && 
          item.subject === selectedSubject && 
          item.exam === selectedExam
@@ -779,6 +821,8 @@
                      // User is already logged in, show the app
                      loginSection.classList.add('hidden');
                      appSection.classList.remove('hidden');
+                     // Get custom exam names
+                     await preloadCustomExams();
                  } else {
                      // User is not logged in, show the login form
                      loginSection.classList.remove('hidden');
@@ -790,8 +834,6 @@
                  loginSection.classList.remove('hidden');
                  appSection.classList.add('hidden');
              } finally {
-                 // Initialize the form
-                 await initializeForm();
                  hideLoading();
              }
          });
@@ -821,6 +863,9 @@
                  
                  // Optionally store the user ID or other data
                  window.userId = data.user.id;
+         
+                 // Get custom exam names
+                 await preloadCustomExams();
              } catch (error) {
                  // Handle login error
                  loginError.textContent = error.message || 'Invalid email or password!';
@@ -858,6 +903,132 @@
                  hideLoading();
              }
          });
+         
+         async function preloadCustomExams() {
+                     // Pre-load all custom exams
+         customExams = await selectData('custom_exams') || [];
+         // Initialize the form
+         await initializeForm();
+         }
+         
+         // Handle class, subject and exam selection
+         async function handleSelectionChange(event) {
+         const selectedClass = classSelect.value;
+         const selectedSubject = subjectSelect.value;
+         let selectedExam = examSelect.value;
+         
+         // Only update the exam dropdown when class or subject changes, not when exam changes
+         if ((event.target === classSelect || event.target === subjectSelect) && 
+         selectedClass && selectedSubject) {
+         selectedExam = updateExamDropdown(selectedClass, selectedSubject, true);
+         }
+         
+         if (selectedClass && selectedExam && selectedSubject) {
+         showLoading();
+         const syncSuccess = await syncMarksData(selectedClass, selectedExam, selectedSubject);
+         
+         if(syncSuccess) {
+            hideLoading();
+            updateMarksTable();
+         } else {
+            await showDialog({
+                title: 'Error',
+                message: 'Error syncing with database. Please try again.',
+                type: 'alert'
+            });
+            return;
+         }
+         }
+         }
+         
+         // Function to update exam dropdown based on class and subject selection
+         function updateExamDropdown(className, subjectName, preserveSelection = false) {
+         // Store current selection if needed
+         const currentSelection = preserveSelection ? examSelect.value : null;
+         
+         // Clear existing options (except the placeholder)
+         while (examSelect.options.length > 1) {
+         examSelect.remove(1);
+         }
+         
+         // Add common exams (these are always available)
+         exams.forEach(exam => {
+         const option = document.createElement('option');
+         option.value = exam.name;
+         option.textContent = exam.name;
+         examSelect.appendChild(option);
+         });
+         
+         // Add custom exams for this class and subject
+         if (className && subjectName) {
+         const relevantCustomExams = customExams.filter(
+            exam => exam.class === className && exam.subject === subjectName
+         );
+         
+         relevantCustomExams.forEach(exam => {
+            const option = document.createElement('option');
+            option.value = exam.name;
+            option.textContent = exam.name;
+            option.dataset.custom = 'true'; // Mark as custom exam
+            examSelect.appendChild(option);
+         });
+         }
+         
+         // Restore previous selection if it exists in the new options
+         if (preserveSelection && currentSelection) {
+         // Find if the current selection still exists in the options
+         for (let i = 0; i < examSelect.options.length; i++) {
+            if (examSelect.options[i].value === currentSelection) {
+                examSelect.value = currentSelection;
+                return currentSelection;
+            }
+         }
+         } 
+         return null;
+         }
+         
+          async function syncMarksData(selectedClass, selectedExam, selectedSubject) {
+         try {
+         // Fetch marks data from Supabase for the selected filters
+         const fetchedMarks = await selectData(
+         "marks",                                   // tableName
+         false,                                     // fetchSingle (we want multiple records)
+         "*",                                       // columns (fetch all columns)
+         ["class", "exam", "subject"],              // matchColumns
+         [selectedClass, selectedExam, selectedSubject], // matchValues
+         "student",                                 // orderByColumn (sort by student name)
+         "asc"                                      // orderDirection
+         );
+         
+         // If no data fetched or error occurred, resolve with true (nothing to sync)
+         if (!fetchedMarks || fetchedMarks.length === 0) {
+         return true;
+         }
+         
+         // Update global marks array with fetched data
+         fetchedMarks.forEach(fetchedMark => {
+         const existingIndex = marks.findIndex(mark => mark.id === fetchedMark.id);
+         
+         // Handle null marks by converting to empty string
+         const marksValue = fetchedMark.marks === null ? null : fetchedMark.marks;
+         
+         if (existingIndex !== -1) {
+         // Update existing record
+         marks[existingIndex].marks = marksValue;
+         marks[existingIndex].updated_at = fetchedMark.updated_at;
+         } else {
+         // Add new record (with the potentially modified marks value)
+         const newMark = {...fetchedMark, marks: marksValue};
+         marks.push(newMark);
+         }
+         });
+         
+         return true;
+         } catch (error) {
+         console.error("Error syncing marks data:", error.message);
+         return false;
+         }
+         }
       </script>
    </body>
 </html>
