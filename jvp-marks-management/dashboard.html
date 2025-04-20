@@ -676,6 +676,9 @@
              // Add event listener for print button
              printBtn.addEventListener('click', printMarks);
              downloadCSVBtn.addEventListener('click', downloadCSV);
+         
+          // Apply URL params for a quick marks analysis if class, subject and exam details are present in the URL
+         applyURLParamsToSelects();
          }
          
          // Function to update the marks table based on selected filters
@@ -1027,6 +1030,24 @@
          } catch (error) {
          console.error("Error syncing marks data:", error.message);
          return false;
+         }
+         }
+         
+         function applyURLParamsToSelects() {
+         const urlParams = new URLSearchParams(window.location.search);
+         
+         const classVal = urlParams.get('class');
+         const subVal = urlParams.get('sub');
+         const examVal = urlParams.get('exam');
+         
+         if (classVal && subVal && examVal) {
+         classSelect.value = classVal;
+         subjectSelect.value = subVal;
+         examSelect.value = examVal;
+         
+         // Dispatch change event
+         const event = new Event('change', { bubbles: true });
+         subjectSelect.dispatchEvent(event);
          }
          }
       </script>
