@@ -634,14 +634,15 @@
          // Save new custom exam
          saveExamBtn.addEventListener('click', async () => {
          const examName = newExamName.value.trim();
-         const maxMarks = parseInt(newExamMarks.value, 10);
+         const maxMarksInput = newExamMarks.value;
+         const maxMarks = parseInt(maxMarksInput, 10);
          const selectedClass = classSelect.value;
          const selectedSubject = subjectSelect.value;
          
-         if (!examName || isNaN(maxMarks) || maxMarks <= 0) {
+         if (!examName || isNaN(maxMarks) || maxMarks <= 0 || maxMarksInput.includes('.')) {
          showDialog({
          title: 'Warning',
-         message: 'Please enter a valid exam name and maximum marks.',
+         message: 'Please enter a valid exam name and maximum marks. The maximum marks must be a positive integer without a decimal part.',
          type: 'alert'
          });
          return;
