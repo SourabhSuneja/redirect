@@ -387,6 +387,22 @@
          #add-exam-btn {
          margin-top: 8px;
          }
+         .input-group {
+         position: relative;
+         }
+         .input-group input {
+         padding-right: 90px; /* space for the suffix */
+         }
+         .domain-suffix {
+         position: absolute;
+         right: 16px;
+         top: 50%;
+         transform: translateY(-50%);
+         color: #888;
+         font-size: 14px;
+         pointer-events: none;
+         user-select: none;
+         }
       </style>
    </head>
    <body>
@@ -411,7 +427,10 @@
             <div id="login-error" class="alert hidden"></div>
             <div class="form-group">
                <label for="username">Username</label>
-               <input type="text" id="username" placeholder="Enter your username">
+               <div class="input-group">
+                  <input type="text" id="username" placeholder="Enter your username">
+                  <span class="domain-suffix">@jvp.com</span>
+               </div>
             </div>
             <div class="form-group">
                <label for="password">Password</label>
