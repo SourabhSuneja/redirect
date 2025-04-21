@@ -12,6 +12,8 @@
       <link rel="stylesheet" href="dialog.css">
       <!-- Dialog Box Scripts -->
       <script src="dialog.js"></script>
+      <!-- Common JS Functions -->
+      <script src="common.js"></script>
       <style>
          :root {
          --primary: #4f46e5;
@@ -1112,42 +1114,7 @@
          }
          
          // Helper functions
-         // Function to get max marks considering both regular and custom exams
-         function getMaxMarks(examName) {
-         // First check common exams
-         const commonExam = exams.find(e => e.name === examName);
-         if (commonExam) return commonExam.mm;
-         
-         // Then check custom exams
-         const selectedClass = classSelect.value;
-         const selectedSubject = subjectSelect.value;
-         
-         const customExam = customExams.find(e => 
-         e.name === examName && 
-         e.class === selectedClass && 
-         e.subject === selectedSubject);
-         
-         return customExam ? customExam.mm : 0;
-         }
-         
-         function getPerformanceRemark(marks, examName) {
-         if (marks === '') return 'Absent';
-         
-         const maxMarks = getMaxMarks(examName);
-         const percentage = (marks / maxMarks) * 100;
-         
-         if (percentage < 33) return 'Needs improvement';
-         if (percentage < 50) return 'Satisfactory performance';
-         if (percentage < 75) return 'Good performance';
-         if (percentage < 90) return 'Very good performance';
-         return 'Outstanding performance';
-         }
-         
-         function getPassingMark(examName) {
-             // Assuming passing mark is 33% of maximum marks
-             return getMaxMarks(examName) * 0.33;
-         }
-         
+                        
          // Submit form
          submitBtn.addEventListener('click', async () => {
          const selectedClass = classSelect.value;
