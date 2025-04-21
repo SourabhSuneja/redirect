@@ -562,6 +562,9 @@
          
          // Marks data (will be loaded from the server)
          let marks = [];
+
+         // Marks of the selected exam will be stored separately for plotting charts, doing analysis etc
+         let selectedMarks = [];
          
          // Global variable to store the exam name (coming from URL, if any)
          let examParamInURL = null;
@@ -702,6 +705,9 @@
                  item.subject === selectedSubject && 
                  item.exam === selectedExam
              );
+
+             // Store reference to filteredData in the global selectedMarks variable for later charts processing
+             selectedMarks = filteredData;
          
              // If no records found for the selected class, subject and exam, hide the marks container and return
               if(filteredData.length === 0) {
