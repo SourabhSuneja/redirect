@@ -782,8 +782,8 @@
   </div>
 </div>
 
-<!-- Add Chart.js library -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+<!-- Add D3 Charts library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
       <script>
          // DOM elements
          const loginSection = document.getElementById('login-section');
@@ -1326,48 +1326,49 @@
 
         // Function to open the analysis modal
   function openAnalysisModal() {
-    // Show the modal first
-    analysisModal.classList.add('active');
-    document.body.style.overflow = 'hidden';
-    
-    // Set the subtitle
-    const selectedClass = classSelect.options[classSelect.selectedIndex]?.text || '-';
-    const selectedSubject = subjectSelect.options[subjectSelect.selectedIndex]?.text || '-';
-    const selectedExam = examSelect.options[examSelect.selectedIndex]?.text || '-';
-    analysisSubtitle.textContent = `Class: ${selectedClass} | Subject: ${selectedSubject} | Exam: ${selectedExam}`;
-    
-    // First do the calculations
-    calculateStats();
-    calculateRankings();
-    
-    // Then initialize the chart with delay to ensure modal is visible
-    setTimeout(() => {
-      if (typeof Chart === 'undefined') {
-        console.error('Chart.js is not loaded!');
-        const scriptElement = document.createElement('script');
-        scriptElement.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
-        scriptElement.onload = function() {
-          console.log('Chart.js loaded dynamically');
-          generateRemarksChart();
-        };
-        document.body.appendChild(scriptElement);
-      } else {
-        generateRemarksChart();
-      }
-    }, 500);
-  }
+  // Show the modal first
+  analysisModal.classList.add('active');
+  document.body.style.overflow = 'hidden';
   
-  // Function to close the analysis modal
-  function closeAnalysisModal() {
-    analysisModal.classList.remove('active');
-    document.body.style.overflow = ''; // Re-enable background scrolling
-    
-    // Destroy chart to prevent memory leaks
-    if (remarksChart) {
-      remarksChart.destroy();
-      remarksChart = null;
+  // Set the subtitle
+  const selectedClass = classSelect.options[classSelect.selectedIndex]?.text || '-';
+  const selectedSubject = subjectSelect.options[subjectSelect.selectedIndex]?.text || '-';
+  const selectedExam = examSelect.options[examSelect.selectedIndex]?.text || '-';
+  analysisSubtitle.textContent = `Class: ${selectedClass} | Subject: ${selectedSubject} | Exam: ${selectedExam}`;
+  
+  // First do the calculations
+  calculateStats();
+  calculateRankings();
+  
+  // Then initialize the chart with delay to ensure modal is visible
+  setTimeout(() => {
+    if (typeof d3 === 'undefined') {
+      console.error('D3.js is not loaded!');
+      const scriptElement = document.createElement('script');
+      scriptElement.src = 'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js';
+      scriptElement.onload = function() {
+        console.log('D3.js loaded dynamically');
+        generateRemarksChart();
+      };
+      document.body.appendChild(scriptElement);
+    } else {
+      generateRemarksChart();
     }
+  }, 500);
+}
+
+// Update closeAnalysisModal to handle D3 chart cleanup
+function closeAnalysisModal() {
+  analysisModal.classList.remove('active');
+  document.body.style.overflow = ''; // Re-enable background scrolling
+  
+  // No need to explicitly destroy D3 charts, just clear the container
+  const chartContainer = document.getElementById('remarks-chart');
+  if (chartContainer) {
+    chartContainer.innerHTML = '';
+    remarksChart = null;
   }
+}
   
   // Calculate statistics from selectedMarks
   function calculateStats() {
@@ -1477,122 +1478,150 @@
     });
   }
   
-  // Generate remarks distribution chart
+  // Generate remarks distribution chart using D3.js
 function generateRemarksChart() {
-    console.log("Starting chart generation");
-    
-    // Get container and ensure it's empty
-    const chartContainer = document.getElementById('remarks-chart');
-    chartContainer.innerHTML = '';
-    
-    // Create a new canvas with explicit dimensions
-    const canvas = document.createElement('canvas');
-    canvas.id = 'remarks-pie-chart';
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    chartContainer.appendChild(canvas);
-    
-    // Filter out entries with null remarks
-    const validMarks = selectedMarks.filter(mark => mark.remark !== null);
-    
-    if (validMarks.length === 0) {
-      chartContainer.innerHTML = '<div style="text-align: center; padding: 80px 0;">No valid remarks data available</div>';
-      return;
-    }
-    
-    // Count remarks by category
-    const remarkCounts = {};
-    validMarks.forEach(mark => {
-      if (!remarkCounts[mark.remark]) {
-        remarkCounts[mark.remark] = 0;
-      }
-      remarkCounts[mark.remark]++;
-    });
-    
-    // Prepare data for chart
-    const labels = Object.keys(remarkCounts);
-    const data = Object.values(remarkCounts);
-    const total = data.reduce((sum, count) => sum + count, 0);
-    
-    // Color mapping for common remarks
-    const colorMap = {
-      'Outstanding performance': '#10b981', // Green
-      'Good performance': '#3b82f6',     // Blue
-      'Satisfactory performance': '#f59e0b', // Amber
-      'Needs improvement': '#ef4444',   // Red
-      'Absent': '#6d28d9'               // Purple
-    };
-    
-    // Generate colors for all remarks
-    const backgroundColors = labels.map(label => {
-      return colorMap[label] || getRandomColor();
-    });
-    
-    // Calculate percentages for labels
-    const labelWithPercentages = labels.map((label, index) => {
-      const percentage = ((data[index] / total) * 100).toFixed(1);
-      return `${label}: ${percentage}%`;
-    });
-    
-    console.log("Chart data prepared:", { labels, data });
-    
-    // Try creating the chart with a delay to ensure DOM is ready
-    setTimeout(() => {
-      try {
-        // If a previous chart exists, destroy it
-        if (remarksChart) {
-          remarksChart.destroy();
-          remarksChart = null;
-        }
-        
-        // Create new chart with basic config first
-        const ctx = canvas.getContext('2d');
-        remarksChart = new Chart(ctx, {
-          type: 'pie',
-          data: {
-            labels: labelWithPercentages,
-            datasets: [{
-              data: data,
-              backgroundColor: backgroundColors,
-              borderColor: 'white',
-              borderWidth: 2
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'right',
-                labels: {
-                  padding: 20,
-                  boxWidth: 15
-                }
-              }
-            },
-            animation: {
-              animateScale: true,
-              animateRotate: true
-            }
-          }
-        });
-        
-        console.log("Chart created successfully:", remarksChart);
-      } catch (error) {
-        console.error("Chart creation error:", error);
-        chartContainer.innerHTML = '<div style="text-align: center; padding: 80px 0; color: #ef4444;">Error creating chart. See console for details.</div>';
-      }
-    }, 300); // Increased delay for DOM rendering
+  console.log("Starting D3 chart generation");
+  
+  // Get container and ensure it's empty
+  const chartContainer = document.getElementById('remarks-chart');
+  chartContainer.innerHTML = '';
+  
+  // Filter out entries with null remarks
+  const validMarks = selectedMarks.filter(mark => mark.remark !== null);
+  
+  if (validMarks.length === 0) {
+    chartContainer.innerHTML = '<div style="text-align: center; padding: 80px 0;">No valid remarks data available</div>';
+    return;
   }
+  
+  // Count remarks by category
+  const remarkCounts = {};
+  validMarks.forEach(mark => {
+    if (!remarkCounts[mark.remark]) {
+      remarkCounts[mark.remark] = 0;
+    }
+    remarkCounts[mark.remark]++;
+  });
+  
+  // Prepare data for chart
+  const pieData = Object.keys(remarkCounts).map(remark => {
+    return {
+      label: remark,
+      value: remarkCounts[remark]
+    };
+  });
+  
+  const total = pieData.reduce((sum, item) => sum + item.value, 0);
+  
+  // Color mapping for common remarks
+  const colorMap = {
+    'Outstanding performance': '#10b981', // Green
+    'Good performance': '#3b82f6',     // Blue
+    'Satisfactory performance': '#f59e0b', // Amber
+    'Needs improvement': '#ef4444',   // Red
+    'Absent': '#6d28d9'               // Purple
+  };
+  
+  // Set up dimensions
+  const width = chartContainer.clientWidth;
+  const height = chartContainer.clientHeight;
+  const radius = Math.min(width, height) / 2 * 0.8;
+  
+  // Create SVG element
+  const svg = d3.select(chartContainer)
+    .append('svg')
+    .attr('width', width)
+    .attr('height', height)
+    .append('g')
+    .attr('transform', `translate(${width / 2 - radius * 0.3}, ${height / 2})`);
+  
+  // Store reference to our chart
+  remarksChart = svg.node();
+  
+  // Generate arc
+  const arc = d3.arc()
+    .innerRadius(0)
+    .outerRadius(radius);
+  
+  // Generate pie layout
+  const pie = d3.pie()
+    .value(d => d.value)
+    .sort(null);
+  
+  // Generate arcs for each data point
+  const arcs = svg.selectAll('.arc')
+    .data(pie(pieData))
+    .enter()
+    .append('g')
+    .attr('class', 'arc');
+  
+  // Add colored segments
+  arcs.append('path')
+    .attr('d', arc)
+    .attr('fill', (d, i) => colorMap[d.data.label] || getRandomColor())
+    .attr('stroke', 'white')
+    .attr('stroke-width', 2)
+    .style('transition', 'opacity 0.3s')
+    .on('mouseover', function() {
+      d3.select(this).style('opacity', 0.8);
+    })
+    .on('mouseout', function() {
+      d3.select(this).style('opacity', 1);
+    });
+  
+  // Add percentage labels inside pie
+  arcs.append('text')
+    .attr('transform', d => {
+      const centroid = arc.centroid(d);
+      return `translate(${centroid[0]}, ${centroid[1]})`;
+    })
+    .attr('text-anchor', 'middle')
+    .attr('font-size', '12px')
+    .attr('fill', 'white')
+    .attr('font-weight', 'bold')
+    .text(d => {
+      const percentage = ((d.data.value / total) * 100).toFixed(1);
+      return percentage > 5 ? `${percentage}%` : '';
+    });
+  
+  // Create legend
+  const legendGroup = svg.append('g')
+    .attr('transform', `translate(${radius * 1.2}, -${radius * 0.8})`);
+  
+  const legendItems = legendGroup.selectAll('.legend-item')
+    .data(pieData)
+    .enter()
+    .append('g')
+    .attr('class', 'legend-item')
+    .attr('transform', (d, i) => `translate(0, ${i * 25})`);
+  
+  // Add colored squares
+  legendItems.append('rect')
+    .attr('width', 15)
+    .attr('height', 15)
+    .attr('fill', (d, i) => colorMap[d.label] || getRandomColor());
+  
+  // Add text labels with percentages
+  legendItems.append('text')
+    .attr('x', 20)
+    .attr('y', 12)
+    .text(d => {
+      const percentage = ((d.value / total) * 100).toFixed(1);
+      return `${d.label}: ${percentage}%`;
+    })
+    .attr('font-size', '12px');
+  
+  console.log("D3 Chart created successfully");
+}
 
-// Add this check to make sure Chart.js is loaded
-function checkChartJsLoaded() {
-  if (typeof Chart === 'undefined') {
-    console.error('Chart.js is not loaded!');
+// Replace checkChartJsLoaded with checkD3Loaded
+function checkD3Loaded() {
+  if (typeof d3 === 'undefined') {
+    console.error('D3.js is not loaded!');
     const scriptElement = document.createElement('script');
-    scriptElement.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
+    scriptElement.src = 'https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js';
     scriptElement.onload = function() {
-      console.log('Chart.js loaded dynamically');
+      console.log('D3.js loaded dynamically');
       if (analysisModal.classList.contains('active')) {
         generateRemarksChart();
       }
