@@ -987,6 +987,9 @@
                  const parsedPercentage = parseFloat(percentage)
                  selectedMarks[index]['percentage'] = isNaN(parsedPercentage) ? null : parsedPercentage;
                  selectedMarks[index]['remark'] = remark === 'Absent' ? null : remark;
+
+                 // A small name issue fix
+                 selectedMarks = selectedMarks.map(o => ({student: o.name, ...o, name: undefined}));
                  
                  // Create row for marks table
                  const row = document.createElement('tr');
