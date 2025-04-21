@@ -706,8 +706,8 @@
                  item.exam === selectedExam
              );
 
-             // Store reference to filteredData in the global selectedMarks variable for later charts processing
-             selectedMarks = filteredData;
+             // Store a copy of filteredData in the global selectedMarks variable for later analysis
+             selectedMarks = JSON.parse(JSON.stringify(filteredData)) || [];
          
              // If no records found for the selected class, subject and exam, hide the marks container and return
               if(filteredData.length === 0) {
