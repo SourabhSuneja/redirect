@@ -1317,24 +1317,29 @@
 
         // Function to open the analysis modal
   function openAnalysisModal() {
-    analysisModal.classList.add('active');
-    document.body.style.overflow = 'hidden'; // Prevent background scrolling
-    
-    // Set the subtitle
-    const selectedClass = classSelect.options[classSelect.selectedIndex]?.text || '-';
-    const selectedSubject = subjectSelect.options[subjectSelect.selectedIndex]?.text || '-';
-    const selectedExam = examSelect.options[examSelect.selectedIndex]?.text || '-';
-    analysisSubtitle.textContent = `Class: ${selectedClass} | Subject: ${selectedSubject} | Exam: ${selectedExam}`;
-    
-    // Calculate and display statistics
-    calculateStats();
-    
-    // Calculate and display rankings
-    calculateRankings();
-    
-    // Generate and display remarks distribution chart
-    generateRemarksChart();
+  analysisModal.classList.add('active');
+  document.body.style.overflow = 'hidden'; // Prevent background scrolling
+  
+  // Set the subtitle
+  const selectedClass = classSelect.options[classSelect.selectedIndex]?.text || '-';
+  const selectedSubject = subjectSelect.options[subjectSelect.selectedIndex]?.text || '-';
+  const selectedExam = examSelect.options[examSelect.selectedIndex]?.text || '-';
+  analysisSubtitle.textContent = `Class: ${selectedClass} | Subject: ${selectedSubject} | Exam: ${selectedExam}`;
+  
+  // Calculate and display statistics
+  calculateStats();
+  
+  // Calculate and display rankings
+  calculateRankings();
+  
+  // Check if Chart.js is loaded before generating the chart
+  if (checkChartJsLoaded()) {
+    // Add a small delay to ensure the modal is fully rendered
+    setTimeout(() => {
+      generateRemarksChart();
+    }, 100);
   }
+}
   
   // Function to close the analysis modal
   function closeAnalysisModal() {
@@ -1457,65 +1462,75 @@
   }
   
   // Generate remarks distribution chart
-  function generateRemarksChart() {
-    const chartContainer = document.getElementById('remarks-chart');
-    
-    // Filter out entries with null remarks
-    const validMarks = selectedMarks.filter(mark => mark.remark !== null);
-    
-    if (validMarks.length === 0) {
-      chartContainer.innerHTML = '<div style="text-align: center; padding: 80px 0;">No valid remarks data available</div>';
-      return;
+function generateRemarksChart() {
+  const chartContainer = document.getElementById('remarks-chart');
+  
+  // Clear previous chart if exists
+  if (remarksChart) {
+    remarksChart.destroy();
+  }
+  
+  // Always recreate the canvas
+  chartContainer.innerHTML = '<canvas id="remarks-pie-chart" style="width:100%; height:100%;"></canvas>';
+  
+  // Filter out entries with null remarks
+  const validMarks = selectedMarks.filter(mark => mark.remark !== null);
+  
+  if (validMarks.length === 0) {
+    chartContainer.innerHTML = '<div style="text-align: center; padding: 80px 0;">No valid remarks data available</div>';
+    return;
+  }
+  
+  // Count remarks by category
+  const remarkCounts = {};
+  validMarks.forEach(mark => {
+    if (!remarkCounts[mark.remark]) {
+      remarkCounts[mark.remark] = 0;
     }
-    
-    // Count remarks by category
-    const remarkCounts = {};
-    validMarks.forEach(mark => {
-      if (!remarkCounts[mark.remark]) {
-        remarkCounts[mark.remark] = 0;
-      }
-      remarkCounts[mark.remark]++;
-    });
-    
-    // Prepare data for chart
-    const labels = Object.keys(remarkCounts);
-    const data = Object.values(remarkCounts);
-    const total = data.reduce((sum, count) => sum + count, 0);
-    
-    // Color mapping for common remarks
-    const colorMap = {
-      'Outstanding performance': '#10b981', // Green
-      'Good performance': '#3b82f6',     // Blue
-      'Satisfactory performance': '#f59e0b', // Amber
-      'Needs improvement': '#ef4444',   // Red
-      'Absent': '#6d28d9'               // Purple
-    };
-    
-    // Generate colors for all remarks
-    const backgroundColors = labels.map(label => {
-      return colorMap[label] || getRandomColor();
-    });
-    
-    // Calculate percentages for labels
-    const labelWithPercentages = labels.map((label, index) => {
-      const percentage = ((data[index] / total) * 100).toFixed(1);
-      return `${label}: ${percentage}%`;
-    });
-    
-    // Clear previous chart if exists
-    if (remarksChart) {
-      remarksChart.destroy();
-    }
-    
-    // Create the canvas for the chart
-    chartContainer.innerHTML = '<canvas id="remarks-pie-chart"></canvas>';
-    const ctx = document.getElementById('remarks-pie-chart').getContext('2d');
-    
-    // Create the chart
+    remarkCounts[mark.remark]++;
+  });
+  
+  // Prepare data for chart
+  const labels = Object.keys(remarkCounts);
+  const data = Object.values(remarkCounts);
+  const total = data.reduce((sum, count) => sum + count, 0);
+  
+  // Color mapping for common remarks
+  const colorMap = {
+    'Outstanding performance': '#10b981', // Green
+    'Good performance': '#3b82f6',     // Blue
+    'Satisfactory performance': '#f59e0b', // Amber
+    'Needs improvement': '#ef4444',   // Red
+    'Absent': '#6d28d9'               // Purple
+  };
+  
+  // Generate colors for all remarks
+  const backgroundColors = labels.map(label => {
+    return colorMap[label] || getRandomColor();
+  });
+  
+  // Make sure we have a valid canvas context
+  const canvas = document.getElementById('remarks-pie-chart');
+  if (!canvas) {
+    console.error('Canvas element not found');
+    return;
+  }
+  
+  const ctx = canvas.getContext('2d');
+  if (!ctx) {
+    console.error('Could not get canvas context');
+    return;
+  }
+  
+  // Add console logs for debugging
+  console.log('Chart data:', { labels, data, backgroundColors });
+  
+  // Create the chart with simpler options first
+  try {
     remarksChart = new Chart(ctx, {
       type: 'pie',
       data: {
-        labels: labelWithPercentages,
+        labels: labels,
         datasets: [{
           data: data,
           backgroundColor: backgroundColors,
@@ -1525,32 +1540,34 @@
       },
       options: {
         responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: 'right',
-            labels: {
-              padding: 20,
-              boxWidth: 15,
-              font: {
-                size: 12
-              }
-            }
-          },
-          tooltip: {
-            callbacks: {
-              label: function(context) {
-                const label = context.label || '';
-                const value = context.raw || 0;
-                const percentage = ((value / total) * 100).toFixed(1);
-                return `${label.split(':')[0]}: ${value} students (${percentage}%)`;
-              }
-            }
-          }
-        }
+        maintainAspectRatio: false
       }
     });
+    console.log('Chart created successfully');
+  } catch (error) {
+    console.error('Error creating chart:', error);
+    chartContainer.innerHTML = '<div style="text-align: center; padding: 80px 0; color: red;">Error creating chart. Check console for details.</div>';
   }
+}
+
+// Add this check to make sure Chart.js is loaded
+function checkChartJsLoaded() {
+  if (typeof Chart === 'undefined') {
+    console.error('Chart.js is not loaded!');
+    const scriptElement = document.createElement('script');
+    scriptElement.src = 'https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js';
+    scriptElement.onload = function() {
+      console.log('Chart.js loaded dynamically');
+      if (analysisModal.classList.contains('active')) {
+        generateRemarksChart();
+      }
+    };
+    document.body.appendChild(scriptElement);
+    return false;
+  }
+  return true;
+}
+
   
   // Helper function to generate random colors
   function getRandomColor() {
