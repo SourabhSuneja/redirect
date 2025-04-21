@@ -1460,16 +1460,7 @@
          });
          
          const total = pieData.reduce((sum, item) => sum + item.value, 0);
-         
-         // Color mapping for common remarks
-         const colorMap = {
-         'Outstanding performance': '#10b981', // Green
-         'Good performance': '#3b82f6',     // Blue
-         'Satisfactory performance': '#f59e0b', // Amber
-         'Needs improvement': '#ef4444',   // Red
-         'Absent': '#6d28d9'               // Purple
-         };
-         
+                  
          // Get the container dimensions
          const containerWidth = chartContainer.clientWidth;
          const containerHeight = 400; // Default height
