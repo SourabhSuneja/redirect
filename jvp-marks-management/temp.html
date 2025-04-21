@@ -509,23 +509,25 @@
          font-size: 0.9rem;
          }
          .chart-section {
-         margin-bottom: 32px;
-         border: 1px solid var(--border);
-         border-radius: 8px;
-         padding: 20px;
-         background-color: #f9fafb;
-         }
-         .chart-container {
-         height: 400px; /* Fixed height is important */
-         width: 100%;
-         max-width: 700px;
-         margin: 0 auto;
-         position: relative;
-         background-color: white;
-         border-radius: 8px;
-         padding: 20px;
-         box-shadow: var(--shadow-sm);
-         }
+   margin-bottom: 32px;
+   border: 1px solid var(--border);
+   border-radius: 8px;
+   padding: 20px;
+   background-color: #f9fafb;
+}
+.chart-container {
+   min-height: 300px; /* Minimum height instead of fixed */
+   height: auto; /* Allow auto height */
+   width: 100%;
+   max-width: 700px;
+   margin: 0 auto;
+   position: relative;
+   background-color: white;
+   border-radius: 8px;
+   padding: 20px;
+   box-shadow: var(--shadow-sm);
+   overflow: visible; /* Prevent clipping */
+}
          .rankings-table {
          width: 100%;
          border-collapse: collapse;
@@ -1460,142 +1462,201 @@
          }
          
          // Generate remarks distribution chart using D3.js
-         function generateRemarksChart() {
-         console.log("Starting D3 chart generation");
-         
-         // Get container and ensure it's empty
-         const chartContainer = document.getElementById('remarks-chart');
-         chartContainer.innerHTML = '';
-         
-         // Filter out entries with null remarks
-         const validMarks = selectedMarks.filter(mark => mark.remark !== null);
-         
-         if (validMarks.length === 0) {
-         chartContainer.innerHTML = '<div style="text-align: center; padding: 80px 0;">No valid remarks data available</div>';
-         return;
-         }
-         
-         // Count remarks by category
-         const remarkCounts = {};
-         validMarks.forEach(mark => {
-         if (!remarkCounts[mark.remark]) {
+function generateRemarksChart() {
+   console.log("Starting D3 chart generation");
+   
+   // Get container and ensure it's empty
+   const chartContainer = document.getElementById('remarks-chart');
+   chartContainer.innerHTML = '';
+   
+   // Filter out entries with null remarks
+   const validMarks = selectedMarks.filter(mark => mark.remark !== null);
+   
+   if (validMarks.length === 0) {
+      chartContainer.innerHTML = '<div style="text-align: center; padding: 80px 0;">No valid remarks data available</div>';
+      return;
+   }
+   
+   // Count remarks by category
+   const remarkCounts = {};
+   validMarks.forEach(mark => {
+      if (!remarkCounts[mark.remark]) {
          remarkCounts[mark.remark] = 0;
-         }
-         remarkCounts[mark.remark]++;
-         });
-         
-         // Prepare data for chart
-         const pieData = Object.keys(remarkCounts).map(remark => {
-         return {
+      }
+      remarkCounts[mark.remark]++;
+   });
+   
+   // Prepare data for chart
+   const pieData = Object.keys(remarkCounts).map(remark => {
+      return {
          label: remark,
          value: remarkCounts[remark]
-         };
-         });
-         
-         const total = pieData.reduce((sum, item) => sum + item.value, 0);
-         
-         // Color mapping for common remarks
-         const colorMap = {
-         'Outstanding performance': '#10b981', // Green
-         'Good performance': '#3b82f6',     // Blue
-         'Satisfactory performance': '#f59e0b', // Amber
-         'Needs improvement': '#ef4444',   // Red
-         'Absent': '#6d28d9'               // Purple
-         };
-         
-         // Set up dimensions
-         const width = chartContainer.clientWidth;
-         const height = chartContainer.clientHeight;
-         const radius = Math.min(width, height) / 2 * 0.8;
-         
-         // Create SVG element
-         const svg = d3.select(chartContainer)
-         .append('svg')
-         .attr('width', width)
-         .attr('height', height)
-         .append('g')
-         .attr('transform', `translate(${width / 2 - radius * 0.3}, ${height / 2})`);
-         
-         // Store reference to our chart
-         remarksChart = svg.node();
-         
-         // Generate arc
-         const arc = d3.arc()
-         .innerRadius(0)
-         .outerRadius(radius);
-         
-         // Generate pie layout
-         const pie = d3.pie()
-         .value(d => d.value)
-         .sort(null);
-         
-         // Generate arcs for each data point
-         const arcs = svg.selectAll('.arc')
-         .data(pie(pieData))
-         .enter()
-         .append('g')
-         .attr('class', 'arc');
-         
-         // Add colored segments
-         arcs.append('path')
-         .attr('d', arc)
-         .attr('fill', (d, i) => colorMap[d.data.label] || getRandomColor())
-         .attr('stroke', 'white')
-         .attr('stroke-width', 2)
-         .style('transition', 'opacity 0.3s')
-         .on('mouseover', function() {
+      };
+   });
+   
+   const total = pieData.reduce((sum, item) => sum + item.value, 0);
+   
+   // Color mapping for common remarks
+   const colorMap = {
+      'Outstanding performance': '#10b981', // Green
+      'Good performance': '#3b82f6',     // Blue
+      'Satisfactory performance': '#f59e0b', // Amber
+      'Needs improvement': '#ef4444',   // Red
+      'Absent': '#6d28d9'               // Purple
+   };
+   
+   // Get the container dimensions
+   const containerWidth = chartContainer.clientWidth;
+   const containerHeight = 400; // Default height
+   
+   // Determine if we're on a small screen
+   const isSmallScreen = containerWidth < 500;
+   
+   // Set up dimensions based on screen size
+   const width = containerWidth;
+   const height = containerHeight;
+   
+   // Calculate optimal radius
+   const radius = Math.min(width, height) / 2 * (isSmallScreen ? 0.6 : 0.7);
+   
+   // Create SVG element with viewBox for responsiveness
+   const svg = d3.select(chartContainer)
+      .append('svg')
+      .attr('width', '100%')
+      .attr('height', height)
+      .attr('viewBox', `0 0 ${width} ${height}`)
+      .attr('preserveAspectRatio', 'xMidYMid meet')
+      .append('g');
+   
+   // Position the pie chart based on screen size
+   if (isSmallScreen) {
+      // On small screens, center the chart and put legend below
+      svg.attr('transform', `translate(${width / 2}, ${height * 0.35})`);
+   } else {
+      // On larger screens, move chart left to make room for legend on right
+      svg.attr('transform', `translate(${width / 3}, ${height / 2})`);
+   }
+   
+   // Store reference to our chart
+   remarksChart = svg.node();
+   
+   // Generate arc
+   const arc = d3.arc()
+      .innerRadius(0)
+      .outerRadius(radius);
+   
+   // Generate pie layout
+   const pie = d3.pie()
+      .value(d => d.value)
+      .sort(null);
+   
+   // Generate arcs for each data point
+   const arcs = svg.selectAll('.arc')
+      .data(pie(pieData))
+      .enter()
+      .append('g')
+      .attr('class', 'arc');
+   
+   // Add colored segments
+   arcs.append('path')
+      .attr('d', arc)
+      .attr('fill', (d, i) => colorMap[d.data.label] || getRandomColor())
+      .attr('stroke', 'white')
+      .attr('stroke-width', 2)
+      .style('transition', 'opacity 0.3s')
+      .on('mouseover', function() {
          d3.select(this).style('opacity', 0.8);
-         })
-         .on('mouseout', function() {
+      })
+      .on('mouseout', function() {
          d3.select(this).style('opacity', 1);
-         });
-         
-         // Add percentage labels inside pie
-         arcs.append('text')
-         .attr('transform', d => {
+      });
+   
+   // Add percentage labels inside pie
+   arcs.append('text')
+      .attr('transform', d => {
          const centroid = arc.centroid(d);
          return `translate(${centroid[0]}, ${centroid[1]})`;
-         })
-         .attr('text-anchor', 'middle')
-         .attr('font-size', '12px')
-         .attr('fill', 'white')
-         .attr('font-weight', 'bold')
-         .text(d => {
+      })
+      .attr('text-anchor', 'middle')
+      .attr('font-size', '12px')
+      .attr('fill', 'white')
+      .attr('font-weight', 'bold')
+      .text(d => {
          const percentage = ((d.data.value / total) * 100).toFixed(1);
          return percentage > 5 ? `${percentage}%` : '';
-         });
-         
-         // Create legend
-         const legendGroup = svg.append('g')
-         .attr('transform', `translate(${radius * 1.2}, -${radius * 0.8})`);
-         
-         const legendItems = legendGroup.selectAll('.legend-item')
-         .data(pieData)
-         .enter()
-         .append('g')
-         .attr('class', 'legend-item')
-         .attr('transform', (d, i) => `translate(0, ${i * 25})`);
-         
-         // Add colored squares
-         legendItems.append('rect')
-         .attr('width', 15)
-         .attr('height', 15)
-         .attr('fill', (d, i) => colorMap[d.label] || getRandomColor());
-         
-         // Add text labels with percentages
-         legendItems.append('text')
-         .attr('x', 20)
-         .attr('y', 12)
-         .text(d => {
+      });
+   
+   // Create legend with responsive positioning
+   const legendGroup = svg.append('g');
+   
+   if (isSmallScreen) {
+      // On small screens, position legend below the chart
+      legendGroup.attr('transform', `translate(${-radius * 0.9}, ${radius * 1.2})`);
+   } else {
+      // On larger screens, position legend to the right
+      legendGroup.attr('transform', `translate(${radius * 1.1}, ${-radius * 0.8})`);
+   }
+   
+   // Create legend items
+   const legendItems = legendGroup.selectAll('.legend-item')
+      .data(pieData)
+      .enter()
+      .append('g')
+      .attr('class', 'legend-item');
+   
+   // Position legend items appropriately based on screen size
+   if (isSmallScreen) {
+      // On small screens, make legend items appear in rows (wrap)
+      const itemsPerRow = Math.floor(width / 120);
+      legendItems.attr('transform', (d, i) => {
+         const row = Math.floor(i / itemsPerRow);
+         const col = i % itemsPerRow;
+         return `translate(${col * 120}, ${row * 25})`;
+      });
+   } else {
+      // On larger screens, stack legend items vertically
+      legendItems.attr('transform', (d, i) => `translate(0, ${i * 25})`);
+   }
+   
+   // Add colored squares
+   legendItems.append('rect')
+      .attr('width', 15)
+      .attr('height', 15)
+      .attr('fill', (d, i) => colorMap[d.label] || getRandomColor());
+   
+   // Add text labels with percentages
+   legendItems.append('text')
+      .attr('x', 20)
+      .attr('y', 12)
+      .text(d => {
          const percentage = ((d.value / total) * 100).toFixed(1);
          return `${d.label}: ${percentage}%`;
-         })
-         .attr('font-size', '12px');
+      })
+      .attr('font-size', '12px')
+      .style('text-overflow', 'ellipsis')
+      .attr('class', 'legend-text');
+   
+   // Handle window resize events
+   const resizeChart = () => {
+      // Redraw chart when window size changes
+      chartContainer.innerHTML = '';
+      generateRemarksChart();
+   };
+   
+   // Remove any existing resize listener to prevent duplicates
+   window.removeEventListener('resize', resizeChart);
+   
+   // Add resize listener with debounce
+   let resizeTimeout;
+   window.addEventListener('resize', () => {
+      clearTimeout(resizeTimeout);
+      resizeTimeout = setTimeout(resizeChart, 250);
+   });
+   
+   console.log("D3 Chart created successfully");
+}
          
-         console.log("D3 Chart created successfully");
-         }
-         
-         // Replace checkChartJsLoaded with checkD3Loaded
+         // Check if D3 has loaded
          function checkD3Loaded() {
          if (typeof d3 === 'undefined') {
          console.error('D3.js is not loaded!');
