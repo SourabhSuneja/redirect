@@ -741,7 +741,7 @@
                  // Store the computed percentage and remark in the global selectedMarks as well
                  const parsedPercentage = parseFloat(percentage)
                  selectedMarks[index]['percentage'] = isNaN(parsedPercentage) ? null : parsedPercentage;
-                 selectedMarks[index]['remark'] = remark === 'Absent': null : remark;
+                 selectedMarks[index]['remark'] = remark === 'Absent' ? null : remark;
                  
                  // Create row for marks table
                  const row = document.createElement('tr');
