@@ -989,7 +989,7 @@
                  selectedMarks[index]['remark'] = remark === 'Absent' ? null : remark;
 
                  // A small name issue fix
-                 selectedMarks = selectedMarks.map(o => ({student: o.name, ...o, name: undefined}));
+                 selectedMarks = selectedMarks.map(o => ({name: o.student, ...o, student: undefined}));
                  
                  // Create row for marks table
                  const row = document.createElement('tr');
