@@ -1514,10 +1514,11 @@ function generateRemarksChart() {
    
    // Set up dimensions based on screen size
    const width = containerWidth;
-   const height = containerHeight;
+   // Adjust height to accommodate vertical legend on small screens
+   const height = isSmallScreen ? Math.max(containerHeight, 400 + pieData.length * 25) : containerHeight;
    
-   // Calculate optimal radius
-   const radius = Math.min(width, height) / 2 * (isSmallScreen ? 0.6 : 0.7);
+   // Calculate optimal radius - smaller on small screens
+   const radius = Math.min(width, height) / 2 * (isSmallScreen ? 0.5 : 0.65);
    
    // Create SVG element with viewBox for responsiveness
    const svg = d3.select(chartContainer)
@@ -1530,8 +1531,8 @@ function generateRemarksChart() {
    
    // Position the pie chart based on screen size
    if (isSmallScreen) {
-      // On small screens, center the chart and put legend below
-      svg.attr('transform', `translate(${width / 2}, ${height * 0.35})`);
+      // On small screens, move the chart up to make room for legend below
+      svg.attr('transform', `translate(${width / 2}, ${height * 0.3})`);
    } else {
       // On larger screens, move chart left to make room for legend on right
       svg.attr('transform', `translate(${width / 3}, ${height / 2})`);
@@ -1591,32 +1592,20 @@ function generateRemarksChart() {
    
    if (isSmallScreen) {
       // On small screens, position legend below the chart
-      legendGroup.attr('transform', `translate(${-radius * 0.9}, ${radius * 1.2})`);
+      legendGroup.attr('transform', `translate(${-radius * 0.8}, ${radius * 1.2})`);
    } else {
       // On larger screens, position legend to the right
       legendGroup.attr('transform', `translate(${radius * 1.1}, ${-radius * 0.8})`);
    }
    
-   // Create legend items
+   // Create legend items - always stacked vertically
    const legendItems = legendGroup.selectAll('.legend-item')
       .data(pieData)
       .enter()
       .append('g')
-      .attr('class', 'legend-item');
-   
-   // Position legend items appropriately based on screen size
-   if (isSmallScreen) {
-      // On small screens, make legend items appear in rows (wrap)
-      const itemsPerRow = Math.floor(width / 120);
-      legendItems.attr('transform', (d, i) => {
-         const row = Math.floor(i / itemsPerRow);
-         const col = i % itemsPerRow;
-         return `translate(${col * 120}, ${row * 25})`;
-      });
-   } else {
-      // On larger screens, stack legend items vertically
-      legendItems.attr('transform', (d, i) => `translate(0, ${i * 25})`);
-   }
+      .attr('class', 'legend-item')
+      // Always stack legend items vertically on all screen sizes
+      .attr('transform', (d, i) => `translate(0, ${i * 25})`);
    
    // Add colored squares
    legendItems.append('rect')
@@ -1635,6 +1624,18 @@ function generateRemarksChart() {
       .attr('font-size', '12px')
       .style('text-overflow', 'ellipsis')
       .attr('class', 'legend-text');
+   
+   // Ensure legend text doesn't overflow on small screens
+   if (isSmallScreen) {
+      legendGroup.selectAll('.legend-text')
+         .attr('textLength', null)
+         .each(function() {
+            const textWidth = width * 0.7; // Limit text width on small screens
+            if (this.getComputedTextLength() > textWidth) {
+               d3.select(this).attr('textLength', textWidth);
+            }
+         });
+   }
    
    // Handle window resize events
    const resizeChart = () => {
