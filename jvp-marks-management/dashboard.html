@@ -154,6 +154,9 @@
          .btn-secondary:hover {
          background-color: var(--secondary-dark);
          }
+         #logout-btn {
+         background-color: var(--danger);
+         }
          .hidden {
          display: none !important;
          }
@@ -584,7 +587,7 @@
          color: var(--dark);
          }
          .rank-2 {
-         background-color: silver;
+         background-color: #f2f2f2;
          color: var(--dark);
          }
          .rank-3 {
@@ -812,10 +815,7 @@
          
          // Global variable to store the exam name (coming from URL, if any)
          let examParamInURL = null;
-         
-         // List of all classes
-         const classes = ['6-A1', '6-A2', '6-A3', '6-A4', '7-A1', '7-A2', '7-A2', '8-A1', '8-A2', '8-A3', '9-A1', '9-A2', '9-A3', '10-A1', '10-A2'];
-         
+                  
          // Exam data for calculating percentages
          const exams = [
              {'name': 'PT-1', 'mm': 20},
@@ -1384,6 +1384,7 @@
          // If this percentage is different from the previous one, assign a new rank
          if (previousPercentage !== mark.percentage) {
          currentRank = rankCounter + 1;
+         rankCounter++;
          }
          
          // Create the ranking row
@@ -1407,7 +1408,6 @@
          
          // Update for next iteration
          previousPercentage = mark.percentage;
-         rankCounter++;
          });
          
          // Add rows for students with null percentages (unranked)
