@@ -705,9 +705,6 @@
                  item.subject === selectedSubject && 
                  item.exam === selectedExam
              );
-
-             // Store a copy of filteredData in the global selectedMarks variable for later analysis
-             selectedMarks = JSON.parse(JSON.stringify(filteredData)) || [];
          
              // If no records found for the selected class, subject and exam, hide the marks container and return
               if(filteredData.length === 0) {
@@ -719,6 +716,9 @@
             });
                 return;
             }
+
+             // Store a copy of filteredData in the global selectedMarks variable for later analysis
+             selectedMarks = JSON.parse(JSON.stringify(filteredData)) || [];
              
              // Update the marks title and subtitle
              marksTitle.textContent = `Marks Statement: ${selectedExam}`;
@@ -737,6 +737,10 @@
                  const percentage = item.marks !== null ? ((item.marks / maxMarks) * 100).toFixed(2) : '-';
                  const remark = getPerformanceRemark(item.marks, selectedExam);
                  const remarkClass = getRemarkClass(remark);
+
+                 // Store the computed percentage and remark in the global selectedMarks as well
+                 selectedMarks[index]['percentage'] = percentage;
+                 selectedMarks[index]['remark'] = remark;
                  
                  // Create row for marks table
                  const row = document.createElement('tr');
