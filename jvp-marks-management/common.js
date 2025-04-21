@@ -1,3 +1,13 @@
+// Color mapping for updated remarks
+const colorMap = {
+   'Outstanding performance': '#10b981',       // Green
+   'Good performance': '#60a5fa',         // Light Blue
+   'Very good performance': '#3b82f6',              // Blue
+   'Fair performance': '#f59e0b',              // Amber
+   'Needs hard work': '#ef4444',               // Red
+   'Absent': '#6d28d9'                         // Purple
+};
+
 // Function to get max marks considering both regular and custom exams
 function getMaxMarks(examName) {
    // First check common exams
@@ -23,9 +33,9 @@ function getPerformanceRemark(marks, examName) {
    const maxMarks = getMaxMarks(examName);
    const percentage = (marks / maxMarks) * 100;
 
-   if (percentage < 33) return 'Needs improvement';
-   if (percentage < 50) return 'Satisfactory performance';
-   if (percentage < 75) return 'Good performance';
+   if (percentage < 50) return 'Needs hard work';
+   if (percentage < 70) return 'Fair performance';
+   if (percentage < 80) return 'Good performance';
    if (percentage < 90) return 'Very good performance';
    return 'Outstanding performance';
 }
@@ -33,8 +43,8 @@ function getPerformanceRemark(marks, examName) {
 // Function to get CSS class for remark
 function getRemarkClass(remark) {
    if (remark === 'Absent') return 'remark-absent';
-   if (remark === 'Needs improvement') return 'remark-poor';
-   if (remark === 'Satisfactory performance') return 'remark-average';
+   if (remark === 'Needs hard work') return 'remark-poor';
+   if (remark === 'Fair performance') return 'remark-average';
    if (remark === 'Good performance' || remark === 'Very good performance') return 'remark-good';
    if (remark === 'Outstanding performance') return 'remark-excellent';
    return '';
