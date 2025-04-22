@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class 9 Exam Blueprints | PT-1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Poppins', sans-serif;
+    }
+    
+    body {
+      background-color: #f5f7fa;
+      color: #333;
+      line-height: 1.6;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+    }
+    
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      text-align: center;
+      padding: 20px 0;
+      background-color: #fff;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      margin-bottom: 30px;
+    }
+    
+    .school-logo {
+      width: 80px;
+      height: auto;
+      margin-bottom: 15px;
+    }
+    
+    h1 {
+      font-size: 2rem;
+      color: #3f51b5;
+      margin-bottom: 10px;
+    }
+    
+    h2 {
+      font-size: 1.4rem;
+      color: #757575;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    
+    h3 {
+      font-size: 1.2rem;
+      color: #3f51b5;
+      font-weight: 600;
+      margin-bottom: 15px;
+    }
+    
+    .subjects-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    
+    .subject-card {
+      background-color: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      cursor: pointer;
+    }
+    
+    .subject-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .subject-header {
+      padding: 15px;
+      background-color: #3f51b5;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    
+    .subject-title {
+      font-size: 1.2rem;
+      font-weight: 600;
+    }
+    
+    .subject-body {
+      padding: 15px;
+      text-align: center;
+    }
+    
+    .subject-body p {
+      margin-bottom: 10px;
+      color: #757575;
+    }
+    
+    .subject-footer {
+      padding: 10px 15px;
+      background-color: #f5f5f5;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .view-btn {
+      display: inline-flex;
+      align-items: center;
+      color: #3f51b5;
+      font-weight: 500;
+      text-decoration: none;
+    }
+    
+    .view-btn .material-icons {
+      margin-left: 5px;
+      font-size: 18px;
+    }
+    
+    /* Modal Styles */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 1000;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+    }
+    
+    .modal-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .modal-container {
+      background-color: #fff;
+      border-radius: 10px;
+      width: 90%;
+      max-width: 600px;
+      max-height: 90vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+      transform: scale(0.9);
+      transition: transform 0.3s ease;
+    }
+    
+    .modal-overlay.active .modal-container {
+      transform: scale(1);
+    }
+    
+    .modal-header {
+      padding: 20px;
+      background-color: #3f51b5;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-radius: 10px 10px 0 0;
+    }
+    
+    .modal-title {
+      font-size: 1.4rem;
+      font-weight: 600;
+    }
+    
+    .close-modal {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .modal-body {
+      padding: 20px;
+    }
+    
+    .blueprint-section {
+      margin-bottom: 20px;
+    }
+    
+    .blueprint-section h4 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #3f51b5;
+      margin-bottom: 10px;
+      border-bottom: 1px solid #e0e0e0;
+      padding-bottom: 5px;
+    }
+    
+    .blueprint-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #f5f5f5;
+    }
+    
+    .blueprint-item:last-child {
+      border-bottom: none;
+    }
+    
+    .total-marks {
+      background-color: #e8eaf6;
+      padding: 10px;
+      border-radius: 5px;
+      margin-top: 15px;
+      text-align: right;
+      font-weight: 600;
+    }
+    
+    .subject-icon {
+      font-size: 22px;
+    }
+    
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      padding: 20px 0;
+      color: #757575;
+      font-size: 0.9rem;
+    }
+    
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      h2 {
+        font-size: 1.2rem;
+      }
+      
+      .subjects-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <img src="https://i.postimg.cc/Y0qB2Wyc/images-2024-05-21-T183208-408.jpg" alt="Jamna Vidyapeeth Logo" class="school-logo">
+      <h1>Jamna Vidyapeeth</h1>
+      <h2>Grade 9 - Periodic Test 1</h2>
+      <h3>Exam Blueprints</h3>
+    </header>
+    
+    <div class="subjects-grid">
+      <!-- Subject cards will be generated dynamically via JS -->
+    </div>
+  </div>
+  
+  <div class="modal-overlay" id="blueprintModal">
+    <div class="modal-container">
+      <div class="modal-header">
+        <div class="modal-title" id="modalTitle">Subject Blueprint</div>
+        <button class="close-modal" id="closeModal">
+          <span class="material-icons">close</span>
+        </button>
+      </div>
+      <div class="modal-body" id="modalBody">
+        <!-- Blueprint content will be generated dynamically -->
+      </div>
+    </div>
+  </div>
+  
+  <footer>
+    <p>Crafted by Sourabh Sir</p>
+  </footer>
+  
+  <script>
+    // Blueprint data store
+    const blueprintData = {
+      english: {
+        name: "English",
+        icon: "menu_book",
+        color: "#3f51b5",
+        totalMarks: 20,
+        sections: [
+          { 
+            name: "Detailed Blueprint Coming Soon",
+            items: [
+              { description: "Check back later for detailed English blueprint", marks: "" }
+            ]
+          }
+        ]
+      },
+      hindi: {
+        name: "Hindi",
+        icon: "translate",
+        color: "#f44336",
+        totalMarks: 20,
+        sections: [
+          { 
+            name: "Detailed Blueprint Coming Soon",
+            items: [
+              { description: "Check back later for detailed Hindi blueprint", marks: "" }
+            ]
+          }
+        ]
+      },
+      maths: {
+        name: "Mathematics",
+        icon: "calculate",
+        color: "#009688",
+        totalMarks: 20,
+        sections: [
+          {
+            name: "Section A",
+            items: [
+              { description: "MCQ", marks: "4 × 1 = 4 marks" }
+            ]
+          },
+          {
+            name: "Section B",
+            items: [
+              { description: "Short Answer Type", marks: "5 × 2 = 10 marks" }
+            ]
+          },
+          {
+            name: "Section C",
+            items: [
+              { description: "Long Answer Type", marks: "2 × 3 = 6 marks" }
+            ]
+          }
+        ]
+      },
+      science: {
+        name: "Science",
+        icon: "science",
+        color: "#2196f3",
+        totalMarks: 20,
+        sections: [
+          {
+            name: "Question Types",
+            items: [
+              { description: "Multiple Choice Questions (MCQs)", marks: "6 × 1 = 6 marks" },
+              { description: "Short Answer Type", marks: "2 × 2 = 4 marks" },
+              { description: "Long Answer Type", marks: "2 × 3 = 6 marks" },
+              { description: "Case Based", marks: "1 × 4 = 4 marks" }
+            ]
+          }
+        ]
+      },
+      socialScience: {
+        name: "Social Science",
+        icon: "public",
+        color: "#ff9800",
+        totalMarks: 20,
+        sections: [
+          { 
+            name: "Detailed Blueprint Coming Soon",
+            items: [
+              { description: "Check back later for detailed Social Science blueprint", marks: "" }
+            ]
+          }
+        ]
+      },
+      dataScience: {
+        name: "Data Science",
+        icon: "analytics",
+        color: "#673ab7",
+        totalMarks: 20,
+        sections: [
+          {
+            name: "Question Types",
+            items: [
+              { description: "Multiple Choice Questions (MCQs)", marks: "5 × 1 = 5 marks" },
+              { description: "Short Answer Type (attempt any 5 out of 7)", marks: "5 × 1 = 5 marks" },
+              { description: "Long Answer Type (attempt any 2 out of 3)", marks: "2 × 3 = 6 marks" },
+              { description: "Application-based Question (split into 4 parts)", marks: "1 × 4 = 4 marks" }
+            ]
+          }
+        ]
+      }
+    };
+  
+    // Generate subject cards
+    const subjectsGrid = document.querySelector('.subjects-grid');
+    
+    // Function to create subject cards
+    function createSubjectCards() {
+      for (const [key, subject] of Object.entries(blueprintData)) {
+        const card = document.createElement('div');
+        card.className = 'subject-card';
+        card.dataset.subject = key;
+        
+        card.innerHTML = `
+          <div class="subject-header" style="background-color: ${subject.color}">
+            <div class="subject-title">${subject.name}</div>
+            <span class="material-icons subject-icon">${subject.icon}</span>
+          </div>
+          <div class="subject-body">
+            <p>Total Marks: ${subject.totalMarks}</p>
+          </div>
+          <div class="subject-footer">
+            <div class="view-btn">
+              View Blueprint
+              <span class="material-icons">visibility</span>
+            </div>
+          </div>
+        `;
+        
+        subjectsGrid.appendChild(card);
+      }
+    }
+    
+    // Create all subject cards
+    createSubjectCards();
+    
+    // Modal functionality
+    const modal = document.getElementById('blueprintModal');
+    const closeModal = document.getElementById('closeModal');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalBody = document.getElementById('modalBody');
+    
+    // Function to open modal with subject blueprint
+    function openBlueprintModal(subjectKey) {
+      const subject = blueprintData[subjectKey];
+      
+      if (!subject) return;
+      
+      modalTitle.textContent = `${subject.name} Blueprint`;
+      
+      let blueprintContent = '';
+      
+      // Generate sections and items
+      subject.sections.forEach(section => {
+        blueprintContent += `
+          <div class="blueprint-section">
+            <h4>${section.name}</h4>
+            <div class="blueprint-items">
+        `;
+        
+        section.items.forEach(item => {
+          blueprintContent += `
+            <div class="blueprint-item">
+              <div>${item.description}</div>
+              <div>${item.marks}</div>
+            </div>
+          `;
+        });
+        
+        blueprintContent += `
+            </div>
+          </div>
+        `;
+      });
+      
+      blueprintContent += `
+        <div class="total-marks">
+          Total: ${subject.totalMarks} Marks
+        </div>
+      `;
+      
+      modalBody.innerHTML = blueprintContent;
+      modal.classList.add('active');
+      
+      // Prevent body scrolling when modal is open
+      document.body.style.overflow = 'hidden';
+    }
+    
+    // Event listeners
+    document.querySelectorAll('.subject-card').forEach(card => {
+      card.addEventListener('click', () => {
+        openBlueprintModal(card.dataset.subject);
+      });
+    });
+    
+    closeModal.addEventListener('click', () => {
+      modal.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+    
+    // Close modal when clicking outside
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+    
+    // Close modal with Escape key
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && modal.classList.contains('active')) {
+        modal.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
+  </script>
+</body>
+</html>
