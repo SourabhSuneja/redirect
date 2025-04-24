@@ -801,6 +801,16 @@
          }
          
          });
+
+         generateReportBtn.addEventListener("click", function () {
+         const classValue = generateReportBtn.dataset.class;
+         
+         if (classValue) {
+         const url = `custom-marks-report.html?class=${encodeURIComponent(classValue)}`;
+         window.open(url, "_blank");
+         }
+         
+         });
          
          // Initialize the form
          async function initializeForm() {
