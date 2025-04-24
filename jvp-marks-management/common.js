@@ -1,6 +1,19 @@
 // Classes to fetch student lists for
 const classes = ['6-A1', '6-A2', '6-A3', '6-A4', '7-A1', '7-A2', '7-A3', '7-A4', '8-A1', '8-A2', '8-A3', '9-A1', '9-A2', '9-A3', '10-A1', '10-A2', '10-A3'];
 
+// Global array of subjects
+var subjects = [
+  "English",
+  "Hindi",
+  "Science",
+  "Maths",
+  "Social Science",
+  "Sanskrit",
+  "Computer",
+  "Data Science",
+  "GK"
+];
+
 // Color mapping for updated remarks
 const colorMap = {
    'Outstanding performance': '#10b981', // Green
