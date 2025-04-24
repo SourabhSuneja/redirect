@@ -3,12 +3,12 @@ const classes = ['6-A1', '6-A2', '6-A3', '6-A4', '7-A1', '7-A2', '7-A2', '8-A1',
 
 // Color mapping for updated remarks
 const colorMap = {
-   'Outstanding performance': '#10b981',       // Green
-   'Good performance': '#60a5fa',         // Light Blue
-   'Very good performance': '#3b82f6',              // Blue
-   'Fair performance': '#f59e0b',              // Amber
-   'Needs hard work': '#ef4444',               // Red
-   'Absent': '#6d28d9'                         // Purple
+   'Outstanding performance': '#10b981', // Green
+   'Good performance': '#60a5fa', // Light Blue
+   'Very good performance': '#3b82f6', // Blue
+   'Fair performance': '#f59e0b', // Amber
+   'Needs hard work': '#ef4444', // Red
+   'Absent': '#6d28d9' // Purple
 };
 
 // Function to get max marks considering both regular and custom exams
@@ -30,11 +30,17 @@ function getMaxMarks(examName) {
 }
 
 // Function to generate performance remark
-function getPerformanceRemark(marks, examName) {
-   if (marks === null) return 'Absent';
+function getPerformanceRemark(marks, examName, computedPercentage = null) {
+   let percentage;
 
-   const maxMarks = getMaxMarks(examName);
-   const percentage = (marks / maxMarks) * 100;
+   // If an already computed percentage value is given, generate a remark based on that
+   if (computedPercentage) {
+      percentage = computedPercentage;
+   } else {
+      if (marks === null) return 'Absent';
+      const maxMarks = getMaxMarks(examName);
+      percentage = (marks / maxMarks) * 100;
+   }
 
    if (percentage < 50) return 'Needs hard work';
    if (percentage < 70) return 'Fair performance';
