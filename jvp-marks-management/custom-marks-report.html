@@ -368,7 +368,7 @@
       </div>
       <div class="container">
          <h1>Student Performance Report</h1>
-         <h2>Class VIII - Academic Year 2025-26</h2>
+         <h2>Class <span id="classLabel"></span>Academic Year 2025-26</h2>
          <div class="form-group">
             <h3>Select Exams to Display</h3>
             <div class="select-all-row">
@@ -846,6 +846,8 @@
          const classValue = urlParams.get("class") || '8-A2';
          // Store in global variable as well
          classSelect.value = classValue;
+         // Upadte the class label in the page header
+         document.getElementById('classLabel').innerText = (classValue + ' - ') || '';
          
          // If class is present and not falsy
          if (classValue) {
