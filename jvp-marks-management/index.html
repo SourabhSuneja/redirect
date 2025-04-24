@@ -965,13 +965,20 @@
          const selectedSubject = subjectSelect.value;
          let selectedExam = examSelect.value;
          
-          // Hide score insight button at first
+          // Hide score insight and generate report buttons at first
          scoreInsightBtn.style.display = 'none';
+         generateReportBtn.style.display = 'none';
          
          // Only update the exam dropdown when class or subject changes, not when exam changes
          if ((event.target === classSelect || event.target === subjectSelect) && 
          selectedClass && selectedSubject) {
          selectedExam = updateExamDropdown(selectedClass, selectedSubject, true);
+         }
+
+         // Make generate report button visible if class has been selected and also set its data-class attribute
+         if(selectedClass) {
+           generateReportBtn.style.display = 'inline-block';
+           generateReportBtn.dataset.class = selectedClass;
          }
          
          if (selectedClass && selectedExam && selectedSubject) {
