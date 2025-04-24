@@ -583,7 +583,7 @@
          .map(name => name.trim()) // Trim spaces
          .filter(name => name);    // Remove empty lines
          
-         students[className] = names;
+         students[className] = names.map(name => name.toUpperCase()).sort();
          } catch (error) {
          console.error(`Error fetching data for ${className}:`, error);
          students[className] = []; // Fallback in case of error
