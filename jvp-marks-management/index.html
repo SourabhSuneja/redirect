@@ -21,6 +21,7 @@
          --secondary: #10b981;
          --secondary-dark: #059669;
          --danger: #ef4444;
+         --danger-dark: #c33c3c;
          --light: #f9fafb;
          --dark: #1f2937;
          --text: #374151;
@@ -147,7 +148,10 @@
          padding: 10px 20px;
          font-size: 14px;
          }
-         .btn-logout:hover {
+         .btn-logout:hover, #delete-btn:hover {
+         background-color: var(--danger-dark);
+         }
+         #delete-btn {
          background-color: var(--danger);
          }
          .controls {
@@ -503,6 +507,7 @@
                <div class="form-actions">
                   <button id="clear-btn">Clear</button>
                   <button id="submit-btn" class="btn-secondary">Submit</button>
+                  <button id="delete-btn">Delete</button>
                </div>
                <div id="stats-container" class="stats-container hidden">
                   <h3>Class Statistics</h3>
@@ -616,6 +621,7 @@
          const maxMarksDisplay = document.getElementById('max-marks-display');
          const clearBtn = document.getElementById('clear-btn');
          const submitBtn = document.getElementById('submit-btn');
+         const deleteBtn = document.getElementById('delete-btn');
          const feedbackMessage = document.getElementById('feedback-message');
          const statsContainer = document.getElementById('stats-container');
          const subjectSelect = document.getElementById('subject-select');
