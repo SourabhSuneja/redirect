@@ -1135,7 +1135,81 @@
          updateStatistics();
          }
          
-         // Helper functions
+         // Add event listener to the delete button
+deleteBtn.addEventListener('click', async function() {
+    // Get values from the select inputs
+    const selectedClass = classSelect.value;
+    const selectedExam = examSelect.value;
+    const selectedSubject = subjectSelect.value;
+    
+    // Confirm deletion
+    const confirmDelete = await showDialog({
+            	                         title: 'Confirm Delete',
+           	                         message: `Are you sure you want to delete all marks records for class ${selectedClass}, ${selectedSubject}, ${selectedExam}? This action is permanent and can't be undone. Proceed ahead?`,
+            		         type: 'confirm'
+         			            });
+
+    if (confirmDelete) {
+        try {
+            // 1. Delete records from Supabase 'marks' table
+            const deletedMarks = await deleteRow(
+                'marks',
+                ['class', 'subject', 'exam'],
+                [selectedClass, selectedSubject, selectedExam]
+            );
+            
+            if (!deletedMarks) {
+                throw new Error("Failed to delete marks records from database");
+            }
+            
+            // 2. Delete exam details from 'custom_exams' table
+            const deletedExam = await deleteRow(
+                'custom_exams',
+                ['name'],
+                [selectedExam]
+            );
+            
+            if (!deletedExam) {
+                throw new Error("Failed to delete exam details from database");
+            }
+            
+            // 3. Update local marks array (remove matching records)
+            const initialLength = marks.length;
+            marks = marks.filter(mark => 
+                !(mark.class === selectedClass && 
+                  mark.subject === selectedSubject && 
+                  mark.exam === selectedExam)
+            );
+            
+            console.log(`Removed ${initialLength - marks.length} records from local array`);
+            
+            // 4. Reset all select inputs
+            classSelect.value = "";
+            examSelect.value = "";
+            subjectSelect.value = "";
+            
+            // 5. Dispatch change event on classSelect to trigger UI update
+            classSelect.dispatchEvent(new Event('change'));
+            
+            // Show success message
+            showDialog({
+                title: 'Success',
+                message: 'Marks records for the selected class, subject and exam deleted successfully!',
+                type: 'alert'
+            });
+            
+        } catch (error) {
+            console.error("Error during deletion:", error);
+            
+            // Show error message
+            showDialog({
+                title: 'Database Error',
+                message: 'Failed to delete the records. Please try again later.',
+                type: 'alert'
+            });
+        }
+    }
+});
                         
          // Submit form
          submitBtn.addEventListener('click', async () => {
