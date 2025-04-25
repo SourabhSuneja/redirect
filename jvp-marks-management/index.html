@@ -1150,7 +1150,10 @@ deleteBtn.addEventListener('click', async function() {
          			            });
 
     if (confirmDelete) {
+        
         try {
+            // Show loading screen
+            showLoading();
             // 1. Delete records from Supabase 'marks' table
             const deletedMarks = await deleteRow(
                 'marks',
@@ -1207,6 +1210,8 @@ deleteBtn.addEventListener('click', async function() {
                 message: 'Failed to delete the records. Please try again later.',
                 type: 'alert'
             });
+        } finally {
+            hideLoading();
         }
     }
 });
