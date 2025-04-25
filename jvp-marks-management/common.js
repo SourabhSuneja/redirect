@@ -14,6 +14,16 @@ var subjects = [
   "GK"
 ];
 
+// Common pre-decided exams
+const exams = [
+             {'name': 'PT-1 (20M)', 'mm': 20},
+             {'name': 'PT-2 (20M)', 'mm': 20},
+             {'name': 'Term-1 (70M)', 'mm': 70},
+             {'name': 'PT-3 (20M)', 'mm': 20},
+             {'name': 'PT-4 (20M)', 'mm': 20},
+             {'name': 'Term-2 (70M)', 'mm': 70},
+        ];
+
 // Color mapping for updated remarks
 const colorMap = {
    'Outstanding performance': '#10b981', // Green
