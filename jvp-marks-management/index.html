@@ -1177,16 +1177,21 @@ deleteBtn.addEventListener('click', async function() {
             }
             
             // 3. Update local marks array (remove matching records)
-            const initialLength = marks.length;
             marks = marks.filter(mark => 
                 !(mark.class === selectedClass && 
                   mark.subject === selectedSubject && 
                   mark.exam === selectedExam)
             );
+
+           // 4. Update customExams array (remove matching records)
+            customExams = customExams.filter(exam => 
+                !(exam.class === selectedClass && 
+                  exam.subject === selectedSubject && 
+                  exam.name === selectedExam)
+            );
             
-            console.log(`Removed ${initialLength - marks.length} records from local array`);
             
-            // 4. Reset all select inputs
+            // 5. Reset all select inputs
             classSelect.value = "";
             examSelect.value = "";
             subjectSelect.value = "";
