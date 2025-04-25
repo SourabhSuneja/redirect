@@ -1168,8 +1168,8 @@ deleteBtn.addEventListener('click', async function() {
             // 2. Delete exam details from 'custom_exams' table
             const deletedExam = await deleteRow(
                 'custom_exams',
-                ['name'],
-                [selectedExam]
+                ['name', 'class', 'subject'],
+                [selectedExam, selectedClass, selectedSubject]
             );
             
             if (!deletedExam) {
