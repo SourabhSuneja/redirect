@@ -364,6 +364,49 @@ async function subscribeToTable(tableName, callback) {
    }
 }
 
+// create a new user without signing them in
+async function createUserWithoutSession(email, password, metadata = {}) {
+   try {
+      // Create a temporary Supabase client for this operation
+      const tempSupabase = createClient(supabaseUrl, supabaseKey);
+      
+      // Store the existing session if there is one
+      const { data: { session: existingSession } } = await supabase.auth.getSession();
+      
+      // Sign up the new user
+      const { data: signUpData, error: signUpError } = await tempSupabase.auth.signUp({
+         email: email,
+         password: password,
+         options: {
+            data: metadata
+         }
+      });
+
+      if (signUpError) {
+         console.error("Error signing up new user:", signUpError.message);
+         throw signUpError;
+      }
+      
+      // Sign out from the temporary client to clean up
+      await tempSupabase.auth.signOut();
+      
+      // If there was an existing session, restore it by reusing the token
+      if (existingSession) {
+         await supabase.auth.setSession({
+            access_token: existingSession.access_token,
+            refresh_token: existingSession.refresh_token
+         });
+      }
+      
+      console.log("User created successfully without affecting current session:", signUpData);
+      return signUpData.user; // Return just the user information
+   } catch (err) {
+      console.error("Unexpected error during user creation:", err.message);
+      throw err;
+   }
+}
+
+
 // expose all methods globally by attaching them to the window object
 window.checkAuth = checkAuth;
 window.signInUser = signInUser;
@@ -377,3 +420,4 @@ window.deleteRow = deleteRow;
 window.updateRow = updateRow;
 window.invokeFunction = invokeFunction;
 window.subscribeToTable = subscribeToTable;
+window.createUserWithoutSession = createUserWithoutSession;
