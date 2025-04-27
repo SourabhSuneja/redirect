@@ -1,0 +1,892 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Jamna Vidyapeeth - Admin Panel</title>
+      <link rel="preconnect" href="https://fonts.googleapis.com">
+      <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+      <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <!-- Supabase CRUD Functions -->
+      <script type="module" src="supabase-crud.js"></script>
+      <!-- Dialog Box Styles -->
+      <link rel="stylesheet" href="dialog.css">
+      <!-- Dialog Box Scripts -->
+      <script src="dialog.js"></script>
+      <!-- Common JS Functions -->
+      <script src="common.js"></script>
+      <style>
+         :root {
+         --primary: #4f46e5;
+         --primary-dark: #4338ca;
+         --secondary: #10b981;
+         --secondary-dark: #059669;
+         --danger: #ef4444;
+         --light: #f9fafb;
+         --dark: #1f2937;
+         --text: #374151;
+         --border: #e5e7eb;
+         --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+         --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+         --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+         --transition: all 0.2s ease;
+         }
+         * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+         max-height: 9999999px;
+         }
+         body {
+         background-color: var(--light);
+         color: var(--text);
+         line-height: 1.6;
+         font-size: 16px;
+         }
+         .container {
+         max-width: 1200px;
+         margin: 0 auto;
+         padding: 20px;
+         }
+         header {
+         background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+         color: white;
+         padding: 24px 0;
+         text-align: center;
+         box-shadow: var(--shadow);
+         margin-bottom: 2rem;
+         }
+         h1 {
+         margin: 0;
+         font-size: 2.25rem;
+         font-weight: 700;
+         letter-spacing: -0.025em;
+         }
+         h2 {
+         color: var(--dark);
+         font-size: 1.75rem;
+         font-weight: 700;
+         margin-bottom: 1.5rem;
+         letter-spacing: -0.025em;
+         }
+         h3 {
+         color: var(--dark);
+         font-size: 1.25rem;
+         font-weight: 600;
+         margin-bottom: 1rem;
+         letter-spacing: -0.025em;
+         }
+         .login-container, .app-container {
+         background-color: white;
+         border-radius: 12px;
+         box-shadow: var(--shadow-lg);
+         padding: 36px;
+         margin: 30px auto;
+         max-width: 800px;
+         border: 1px solid var(--border);
+         }
+         .login-container {
+         max-width: 440px;
+         }
+         .app-container {
+         overflow-x: scroll;
+         }
+         .form-group {
+         margin-bottom: 24px;
+         }
+         label {
+         display: block;
+         font-weight: 600;
+         margin-bottom: 8px;
+         color: var(--dark);
+         font-size: 0.9rem;
+         }
+         input, select {
+         width: 100%;
+         padding: 12px 16px;
+         border: 1px solid var(--border);
+         border-radius: 8px;
+         font-size: 16px;
+         transition: var(--transition);
+         color: var(--text);
+         background-color: var(--light);
+         }
+         input:focus, select:focus {
+         outline: none;
+         border-color: var(--primary);
+         box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+         }
+         .btn-primary, .btn-secondary, .btn-danger {
+         display: inline-block;
+         padding: 12px 24px;
+         border-radius: 8px;
+         font-weight: 600;
+         text-align: center;
+         cursor: pointer;
+         transition: var(--transition);
+         border: none;
+         font-size: 16px;
+         width: 100%;
+         color: white;
+         }
+         .btn-primary {
+         background-color: var(--primary);
+         }
+         .btn-primary:hover {
+         background-color: var(--primary-dark);
+         }
+         .btn-secondary {
+         background-color: var(--secondary);
+         }
+         .btn-secondary:hover {
+         background-color: var(--secondary-dark);
+         }
+         .btn-danger {
+         background-color: var(--danger);
+         }
+         .btn-danger:hover {
+         background-color: #dc2626;
+         }
+         .btn-sm {
+         padding: 6px 12px;
+         font-size: 14px;
+         width: auto;
+         }
+         .hidden {
+         display: none !important;
+         }
+         .alert {
+         padding: 12px 16px;
+         border-radius: 8px;
+         margin-bottom: 20px;
+         font-weight: 500;
+         color: white; 
+         animation: fadeIn 0.3s ease;
+         }
+         .alert-error {
+         background-color: var(--danger);
+         }
+         .alert-success {
+         background-color: var(--secondary);
+         }
+         @keyframes fadeIn {
+         from { opacity: 0; transform: translateY(-10px); }
+         to { opacity: 1; transform: translateY(0); }
+         }
+         .input-group {
+         display: flex;
+         align-items: center;
+         position: relative;
+         }
+         .domain-suffix {
+         position: absolute;
+         right: 16px;
+         color: var(--text);
+         opacity: 0.7;
+         font-size: 0.9rem;
+         pointer-events: none;
+         }
+         .loading-overlay {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background-color: rgba(255, 255, 255, 0.8);
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         z-index: 1000;
+         }
+         .spinner {
+         width: 50px;
+         height: 50px;
+         border: 4px solid var(--border);
+         border-radius: 50%;
+         border-top-color: var(--primary);
+         animation: spin 1s linear infinite;
+         }
+         @keyframes spin {
+         to {
+         transform: rotate(360deg);
+         }
+         }
+         .tabs {
+         display: flex;
+         margin-bottom: 24px;
+         border-bottom: 1px solid var(--border);
+         }
+         .tab {
+         padding: 12px 24px;
+         cursor: pointer;
+         font-weight: 600;
+         color: var(--text);
+         border-bottom: 3px solid transparent;
+         transition: var(--transition);
+         }
+         .tab.active {
+         color: var(--primary);
+         border-bottom-color: var(--primary);
+         }
+         .tab-content {
+         display: none;
+         }
+         .tab-content.active {
+         display: block;
+         }
+         .card {
+         background-color: white;
+         border-radius: 8px;
+         box-shadow: var(--shadow);
+         padding: 24px;
+         margin-bottom: 24px;
+         border: 1px solid var(--border);
+         }
+         .school-header {
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         }
+         .school-logo {
+         width: 80px;
+         height: 80px;
+         object-fit: contain;
+         margin-right: 20px;
+         border-radius: 50%;
+         background-color: white;
+         padding: 4px;
+         }
+         .school-name {
+         font-size: 2.5rem;
+         margin-bottom: 4px;
+         }
+         .system-name {
+         font-size: 1.25rem;
+         font-weight: 500;
+         margin: 0;
+         color: white;
+         }
+         .table-container {
+         overflow-x: auto;
+         margin-top: 24px;
+         }
+         table {
+         width: 100%;
+         border-collapse: collapse;
+         margin-bottom: 24px;
+         }
+         th, td {
+         padding: 12px 16px;
+         text-align: left;
+         border-bottom: 1px solid var(--border);
+         }
+         th {
+         background-color: var(--light);
+         font-weight: 600;
+         color: var(--dark);
+         }
+         tr:hover {
+         background-color: var(--light);
+         }
+         .action-column {
+         width: 120px;
+         text-align: center;
+         }
+         .checkbox-group {
+         display: grid;
+         grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+         gap: 12px;
+         margin-top: 12px;
+         }
+         .checkbox-item {
+         display: flex;
+         align-items: center;
+         }
+         .checkbox-item input[type="checkbox"] {
+         width: auto;
+         margin-right: 8px;
+         }
+         .header-actions {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         margin-bottom: 24px;
+         }
+         .teacher-row {
+         margin-bottom: 16px;
+         padding-bottom: 16px;
+         border-bottom: 1px solid var(--border);
+         }
+         .assignment-pill {
+         display: inline-block;
+         background-color: var(--primary);
+         color: white;
+         padding: 4px 8px;
+         border-radius: 16px;
+         font-size: 12px;
+         margin-right: 4px;
+         margin-bottom: 4px;
+         }
+         .flex-container {
+         display: flex;
+         justify-content: space-between;
+         gap: 24px;
+         }
+         .flex-column {
+         flex: 1;
+         }
+         @media (max-width: 768px) {
+         .flex-container {
+         flex-direction: column;
+         }
+         .school-header {
+         flex-direction: column;
+         }
+         .school-logo {
+         margin-right: 0;
+         margin-bottom: 16px;
+         }
+         .school-name {
+         font-size: 2rem;
+         }
+         .system-name {
+         font-size: 1rem; 
+         }
+         .checkbox-group {
+         grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+         }
+         }
+      </style>
+   </head>
+   <body>
+      <div id="loading-overlay" class="loading-overlay hidden">
+         <div class="spinner"></div>
+      </div>
+      <header>
+         <div class="container">
+            <div class="school-header">
+               <img src="https://i.postimg.cc/Y0qB2Wyc/images-2024-05-21-T183208-408.jpg" alt="Jamna Vidyapeeth Logo" class="school-logo">
+               <div class="school-info">
+                  <h1 class="school-name">Jamna Vidyapeeth</h1>
+                  <h2 class="system-name">Class Subject Assignment</h2>
+               </div>
+            </div>
+         </div>
+      </header>
+      <div class="container">
+         <!-- Login Section -->
+         <div id="login-section" class="login-container">
+            <h2>Admin Login</h2>
+            <div id="login-error" class="alert alert-error hidden"></div>
+            <div class="form-group">
+               <label for="username">Username</label>
+               <div class="input-group">
+                  <input type="text" id="username" placeholder="Username">
+                  <span class="domain-suffix">@jvp.com</span>
+               </div>
+            </div>
+            <div class="form-group">
+               <label for="password">Password</label>
+               <input type="password" id="password" placeholder="Password">
+            </div>
+            <button id="login-btn" class="btn-secondary">Login</button>
+         </div>
+         <!-- App Section (Hidden by default) -->
+         <div id="app-section" class="app-container hidden">
+            <div class="header-actions">
+               <h2>Teacher Management</h2>
+               <button id="logout-btn" class="btn-danger btn-sm">Logout</button>
+            </div>
+            <div class="tabs">
+               <div class="tab active" data-tab="add-teacher">Add Teacher</div>
+               <div class="tab" data-tab="assign-subjects">Assign Subjects</div>
+               <div class="tab" data-tab="view-teachers">View Teachers</div>
+            </div>
+            <!-- Add Teacher Tab -->
+            <div id="add-teacher-tab" class="tab-content active">
+               <div id="add-teacher-alert" class="alert hidden"></div>
+               <div class="form-group">
+                  <label for="teacher-name">Teacher Name</label>
+                  <input type="text" id="teacher-name" placeholder="Enter teacher's full name">
+               </div>
+               <div class="form-group">
+                  <label for="teacher-email">Email</label>
+                  <div class="input-group">
+                     <input type="text" id="teacher-email" placeholder="Enter username">
+                     <span class="domain-suffix">@jvp.com</span>
+                  </div>
+               </div>
+               <div class="form-group">
+                  <label for="teacher-password">Initial Password</label>
+                  <input type="password" id="teacher-password" placeholder="Set initial password">
+               </div>
+               <button id="add-teacher-btn" class="btn-primary">Register Teacher</button>
+            </div>
+            <!-- Assign Subjects Tab -->
+            <div id="assign-subjects-tab" class="tab-content">
+               <div id="assign-subjects-alert" class="alert hidden"></div>
+               <div class="form-group">
+                  <label for="assign-teacher">Select Teacher</label>
+                  <select id="assign-teacher">
+                     <option value="">Select a teacher</option>
+                  </select>
+               </div>
+               <div class="form-group">
+                  <label for="assign-class">Select Class</label>
+                  <select id="assign-class">
+                     <option value="">Select a class</option>
+                  </select>
+               </div>
+               <div class="form-group">
+                  <label>Select Subjects</label>
+                  <div id="subjects-checkboxes" class="checkbox-group">
+                     <!-- Subject checkboxes will be added dynamically -->
+                  </div>
+               </div>
+               <button id="assign-btn" class="btn-primary">Assign Subjects</button>
+            </div>
+            <!-- View Teachers Tab -->
+            <div id="view-teachers-tab" class="tab-content">
+               <div id="view-teachers-alert" class="alert hidden"></div>
+               <div class="table-container">
+                  <table id="teachers-table">
+                     <thead>
+                        <tr>
+                           <th>Teacher Name</th>
+                           <th>Email</th>
+                           <th>Classes & Subjects</th>
+                           <th class="action-column">Actions</th>
+                        </tr>
+                     </thead>
+                     <tbody id="teachers-list">
+                        <!-- Teacher data will be added dynamically -->
+                     </tbody>
+                  </table>
+               </div>
+            </div>
+         </div>
+      </div>
+      <script>
+         // DOM Elements
+         const loadingOverlay = document.getElementById('loading-overlay');
+         const loginSection = document.getElementById('login-section');
+         const appSection = document.getElementById('app-section');
+         const loginError = document.getElementById('login-error');
+         const username = document.getElementById('username');
+         const password = document.getElementById('password');
+         const loginBtn = document.getElementById('login-btn');
+         const logoutBtn = document.getElementById('logout-btn');
+         const tabs = document.querySelectorAll('.tab');
+         const tabContents = document.querySelectorAll('.tab-content');
+         const teacherName = document.getElementById('teacher-name');
+         const teacherEmail = document.getElementById('teacher-email');
+         const teacherPassword = document.getElementById('teacher-password');
+         const addTeacherBtn = document.getElementById('add-teacher-btn');
+         const addTeacherAlert = document.getElementById('add-teacher-alert');
+         const assignTeacher = document.getElementById('assign-teacher');
+         const assignClass = document.getElementById('assign-class');
+         const subjectsCheckboxes = document.getElementById('subjects-checkboxes');
+         const assignBtn = document.getElementById('assign-btn');
+         const assignSubjectsAlert = document.getElementById('assign-subjects-alert');
+         const teachersList = document.getElementById('teachers-list');
+         const viewTeachersAlert = document.getElementById('view-teachers-alert');
+         
+         // Helper Functions
+         function showLoading() {
+             loadingOverlay.classList.remove('hidden');
+         }
+         
+         function hideLoading() {
+             loadingOverlay.classList.add('hidden');
+         }
+         
+         function showAlert(elementId, message, type = 'error') {
+             const alertElement = document.getElementById(elementId);
+             alertElement.textContent = message;
+             alertElement.classList.remove('hidden', 'alert-error', 'alert-success');
+             alertElement.classList.add('alert-' + type);
+             setTimeout(function() {
+                   hideAlert(elementId);
+             }, 3000);
+         }
+         
+         function hideAlert(elementId) {
+             const alertElement = document.getElementById(elementId);
+             alertElement.classList.add('hidden');
+         }
+         
+         function switchTab(tabId) {
+             tabs.forEach(tab => {
+                 tab.classList.remove('active');
+                 if (tab.dataset.tab === tabId) {
+                     tab.classList.add('active');
+                 }
+             });
+         
+             tabContents.forEach(content => {
+                 content.classList.remove('active');
+                 if (content.id === tabId + '-tab') {
+                     content.classList.add('active');
+                 }
+             });
+         }
+         
+         // Initialize the page
+         async function initPage() {
+             // Show loading
+             showLoading();
+             // Populate classes dropdown
+             classes.forEach(className => {
+                 const option = document.createElement('option');
+                 option.value = className;
+                 option.textContent = className;
+                 assignClass.appendChild(option);
+             });
+         
+             // Populate subjects checkboxes
+             subjects.forEach(subject => {
+                 const checkboxItem = document.createElement('div');
+                 checkboxItem.className = 'checkbox-item';
+                 
+                 const checkbox = document.createElement('input');
+                 checkbox.type = 'checkbox';
+                 checkbox.id = 'subject-' + subject.toLowerCase().replace(/\s+/g, '-');
+                 checkbox.value = subject;
+                 
+                 const label = document.createElement('label');
+                 label.htmlFor = checkbox.id;
+                 label.textContent = subject;
+                 
+                 checkboxItem.appendChild(checkbox);
+                 checkboxItem.appendChild(label);
+                 subjectsCheckboxes.appendChild(checkboxItem);
+             });
+         
+             // Check authentication status on page load
+             const isAuthenticated = await checkAuth();
+             if (isAuthenticated) {
+                 // Check if the user has admin privileges
+                 const adminId = await selectData('admins', true, 'id', ['id'], [window.userId]);
+                 if(!adminId) {
+                       await signOutUser();
+                       hideLoading();
+                       return;
+                 }
+                 loginSection.classList.add('hidden');
+                 appSection.classList.remove('hidden');
+                 await loadTeachers();
+                 await loadTeacherDropdown();
+             } else {
+                 hideLoading();
+             }
+         }
+         
+         // Load teachers for the dropdown
+         async function loadTeacherDropdown() {
+             try {
+                 showLoading();
+                 const teachers = await selectData('teachers');
+                 
+                 // Clear existing options except the first one
+                 while (assignTeacher.options.length > 1) {
+                     assignTeacher.options.remove(1);
+                 }
+                 
+                 if (teachers && teachers.length > 0) {
+                     teachers.forEach(teacher => {
+                         const option = document.createElement('option');
+                         option.value = teacher.id;
+                         option.textContent = teacher.name;
+                         assignTeacher.appendChild(option);
+                     });
+                 }
+             } catch (error) {
+                 console.error('Error loading teachers:', error);
+             } finally {
+                 hideLoading();
+             }
+         }
+         
+         // Load teachers and their assignments
+         async function loadTeachers() {
+             try {
+                 showLoading();
+                 const teachers = await selectData('teachers');
+                 
+                 // Clear the table body
+                 teachersList.innerHTML = '';
+                 
+                 if (teachers && teachers.length > 0) {
+                     for (const teacher of teachers) {
+                         // Get assignments for this teacher
+                         const assignments = await selectData(
+                             'class_subject_assignments',
+                             false,
+                             '*',
+                             ['teacher_id'],
+                             [teacher.id]
+                         );
+                         
+                         // Create the email address
+                         const email = teacher.name.toLowerCase().replace(/\s+/g, '.') + '@jvp.com';
+                         
+                         // Group assignments by class
+                         const classMappings = {};
+                         if (assignments && assignments.length > 0) {
+                             assignments.forEach(assignment => {
+                                 if (!classMappings[assignment.class]) {
+                                     classMappings[assignment.class] = [];
+                                 }
+                                 classMappings[assignment.class].push(assignment.subject);
+                             });
+                         }
+                         
+                         // Create HTML for assignments
+                         let assignmentsHtml = '';
+                         for (const [className, subjectList] of Object.entries(classMappings)) {
+                             assignmentsHtml += `<div><strong>${className}:</strong> `;
+                             subjectList.forEach(subject => {
+                                 assignmentsHtml += `<span class="assignment-pill">${subject}</span>`;
+                             });
+                             assignmentsHtml += `</div>`;
+                         }
+                         
+                         if (assignmentsHtml === '') {
+                             assignmentsHtml = '<em>No assignments</em>';
+                         }
+                         
+                         // Create the table row
+                         const row = document.createElement('tr');
+                         row.innerHTML = `
+                             <td>${teacher.name}</td>
+                             <td>${email}</td>
+                             <td>${assignmentsHtml}</td>
+                             <td class="action-column">
+                                 <button class="btn-danger btn-sm delete-teacher" data-id="${teacher.id}">Delete</button>
+                             </td>
+                         `;
+                         
+                         teachersList.appendChild(row);
+                     }
+                     
+                     // Add event listeners to delete buttons
+                     document.querySelectorAll('.delete-teacher').forEach(button => {
+                         button.addEventListener('click', handleDeleteTeacher);
+                     });
+                 } else {
+                     teachersList.innerHTML = '<tr><td colspan="4" style="text-align: center;">No teachers found</td></tr>';
+                 }
+             } catch (error) {
+                 console.error('Error loading teachers:', error);
+                 showAlert('view-teachers-alert', 'Failed to load teachers: ' + error.message);
+             } finally {
+                 hideLoading();
+             }
+         }
+         
+         // Handle teacher deletion
+         async function handleDeleteTeacher(event) {
+             const teacherId = event.target.dataset.id;
+             if (!confirm('Are you sure you want to delete this teacher? This will remove all their assignments.')) {
+                 return;
+             }
+             
+             try {
+                 showLoading();
+                 
+                 // First delete their assignments
+                 await deleteRow('class_subject_assignments', ['teacher_id'], [teacherId]);
+                 
+                 // Then delete the teacher
+                 await deleteRow('teachers', ['id'], [teacherId]);
+                 
+                 // Reload the teachers list
+                 await loadTeachers();
+                 await loadTeacherDropdown();
+                 
+                 showAlert('view-teachers-alert', 'Teacher deleted successfully', 'success');
+             } catch (error) {
+                 console.error('Error deleting teacher:', error);
+                 showAlert('view-teachers-alert', 'Failed to delete teacher: ' + error.message);
+             } finally {
+                 hideLoading();
+             }
+         }
+         
+         // Handle login
+         async function handleLogin() {
+             const usernameValue = username.value.trim();
+             const passwordValue = password.value.trim();
+             
+             if (!usernameValue || !passwordValue) {
+                 showAlert('login-error', 'Please enter both username and password');
+                 return;
+             }
+             
+             try {
+                 showLoading();
+                 const email = usernameValue + '@jvp.com';
+                 const data = await signInUser(email, passwordValue);
+         
+                 const adminId = await selectData('admins', true, 'id', ['id'], [data.user.id]);
+                 if(!adminId) {
+                       await signOutUser();
+                       
+                       throw new Error("You don't have admin privileges to access this section");
+                 }
+                 
+                 loginSection.classList.add('hidden');
+                 appSection.classList.remove('hidden');
+                 
+                 // Load data for the app
+                 await loadTeachers();
+                 await loadTeacherDropdown();
+                 
+                 // Clear login form
+                 username.value = '';
+                 password.value = '';
+                 hideAlert('login-error');
+             } catch (error) {
+                 console.error('Login error:', error);
+                 showAlert('login-error', error.message);
+             } finally {
+                 hideLoading();
+             }
+         }
+         
+         // Handle logout
+         async function handleLogout() {
+             try {
+                 showLoading();
+                 await signOutUser();
+                 
+                 appSection.classList.add('hidden');
+                 loginSection.classList.remove('hidden');
+             } catch (error) {
+                 console.error('Logout error:', error);
+             } finally {
+                 hideLoading();
+             }
+         }
+         
+         // Handle teacher registration
+         async function handleAddTeacher() {
+         const name = teacherName.value.trim();
+         const email = teacherEmail.value.trim();
+         const initialPassword = teacherPassword.value.trim();
+         
+         if (!name || !email || !initialPassword) {
+         showAlert('add-teacher-alert', 'Please fill in all fields');
+         return;
+         }
+         
+         try {
+         showLoading();
+         const fullEmail = email + '@jvp.com';
+         
+         // Sign up the user in Auth - note that createUserWithoutSession returns the user directly
+         const userData = await createUserWithoutSession(fullEmail, initialPassword);
+         
+         if (userData && userData.id) {
+             console.log('Teacher user created:', userData); // Debug log
+             
+             // Insert into teachers table
+             const insertResult = await upsertData('teachers', {
+                 id: userData.id,
+                 name: name
+             }, ['id']);
+             
+             console.log('Insert result:', insertResult); // Debug log
+             
+             // Clear the form
+             teacherName.value = '';
+             teacherEmail.value = '';
+             teacherPassword.value = '';
+             
+             // Show success message
+             showAlert('add-teacher-alert', 'Teacher registered successfully!', 'success');
+             
+             // Reload teachers
+             await loadTeachers();
+             await loadTeacherDropdown();
+         } else {
+             console.error('User data is incomplete:', userData);
+             showAlert('add-teacher-alert', 'Failed to register teacher: User data is incomplete');
+         }
+         } catch (error) {
+         console.error('Error registering teacher:', error);
+         showAlert('add-teacher-alert', 'Failed to register teacher: ' + error.message);
+         } finally {
+         hideLoading();
+         }
+         }
+         
+         // Handle subject assignment
+         async function handleAssignSubjects() {
+             const teacherId = assignTeacher.value;
+             const className = assignClass.value;
+             const selectedSubjects = [];
+             
+             // Get selected subjects
+             document.querySelectorAll('#subjects-checkboxes input[type="checkbox"]:checked').forEach(checkbox => {
+                 selectedSubjects.push(checkbox.value);
+             });
+             
+             if (!teacherId || !className || selectedSubjects.length === 0) {
+                 showAlert('assign-subjects-alert', 'Please select a teacher, class, and at least one subject');
+                 return;
+             }
+             
+             try {
+                 showLoading();
+                 
+                 // First, delete existing assignments for this teacher and class
+                 await deleteRow('class_subject_assignments', ['teacher_id', 'class'], [teacherId, className]);
+                 
+                 // Create new assignments
+                 const assignments = selectedSubjects.map(subject => ({
+                     teacher_id: teacherId,
+                     subject: subject,
+                     class: className
+                 }));
+                 
+                 // Insert all assignments
+                 await upsertData('class_subject_assignments', assignments, ['teacher_id', 'subject', 'class']);
+                 
+                 // Reset form
+                 assignClass.value = '';
+                 document.querySelectorAll('#subjects-checkboxes input[type="checkbox"]').forEach(checkbox => {
+                     checkbox.checked = false;
+                 });
+                 
+                 // Show success message
+                 showAlert('assign-subjects-alert', 'Subjects assigned successfully!', 'success');
+                 
+                 // Reload teachers to update the view
+                 await loadTeachers();
+             } catch (error) {
+                 console.error('Error assigning subjects:', error);
+                 showAlert('assign-subjects-alert', 'Failed to assign subjects: ' + error.message);
+             } finally {
+                 hideLoading();
+             }
+         }
+         
+         // Event Listeners
+         window.addEventListener('load', initPage);
+         loginBtn.addEventListener('click', handleLogin);
+         logoutBtn.addEventListener('click', handleLogout);
+         addTeacherBtn.addEventListener('click', handleAddTeacher);
+         assignBtn.addEventListener('click', handleAssignSubjects);
+         
+         // Tab switching
+         tabs.forEach(tab => {
+             tab.addEventListener('click', () => {
+                 switchTab(tab.dataset.tab);
+             });
+         });
+         
+      </script>
+   </body>
+</html>
