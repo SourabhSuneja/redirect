@@ -628,8 +628,6 @@
                              [teacher.id]
                          );
                          
-                         // Create the email address
-                         const email = teacher.name.toLowerCase().replace(/\s+/g, '.') + '@jvp.com';
                          
                          // Group assignments by class
                          const classMappings = {};
@@ -660,7 +658,7 @@
                          const row = document.createElement('tr');
                          row.innerHTML = `
                              <td>${teacher.name}</td>
-                             <td>${email}</td>
+                             <td>${teacher.email}</td>
                              <td>${assignmentsHtml}</td>
                              <td class="action-column">
                                  <button class="btn-danger btn-sm delete-teacher" data-id="${teacher.id}">Delete</button>
@@ -794,7 +792,8 @@
              // Insert into teachers table
              const insertResult = await upsertData('teachers', {
                  id: userData.id,
-                 name: name
+                 name: name,
+                 email: fullEmail
              }, ['id']);
              
              console.log('Insert result:', insertResult); // Debug log
