@@ -467,11 +467,6 @@
                   <label for="subject-select">Select Subject</label>
                   <select id="subject-select">
                      <option value="">-- Select Subject --</option>
-                     <script>
-                       for (var i = 0; i < subjects.length; i++) {
-                           document.write('<option value="' + subjects[i] + '">' + subjects[i] + '</option>');
-                       }
-                     </script>
                   </select>
                </div>
                <div class="form-group">
@@ -796,7 +791,7 @@
          }
          
          });
-
+         
          generateReportBtn.addEventListener("click", function () {
          const classValue = generateReportBtn.dataset.class;
          
@@ -812,11 +807,19 @@
              // Fetch students list
              await fetchStudentsForClasses(); 
              // Populate class dropdown
-             for (const className in students) {
+             for (const className of filteredClasses) {
                  const option = document.createElement('option');
                  option.value = className;
                  option.textContent = className;
                  classSelect.appendChild(option);
+             }
+         
+             // Populate subject dropdown
+             for (const subjectName of filteredSubjects) {
+                 const option = document.createElement('option');
+                 option.value = subjectName;
+                 option.textContent = subjectName;
+                 subjectSelect.appendChild(option);
              }
              
              // Populate exam dropdown
@@ -847,15 +850,22 @@
          const data = await signInUser(email, password);
          
          // If we reach here, login was successful
+         
+         // Store the user ID
+         window.userId = data.user.id;
+         
+           // Filter classes and subjects to include only those this teacher is assigned to
+         await filterClassSubjects(window.userId);
          loginSection.classList.add('hidden');
          appSection.classList.remove('hidden');
          loginError.classList.add('hidden');
          
-         // Optionally store the user ID or other data
-         window.userId = data.user.id;
          
          // Pre-load all custom exams
          await preloadCustomExams();
+         
+           // Initialize the form
+            await initializeForm();
          
          } catch (error) {
          // Handle login error
@@ -897,8 +907,14 @@
          const isAuthenticated = await checkAuth();
          
          if (isAuthenticated) {
-            // User is already logged in, pre-load custom exams and show the app
+            // User is already logged in
+           // Filter classes and subjects to include only those this teacher is assigned to
+         await filterClassSubjects(window.userId);
+            
+            // Pre-load custom exams and show the app
             await preloadCustomExams();
+           // Initialize the form
+            await initializeForm();
             loginSection.classList.add('hidden');
             appSection.classList.remove('hidden');
          } else {
@@ -912,8 +928,6 @@
          loginSection.classList.remove('hidden');
          appSection.classList.add('hidden');
          } finally {
-         // Initialize the form
-         await initializeForm();
          hideLoading();
          }
          });
@@ -979,7 +993,7 @@
          selectedClass && selectedSubject) {
          selectedExam = updateExamDropdown(selectedClass, selectedSubject, true);
          }
-
+         
          // Make generate report button visible if class has been selected and also set its data-class attribute
          if(selectedClass) {
            generateReportBtn.style.display = 'inline-block';
@@ -1127,22 +1141,22 @@
          }
          
          // Add event listener to the delete button
-deleteBtn.addEventListener('click', async function() {
-    // Get values from the select inputs
-    const selectedClass = classSelect.value;
-    const selectedExam = examSelect.value;
-    const selectedSubject = subjectSelect.value;
-    
-    // Confirm deletion
-    const confirmDelete = await showDialog({
+         deleteBtn.addEventListener('click', async function() {
+         // Get values from the select inputs
+         const selectedClass = classSelect.value;
+         const selectedExam = examSelect.value;
+         const selectedSubject = subjectSelect.value;
+         
+         // Confirm deletion
+         const confirmDelete = await showDialog({
             	                         title: 'Confirm Delete',
            	                         message: `Are you sure you want to delete all marks records for class ${selectedClass}, ${selectedSubject}, ${selectedExam}? This action is permanent and can't be undone. Proceed ahead?`,
             		         type: 'confirm'
          			            });
-
-    if (confirmDelete) {
-        
-        try {
+         
+         if (confirmDelete) {
+         
+         try {
             // Show loading screen
             showLoading();
             // 1. Delete records from Supabase 'marks' table
@@ -1173,7 +1187,7 @@ deleteBtn.addEventListener('click', async function() {
                   mark.subject === selectedSubject && 
                   mark.exam === selectedExam)
             );
-
+         
            // 4. Update customExams array (remove matching records)
             customExams = customExams.filter(exam => 
                 !(exam.class === selectedClass && 
@@ -1197,7 +1211,7 @@ deleteBtn.addEventListener('click', async function() {
                 type: 'alert'
             });
             
-        } catch (error) {
+         } catch (error) {
             console.error("Error during deletion:", error);
             
             // Show error message
@@ -1206,11 +1220,11 @@ deleteBtn.addEventListener('click', async function() {
                 message: 'Failed to delete the records. Please try again later.',
                 type: 'alert'
             });
-        } finally {
+         } finally {
             hideLoading();
-        }
-    }
-});
+         }
+         }
+         });
                         
          // Submit form
          submitBtn.addEventListener('click', async () => {
@@ -1447,6 +1461,25 @@ deleteBtn.addEventListener('click', async function() {
          async function preloadCustomExams() {
                      // Pre-load all custom exams
          customExams = await selectData('custom_exams') || [];
+         }
+         
+         async function filterClassSubjects(teacherId) {
+         
+         // Get class-subject assignments for this teacher
+                         const assignments = await selectData(
+                             'class_subject_assignments',
+                             false,
+                             '*',
+                             ['teacher_id'],
+                             [teacherId]
+                         );
+         
+            // Filter the classes to include only classes this teacher is assigned to
+         filteredClasses = classes.filter(c => assignments.some(a => a.class === c));
+         
+           // Filter the subjects to include only classes this teacher is assigned to
+         filteredSubjects = subjects.filter(c => assignments.some(a => a.subject === c));
+         
          }
       </script>
    </body>
