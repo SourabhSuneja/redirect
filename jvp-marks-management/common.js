@@ -14,6 +14,9 @@ let subjects = [
   "GK"
 ];
 
+let filteredClasses = [];
+let filteredSubjects = [];
+
 // Common pre-decided exams
 const exams = [
              {'name': 'PT-1 (20M)', 'mm': 20},
