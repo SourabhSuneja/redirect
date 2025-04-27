@@ -22,7 +22,8 @@ USING (auth.role() = 'authenticated');
 -- Create teachers table
 CREATE TABLE teachers (
     id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-    name TEXT NOT NULL
+    name TEXT NOT NULL,
+    email TEXT NOT NULL
 );
 
 -- Enable RLS on teachers
