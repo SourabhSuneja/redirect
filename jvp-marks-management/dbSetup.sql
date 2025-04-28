@@ -244,13 +244,56 @@ CREATE POLICY marks_backup_insert_policy ON marks_backup
 -- 4. Create a function for the trigger
 CREATE OR REPLACE FUNCTION backup_marks_function()
 RETURNS TRIGGER AS $$
+DECLARE
+    latest_backup DECIMAL(5, 2);
+    latest_backup_is_null BOOLEAN;
+    should_backup BOOLEAN := TRUE;
 BEGIN
-    -- Insert the new/updated record into marks_backup
-    INSERT INTO marks_backup (
-        id, exam, subject, student, class, marks, updated_at
-    ) VALUES (
-        NEW.id, NEW.exam, NEW.subject, NEW.student, NEW.class, NEW.marks, NEW.updated_at
-    );
+    -- For new inserts, always create a backup
+    IF TG_OP = 'INSERT' THEN
+        should_backup := TRUE;
+    -- For updates, only backup if marks value changed
+    ELSIF TG_OP = 'UPDATE' THEN
+        -- Get the most recent backup value for this record
+        SELECT 
+            marks, 
+            marks IS NULL INTO latest_backup, latest_backup_is_null 
+        FROM marks_backup 
+        WHERE id = NEW.id 
+        ORDER BY backup_timestamp DESC 
+        LIMIT 1;
+        
+        -- Only backup if:
+        -- 1. No previous backup exists, OR
+        -- 2. Both latest backup and new marks are NOT NULL and have different values, OR
+        -- 3. One is NULL and the other isn't
+        IF latest_backup IS NULL AND latest_backup_is_null IS NULL THEN
+            -- No previous backup exists
+            should_backup := TRUE;
+        ELSIF latest_backup_is_null AND NEW.marks IS NULL THEN
+            -- Both are NULL, don't backup
+            should_backup := FALSE;
+        ELSIF latest_backup_is_null != (NEW.marks IS NULL) THEN
+            -- One is NULL and the other isn't, backup
+            should_backup := TRUE;
+        ELSIF NEW.marks != latest_backup THEN
+            -- Both are NOT NULL and have different values, backup
+            should_backup := TRUE;
+        ELSE
+            -- Values are the same, don't backup
+            should_backup := FALSE;
+        END IF;
+    END IF;
+    
+    -- Only insert into backup if needed
+    IF should_backup THEN
+        INSERT INTO marks_backup (
+            id, exam, subject, student, class, marks, updated_at
+        ) VALUES (
+            NEW.id, NEW.exam, NEW.subject, NEW.student, NEW.class, NEW.marks, NEW.updated_at
+        );
+    END IF;
+    
     RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
@@ -265,4 +308,4 @@ EXECUTE FUNCTION backup_marks_function();
 COMMENT ON TABLE marks_backup IS 'Backup table for marks with history of all changes';
 COMMENT ON COLUMN marks_backup.backup_timestamp IS 'Timestamp when the backup was created';
 COMMENT ON COLUMN marks_backup.backup_id IS 'Unique identifier for each backup record';
-
+COMMENT ON FUNCTION backup_marks_function() IS 'Trigger function that only creates backups when marks value changes';
