@@ -888,7 +888,7 @@
          // Fetch teacher's name
          const teacherName = await selectData('teachers', true, 'name', ['id'], [window.userId]);
          if (teacherName && typeof teacherName === 'object' && teacherName.name !== undefined) {
-            signedInUserName.innerText = teacherName.name;
+            signedInUsername.innerText = teacherName.name;
             userInfo.style.display = "block";
          }
          
@@ -951,7 +951,7 @@
             // Fetch teacher's name
             const teacherName = await selectData('teachers', true, 'name', ['id'], [window.userId]);
             if (teacherName && typeof teacherName === 'object' && teacherName.name !== undefined) {
-               signedInUserName.innerText = teacherName.name;
+               signedInUsername.innerText = teacherName.name;
                userInfo.style.display = "block";
             }
 
