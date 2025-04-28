@@ -631,6 +631,7 @@
          const subjectSelect = document.getElementById('subject-select');
          const scoreInsightBtn = document.getElementById('score-insight-btn');
          const generateReportBtn = document.getElementById('generate-report-btn');
+         const signedInUsername = document.getElementById('signed-in-username');
          
          // Add exam functionality
          const addExamBtn = document.getElementById('add-exam-btn');
@@ -882,6 +883,12 @@
          
          // Store the user ID
          window.userId = data.user.id;
+
+         // Fetch teacher's name
+         const teacherName = await selectData('teachers', true, 'name', ['id'], [window.userId]);
+         if (teacherName && typeof teacherName === 'object' && teacherName.name !== undefined) {
+            signedInUserName.innerText = teacherName.name;
+         }
          
            // Filter classes and subjects to include only those this teacher is assigned to
          await filterClassSubjects(window.userId);
@@ -940,7 +947,11 @@
 
             // Fetch teacher's name
             const teacherName = await selectData('teachers', true, 'name', ['id'], [window.userId]);
-            alert(JSON.stringify(teacherName));
+            if (teacherName && typeof teacherName === 'object' && teacherName.name !== undefined) {
+               signedInUserName.innerText = teacherName.name;
+            }
+
+            
            // Filter classes and subjects to include only those this teacher is assigned to
          await filterClassSubjects(window.userId);
             
