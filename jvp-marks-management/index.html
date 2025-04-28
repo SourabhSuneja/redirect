@@ -6,6 +6,8 @@
       <title>JVP Marks Management</title>
       <meta name="description" content="Sourabh Sir's Marks Manager is a smart school application to enter and track students' test and exam marks easily, keeping academic records accessible anytime, anywhere.">
       <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <!-- Link to Material Icons font -->
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
       <!-- Supabase CRUD Functions -->
       <script type="module" src="supabase-crud.js"></script>
       <!-- Dialog Box Styles -->
@@ -333,8 +335,9 @@
          .user-info {
          text-align: center;
          }
-         .user-info img {
-         height: 80px;
+         .user-avatar {
+         color: white;        
+         font-size: 21px;   
          }
          @media (max-width: 768px) {
          .school-header {
@@ -434,7 +437,7 @@
                   <h1 class="school-name">Jamna Vidyapeeth</h1>
                   <h2 class="system-name">Student Marks Management System</h2>
                   <div class="user-info">
-                     <img src="https://i.postimg.cc/KjGsyFnK/user-avatar.png" alt="Teacher Profile">
+                     <span class="user-avatar material-icons">account_circle</span>
                      <span id="signed-in-username">Sourabh</span>
                   </div>
                </div>
