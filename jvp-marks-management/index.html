@@ -806,6 +806,17 @@
          async function initializeForm() {
              // Fetch students list
              await fetchStudentsForClasses(); 
+
+             // Remove all existing options from class and subject selection
+             // Remove all options except the first one
+             while (classSelect.options.length > 1) {
+                classSelect.remove(1);
+             }
+
+             while (subjectSelect.options.length > 1) {
+                subjectSelect.remove(1);
+             }
+
              // Populate class dropdown
              for (const className of filteredClasses) {
                  const option = document.createElement('option');
