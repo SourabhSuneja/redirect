@@ -937,6 +937,10 @@
          
          if (isAuthenticated) {
             // User is already logged in
+
+            // Fetch teacher's name
+            const teacherName = await selectData('teachers', true, 'name', ['id'], [window.userId]);
+            alert(JSON.stringify(teacherName));
            // Filter classes and subjects to include only those this teacher is assigned to
          await filterClassSubjects(window.userId);
             
