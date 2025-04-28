@@ -1,3 +1,6 @@
+DROP TRIGGER IF EXISTS backup_marks_trigger ON marks;
+DROP FUNCTION IF EXISTS backup_marks_function();
+DROP TABLE IF EXISTS marks_backup;
 DROP TABLE IF EXISTS custom_exams;
 DROP TABLE IF EXISTS marks;
 DROP TABLE IF EXISTS marks_backup;
@@ -213,37 +216,53 @@ TO authenticated
 USING ( true );
 
 
--- Backup table for marks
--- Create "marks_backup" table
+-- Backup Provisions
+
+-- 1. Create marks_backup table with the same structure as marks table
 CREATE TABLE marks_backup (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID NOT NULL,
     exam TEXT NOT NULL,
     subject TEXT NOT NULL,
     student TEXT NOT NULL,
     class TEXT NOT NULL,
     marks DECIMAL(5, 2) DEFAULT NULL,
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    backup_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    -- Adding a Primary Key for the backup table
+    backup_id UUID PRIMARY KEY DEFAULT gen_random_uuid()
 );
 
--- Add a unique constraint
-ALTER TABLE marks_backup
-ADD CONSTRAINT unique_exam_subject_student_class_on_backup
-UNIQUE (exam, subject, student, class);
-
-
--- Enable RLS on marks table
+-- 2. Enable RLS on marks_backup table
 ALTER TABLE marks_backup ENABLE ROW LEVEL SECURITY;
 
-
--- Policy for INSERT: Teachers can only insert marks for their assigned subjects and classes
-CREATE POLICY marks_insert_policy ON marks_backup
+-- 3. Policy for INSERT: Only the service role can insert into marks_backup
+-- This prevents direct client-side inserts while allowing the trigger to work
+CREATE POLICY marks_backup_insert_policy ON marks_backup
     FOR INSERT
-    WITH CHECK (
-        EXISTS (
-            SELECT 1 FROM class_subject_assignments
-            WHERE teacher_id = auth.uid()
-            AND subject = marks_backup.subject
-            AND class = marks_backup.class
-        )
+    WITH CHECK (auth.role() = 'service_role');
+
+-- 4. Create a function for the trigger
+CREATE OR REPLACE FUNCTION backup_marks_function()
+RETURNS TRIGGER AS $$
+BEGIN
+    -- Insert the new/updated record into marks_backup
+    INSERT INTO marks_backup (
+        id, exam, subject, student, class, marks, updated_at
+    ) VALUES (
+        NEW.id, NEW.exam, NEW.subject, NEW.student, NEW.class, NEW.marks, NEW.updated_at
     );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 5. Create trigger for INSERT and UPDATE operations on marks table
+CREATE TRIGGER backup_marks_trigger
+AFTER INSERT OR UPDATE ON marks
+FOR EACH ROW
+EXECUTE FUNCTION backup_marks_function();
+
+-- 6. Add comments for documentation
+COMMENT ON TABLE marks_backup IS 'Backup table for marks with history of all changes';
+COMMENT ON COLUMN marks_backup.backup_timestamp IS 'Timestamp when the backup was created';
+COMMENT ON COLUMN marks_backup.backup_id IS 'Unique identifier for each backup record';
 
