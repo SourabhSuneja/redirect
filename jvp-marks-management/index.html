@@ -1309,7 +1309,15 @@
          );
          
          // Current timestamp for updated_at field
-         const currentTime = new Date().toISOString();
+         const now = new Date();
+const options = { timeZone: 'Asia/Kolkata', hour12: false };
+const formatter = new Intl.DateTimeFormat('en-GB', { 
+  ...options,
+  year: 'numeric', month: '2-digit', day: '2-digit',
+  hour: '2-digit', minute: '2-digit', second: '2-digit' 
+});
+const parts = formatter.formatToParts(now);
+const currentTime = `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}T${parts.find(p => p.type === 'hour').value}:${parts.find(p => p.type === 'minute').value}:${parts.find(p => p.type === 'second').value}`;
          
          if (existingIndex !== -1) {
              // Update existing record in global array
