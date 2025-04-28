@@ -1,5 +1,6 @@
 DROP TABLE IF EXISTS custom_exams;
 DROP TABLE IF EXISTS marks;
+DROP TABLE IF EXISTS marks_backup;
 DROP TABLE IF EXISTS class_subject_assignments;
 DROP TABLE IF EXISTS teachers;
 DROP TABLE IF EXISTS admins;
@@ -210,3 +211,38 @@ ON custom_exams
 FOR SELECT
 TO authenticated
 USING ( true );
+
+
+-- Backup table for marks
+-- Create "marks_backup" table
+CREATE TABLE marks_backup (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    exam TEXT NOT NULL,
+    subject TEXT NOT NULL,
+    student TEXT NOT NULL,
+    class TEXT NOT NULL,
+    marks DECIMAL(5, 2) DEFAULT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Add a unique constraint
+ALTER TABLE marks_backup
+ADD CONSTRAINT unique_exam_subject_student_class
+UNIQUE (exam, subject, student, class);
+
+
+-- Enable RLS on marks table
+ALTER TABLE marks_backup ENABLE ROW LEVEL SECURITY;
+
+
+-- Policy for INSERT: Teachers can only insert marks for their assigned subjects and classes
+CREATE POLICY marks_insert_policy ON marks_backup
+    FOR INSERT
+    WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM class_subject_assignments
+            WHERE teacher_id = auth.uid()
+            AND subject = marks.subject
+            AND class = marks.class
+        )
+    );
