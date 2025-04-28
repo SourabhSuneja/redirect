@@ -441,7 +441,7 @@
                <div class="school-info">
                   <h1 class="school-name">Jamna Vidyapeeth</h1>
                   <h2 class="system-name">Student Marks Management System</h2>
-                  <div class="user-info">
+                  <div style="display: none" id="user-info" class="user-info">
                      <span class="user-avatar material-icons">account_circle</span>
                      <span id="signed-in-username">Sourabh</span>
                   </div>
@@ -631,6 +631,7 @@
          const subjectSelect = document.getElementById('subject-select');
          const scoreInsightBtn = document.getElementById('score-insight-btn');
          const generateReportBtn = document.getElementById('generate-report-btn');
+         const userInfo = document.getElementById('user-info');
          const signedInUsername = document.getElementById('signed-in-username');
          
          // Add exam functionality
@@ -888,6 +889,7 @@
          const teacherName = await selectData('teachers', true, 'name', ['id'], [window.userId]);
          if (teacherName && typeof teacherName === 'object' && teacherName.name !== undefined) {
             signedInUserName.innerText = teacherName.name;
+            userInfo.style.display = "block";
          }
          
            // Filter classes and subjects to include only those this teacher is assigned to
@@ -924,6 +926,7 @@
          appSection.classList.add('hidden');
          usernameInput.value = '';
          passwordInput.value = '';
+         userInfo.style.display = "none";
          
          // Clear any stored user data
          window.userId = null;
@@ -949,6 +952,7 @@
             const teacherName = await selectData('teachers', true, 'name', ['id'], [window.userId]);
             if (teacherName && typeof teacherName === 'object' && teacherName.name !== undefined) {
                signedInUserName.innerText = teacherName.name;
+               userInfo.style.display = "block";
             }
 
             
