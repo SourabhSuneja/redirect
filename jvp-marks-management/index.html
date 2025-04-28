@@ -827,7 +827,7 @@
              // Fetch students list
              await fetchStudentsForClasses(); 
 
-             // Remove all existing options from class and subject selection
+             // Remove all existing options from class, subject and exam selection
              // Remove all options except the first one
              while (classSelect.options.length > 1) {
                 classSelect.remove(1);
@@ -835,6 +835,10 @@
 
              while (subjectSelect.options.length > 1) {
                 subjectSelect.remove(1);
+             }
+
+             while (examSelect.options.length > 1) {
+                examSelect.remove(1);
              }
 
              // Populate class dropdown
