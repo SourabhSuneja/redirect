@@ -227,7 +227,7 @@ CREATE TABLE marks_backup (
 
 -- Add a unique constraint
 ALTER TABLE marks_backup
-ADD CONSTRAINT unique_exam_subject_student_class
+ADD CONSTRAINT unique_exam_subject_student_class_on_backup
 UNIQUE (exam, subject, student, class);
 
 
@@ -242,7 +242,8 @@ CREATE POLICY marks_insert_policy ON marks_backup
         EXISTS (
             SELECT 1 FROM class_subject_assignments
             WHERE teacher_id = auth.uid()
-            AND subject = marks.subject
-            AND class = marks.class
+            AND subject = marks_backup.subject
+            AND class = marks_backup.class
         )
     );
+
