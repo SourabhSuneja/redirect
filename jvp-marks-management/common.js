@@ -14,6 +14,20 @@ let subjects = [
   "GK"
 ];
 
+// Global class-wise list of subjects
+const classwiseSubjects = {
+  1: ['English', 'Hindi', 'Maths', 'EVS', 'Computer', 'GK'],
+  2: ['English', 'Hindi', 'Maths', 'EVS', 'Computer', 'GK'],
+  3: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Computer', 'GK'],
+  4: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Computer', 'GK'],
+  5: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Computer', 'GK'],
+  6: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Sanskrit', 'Computer', 'GK'],
+  7: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Sanskrit', 'Computer', 'GK'],
+  8: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Sanskrit', 'Data Science', 'GK'],
+   9: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science'],
+   10: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science'],
+}
+
 let filteredClasses = [];
 let filteredSubjects = [];
 
@@ -88,4 +102,18 @@ function getRemarkClass(remark) {
 function getPassingMark(examName) {
    // Assuming passing mark is 33% of maximum marks
    return getMaxMarks(examName) * 0.33;
+}
+
+function getSubjectsForClass(classValue) {
+  // Extract class number from 'classValue' like '6-A2'
+  let classNumber = parseInt(classValue.split('-')[0]);
+
+  // Get the relevant subjects for that class
+  let classSubjects = classwiseSubjects[classNumber];
+
+  // If no subjects found, return an empty array
+  if (!classSubjects) return [];
+
+  // Filter the global 'subjects' array to keep only those present in 'classSubjects'
+  return subjects.filter(subject => classSubjects.includes(subject));
 }
