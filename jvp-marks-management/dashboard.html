@@ -1123,8 +1123,13 @@
          // Handle class, subject and exam selection
          async function handleSelectionChange(event) {
          const selectedClass = classSelect.value;
-         const selectedSubject = subjectSelect.value;
+         let selectedSubject = subjectSelect.value;
          let selectedExam = examSelect.value;
+
+         // Only update the subject dropdown when class changes, not when exam/subject changes
+         if (event.target === classSelect && selectedClass) {
+         selectedSubject = updateSubjectDropdown(selectedClass, true);
+         }
          
          // Only update the exam dropdown when class or subject changes, not when exam changes
          if ((event.target === classSelect || event.target === subjectSelect) && 
@@ -1150,6 +1155,40 @@
          }
          }
          
+         // Function to update subject dropdown based on class selection
+         function updateSubjectDropdown(className, preserveSelection = false) {
+         // Store current selection if needed
+         const currentSelection = preserveSelection ? subjectSelect.value : null;
+         
+         // Clear existing options (except the placeholder)
+         while (subjectSelect.options.length > 1) {
+         subjectSelect.remove(1);
+         }
+         
+         // Get subjects for the chosen class
+         const relevantSubjects = getSubjectsForClass(className);
+         
+         relevantSubjects.forEach(subject => {
+            const option = document.createElement('option');
+            option.value = subject;
+            option.textContent = subject;
+            subjectSelect.appendChild(option);
+         });
+         
+         
+         // Restore previous selection if it exists in the new options
+         if (preserveSelection && currentSelection) {
+         // Find if the current selection still exists in the options
+         for (let i = 0; i < subjectSelect.options.length; i++) {
+            if (subjectSelect.options[i].value === currentSelection) {
+                subjectSelect.value = currentSelection;
+                return currentSelection;
+            }
+         }
+         } 
+         return null;
+         }
+
          // Function to update exam dropdown based on class and subject selection
          function updateExamDropdown(className, subjectName, preserveSelection = false) {
          // Store current selection if needed
