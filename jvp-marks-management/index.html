@@ -150,7 +150,7 @@
          padding: 10px 20px;
          font-size: 14px;
          }
-         .btn-logout:hover, #delete-btn:hover {
+         .btn-logout:hover, #delete-btn:hover, #cancelReportDialog:hover {
          background-color: var(--danger-dark);
          }
          #delete-btn {
@@ -431,6 +431,109 @@
          pointer-events: none;
          user-select: none;
          }
+         .report-dialog-overlay {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background-color: rgba(0, 0, 0, 0.5);
+         display: flex;
+         align-items: center;
+         justify-content: center;
+         z-index: 1000;
+         opacity: 0;
+         visibility: hidden;
+         transition: var(--transition);
+         }
+         .report-dialog-overlay.active {
+         opacity: 1;
+         visibility: visible;
+         }
+         .report-dialog {
+         background-color: white;
+         border-radius: 8px;
+         box-shadow: var(--shadow-lg);
+         width: 90%;
+         max-width: 500px;
+         overflow: hidden;
+         transform: translateY(-20px);
+         transition: var(--transition);
+         }
+         .report-dialog-overlay.active .report-dialog {
+         transform: translateY(0);
+         }
+         .report-dialog-header {
+         display: flex;
+         justify-content: space-between;
+         align-items: center;
+         padding: 16px 20px;
+         border-bottom: 1px solid var(--border);
+         }
+         .report-dialog-header h3 {
+         font-size: 18px;
+         color: var(--dark);
+         font-weight: 600;
+         margin: 0;
+         }
+         .close-button {
+         background: none;
+         border: none;
+         font-size: 24px;
+         color: var(--text);
+         cursor: pointer;
+         padding: 0;
+         line-height: 1;
+         transition: var(--transition);
+         }
+         .close-button:hover {
+         color: var(--danger);
+         }
+         #cancelReportDialog {
+         background: var(--danger);
+         }
+         .report-dialog-body {
+         padding: 20px;
+         }
+         .report-dialog-body p {
+         color: var(--text);
+         margin-bottom: 16px;
+         }
+         .report-buttons {
+         display: flex;
+         flex-direction: column;
+         gap: 12px;
+         }
+         .report-button {
+         width: 100%;
+         padding: 14px 16px;
+         background-color: white;
+         border: 1px solid var(--border);
+         border-radius: 6px;
+         font-size: 15px;
+         font-weight: 500;
+         color: var(--dark);
+         text-align: left;
+         cursor: pointer;
+         transition: var(--transition);
+         }
+         .report-button:hover {
+         background-color: rgba(79, 70, 229, 0.05);
+         border-color: rgba(79, 70, 229, 0.3);
+         color: var(--primary);
+         }
+         .report-button.selected {
+         background-color: rgba(79, 70, 229, 0.1);
+         border-color: var(--primary);
+         color: var(--primary);
+         }
+         .report-dialog-footer {
+         display: flex;
+         justify-content: flex-end;
+         padding: 16px 20px;
+         border-top: 1px solid var(--border);
+         gap: 12px;
+         }
       </style>
    </head>
    <body>
@@ -582,6 +685,34 @@
          </div>
       </div>
       <!-- Dialog Overlay Ends -->
+      <!-- Report Dialog Overlay Starts -->
+      <div id="reportDialogOverlay" class="report-dialog-overlay">
+         <div class="report-dialog">
+            <div class="report-dialog-header">
+               <h3>Select Report Type</h3>
+               <button id="closeReportDialogBtn" class="close-button">&times;</button>
+            </div>
+            <div class="report-dialog-body">
+               <p>Please select the type of report you want to generate:</p>
+               <div class="report-buttons">
+                  <button class="report-button" data-report-type="consolidated">
+                  Consolidated marks report
+                  </button>
+                  <button class="report-button" data-report-type="subjectwise">
+                  Marks Statements for all individual subjects
+                  </button>
+                  <button class="report-button" data-report-type="custom">
+                  Custom marks report
+                  </button>
+               </div>
+            </div>
+            <div class="report-dialog-footer">
+               <button id="cancelReportDialog" class="btn">Cancel</button>
+               <button id="generateSelectedReport" class="btn btn-primary">Generate Report</button>
+            </div>
+         </div>
+      </div>
+      <!-- Report Dialog Overlay Ends -->
       <script>
          // Data structures         
          const students = {};
@@ -645,6 +776,16 @@
          const saveExamBtn = document.getElementById('save-exam-btn');
          const cancelExamBtn = document.getElementById('cancel-exam-btn');
          const maxMarksInput = document.getElementById('max-marks-input');
+         
+         // Report generation overlay elements
+         const reportDialogOverlay = document.getElementById('reportDialogOverlay');
+         const closeReportDialogBtn = document.getElementById('closeReportDialogBtn');
+         const cancelReportDialog = document.getElementById('cancelReportDialog');
+         const generateSelectedReport = document.getElementById('generateSelectedReport');
+         const reportButtons = document.querySelectorAll('.report-button');
+         
+         // Store the selected report type
+         let selectedReportType = 'consolidated'; // Default selection
          
          // Show/hide exam modal with class and subject info
          addExamBtn.addEventListener('click', () => {
@@ -815,35 +956,26 @@
          
          });
          
-         generateReportBtn.addEventListener("click", function () {
-         const classValue = generateReportBtn.dataset.class;
-         
-         if (classValue) {
-         const url = `custom-marks-report.html?class=${encodeURIComponent(classValue)}`;
-         window.open(url, "_blank");
-         }
-         
-         });
          
          // Initialize the form
          async function initializeForm() {
              // Fetch students list
              await fetchStudentsForClasses(); 
-
+         
              // Remove all existing options from class, subject and exam selection
              // Remove all options except the first one
              while (classSelect.options.length > 1) {
                 classSelect.remove(1);
              }
-
+         
              while (subjectSelect.options.length > 1) {
                 subjectSelect.remove(1);
              }
-
+         
              while (examSelect.options.length > 1) {
                 examSelect.remove(1);
              }
-
+         
              // Populate class dropdown
              for (const className of filteredClasses) {
                  const option = document.createElement('option');
@@ -891,7 +1023,7 @@
          
          // Store the user ID
          window.userId = data.user.id;
-
+         
          // Fetch teacher's name
          const teacherName = await selectData('teachers', true, 'name', ['id'], [window.userId]);
          if (teacherName && typeof teacherName === 'object' && teacherName.name !== undefined) {
@@ -954,14 +1086,14 @@
          
          if (isAuthenticated) {
             // User is already logged in
-
+         
             // Fetch teacher's name
             const teacherName = await selectData('teachers', true, 'name', ['id'], [window.userId]);
             if (teacherName && typeof teacherName === 'object' && teacherName.name !== undefined) {
                signedInUsername.innerText = teacherName.name;
                userInfo.style.display = "block";
             }
-
+         
             
            // Filter classes and subjects to include only those this teacher is assigned to
          await filterClassSubjects(window.userId);
@@ -1049,21 +1181,21 @@
          selectedExam = updateExamDropdown(selectedClass, selectedSubject, true);
          }
          
-         // Make generate report button visible if class has been selected and also set its data-class attribute
-         if(selectedClass) {
-           generateReportBtn.style.display = 'inline-block';
-           generateReportBtn.dataset.class = selectedClass;
-         }
          
          if (selectedClass && selectedExam && selectedSubject) {
          
          // Make score insight button visible
          scoreInsightBtn.style.display = 'inline-block';
          
-         // Set exam, class & subject as data attributes of the score insight button
+         // Make generate report button visible
+         generateReportBtn.style.display = 'inline-block';
+         
+         // Set exam, class & subject as data attributes of the score insight and generate report buttons
          scoreInsightBtn.dataset.exam = selectedExam;
          scoreInsightBtn.dataset.sub = selectedSubject;
          scoreInsightBtn.dataset.class = selectedClass;
+         generateReportBtn.dataset.class = selectedClass;
+         generateReportBtn.dataset.exam = selectedExam;
          
          showLoading();
          const syncSuccess = await syncMarksData(selectedClass, selectedExam, selectedSubject);
@@ -1310,14 +1442,14 @@
          
          // Current timestamp for updated_at field
          const now = new Date();
-const options = { timeZone: 'Asia/Kolkata', hour12: false };
-const formatter = new Intl.DateTimeFormat('en-GB', { 
-  ...options,
-  year: 'numeric', month: '2-digit', day: '2-digit',
-  hour: '2-digit', minute: '2-digit', second: '2-digit' 
-});
-const parts = formatter.formatToParts(now);
-const currentTime = `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}T${parts.find(p => p.type === 'hour').value}:${parts.find(p => p.type === 'minute').value}:${parts.find(p => p.type === 'second').value}`;
+         const options = { timeZone: 'Asia/Kolkata', hour12: false };
+         const formatter = new Intl.DateTimeFormat('en-GB', { 
+         ...options,
+         year: 'numeric', month: '2-digit', day: '2-digit',
+         hour: '2-digit', minute: '2-digit', second: '2-digit' 
+         });
+         const parts = formatter.formatToParts(now);
+         const currentTime = `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}T${parts.find(p => p.type === 'hour').value}:${parts.find(p => p.type === 'minute').value}:${parts.find(p => p.type === 'second').value}`;
          
          if (existingIndex !== -1) {
              // Update existing record in global array
@@ -1544,6 +1676,85 @@ const currentTime = `${parts.find(p => p.type === 'year').value}-${parts.find(p 
          filteredSubjects = subjects.filter(c => assignments.some(a => a.subject === c));
          
          }
+         
+         // Function to open the report dialog
+         function openReportDialog() {
+         reportDialogOverlay.classList.add('active');
+         document.body.style.overflow = 'hidden'; // Prevent scrolling behind the dialog
+         
+         // Reset selection to the first button
+         selectReportButton(reportButtons[0]);
+         }
+         
+         // Function to close the report dialog
+         function closeReportDialog() {
+         reportDialogOverlay.classList.remove('active');
+         document.body.style.overflow = ''; // Restore scrolling
+         }
+         
+         // Function to select a report button
+         function selectReportButton(button) {
+         // Remove selection from all buttons
+         reportButtons.forEach(btn => btn.classList.remove('selected'));
+         
+         // Add selection to the clicked button
+         button.classList.add('selected');
+         
+         // Update the selected report type
+         selectedReportType = button.dataset.reportType;
+         }
+         
+         // Function to generate the selected report
+         function generateReport() {
+         const classValue = generateReportBtn.dataset.class;
+         const exam = generateReportBtn.dataset.exam;
+         
+         let url;
+         switch (selectedReportType) {
+         case 'consolidated':
+         url = `consolidated-pt-marks.html?class=${encodeURIComponent(classValue)}&exam=${encodeURIComponent(exam)}`;
+         break;
+         case 'subjectwise':
+         url = `subjectwise-pt-marks.html?class=${encodeURIComponent(classValue)}&exam=${encodeURIComponent(exam)}`;
+         break;
+         case 'custom':
+         url = `custom-marks-report.html?class=${encodeURIComponent(classValue)}`;
+         break;
+         }
+         
+         // Open the URL in a new tab
+         window.open(url, "_blank");
+         
+         // Close the dialog
+         closeReportDialog();
+         }
+         
+         // Set up report button click handlers
+         reportButtons.forEach(button => {
+         button.addEventListener('click', function() {
+         selectReportButton(this);
+         });
+         });
+         
+         // Event Listeners
+         generateReportBtn.addEventListener('click', openReportDialog);
+         closeReportDialogBtn.addEventListener('click', closeReportDialog);
+         cancelReportDialog.addEventListener('click', closeReportDialog);
+         generateSelectedReport.addEventListener('click', generateReport);
+         
+         // Close dialog when clicking outside
+         reportDialogOverlay.addEventListener('click', function(e) {
+         if (e.target === reportDialogOverlay) {
+         closeReportDialog();
+         }
+         });
+         
+         // Close dialog with Escape key
+         document.addEventListener('keydown', function(e) {
+         if (e.key === 'Escape' && reportDialogOverlay.classList.contains('active')) {
+         closeReportDialog();
+         }
+         });
       </script>
    </body>
 </html>
