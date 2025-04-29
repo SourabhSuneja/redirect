@@ -104,7 +104,7 @@ function getPassingMark(examName) {
    return getMaxMarks(examName) * 0.33;
 }
 
-function getSubjectsForClass(classValue) {
+function getSubjectsForClass(classValue, useFilteredSubjects=false) {
   // Extract class number from 'classValue' like '6-A2'
   let classNumber = parseInt(classValue.split('-')[0]);
 
@@ -114,6 +114,8 @@ function getSubjectsForClass(classValue) {
   // If no subjects found, return an empty array
   if (!classSubjects) return [];
 
-  // Filter the global 'subjects' array to keep only those present in 'classSubjects'
-  return subjects.filter(subject => classSubjects.includes(subject));
+  // Filter the global 'subjects' or 'filteredSubjects' array to keep only those present in 'classSubjects'
+  const arr = useFilteredSubjects ? filteredSubjects : subjects;
+
+  return arr.filter(subject => classSubjects.includes(subject));
 }
