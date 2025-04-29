@@ -289,6 +289,7 @@
              
              // Calculate total marks
              let total20M = 0;
+             let total10M = 0;
              
              // Add subject marks cells
              selectedSubjects.forEach(subject => {
@@ -319,6 +320,7 @@
                      } else {
                          const mark10 = Math.ceil(studentSubjectMark.marks / 2);
                          mark10Cell.textContent = mark10;
+                         total10M += mark10;
                      }
                  } else {
                      mark10Cell.textContent = '-';
@@ -332,7 +334,7 @@
              row.appendChild(total20Cell);
              
              const total10Cell = document.createElement('td');
-             total10Cell.textContent = Math.ceil(total20M / 2);
+             total10Cell.textContent = total10M;
              row.appendChild(total10Cell);
              
              table.appendChild(row);
