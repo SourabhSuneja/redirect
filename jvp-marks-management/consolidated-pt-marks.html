@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Consolidated PT Marks Statement</title>
+      <!-- Supabase CRUD Functions -->
+      <script type="module" src="supabase-crud.js"></script>
+      <!-- Common JS Functions -->
+      <script src="common.js"></script>
+      <style>
+         :root {
+         --primary: #4f46e5;
+         --primary-dark: #4338ca;
+         --secondary: #10b981;
+         --secondary-dark: #059669;
+         --danger: #ef4444;
+         --danger-dark: #c33c3c;
+         --light: #f9fafb;
+         --dark: #1f2937;
+         --text: #374151;
+         --border: #e5e7eb;
+         --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+         --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+         --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+         --transition: all 0.2s ease;
+         }
+         * {
+         max-height: 9999999px;
+         }
+         body {
+         font-family: Arial, sans-serif;
+         margin: 0;
+         padding: 20px;
+         }
+         .container {
+         max-width: 1200px;
+         margin: 0 auto;
+         }
+         .header {
+         text-align: center;
+         margin-bottom: 20px;
+         text-transform: uppercase;
+         }
+         .school-name {
+         font-size: 24px;
+         font-weight: bold;
+         margin-bottom: 5px;
+         }
+         .exam-session {
+         font-size: 18px;
+         margin-bottom: 3px;
+         }
+         .class-info {
+         font-size: 16px;
+         margin-bottom: 15px;
+         }
+         table {
+         width: 100%;
+         border-collapse: collapse;
+         margin-bottom: 20px;
+         }
+         th, td {
+         border: 1px solid #000;
+         padding: 5px;
+         text-align: center;
+         font-size: 14px;
+         }
+         th {
+         background-color: #f2f2f2;
+         }
+         .roll-col {
+         width: 80px;
+         }
+         .name-col {
+         width: 150px;
+         text-align: left;
+         }
+         .mark-col {
+         width: 40px;
+         }
+         .subject-header {
+         position: relative;
+         }
+         .print-btn {
+         padding: 10px 20px;
+         background-color: #4CAF50;
+         color: white;
+         border: none;
+         cursor: pointer;
+         font-size: 16px;
+         border-radius: 4px;
+         }
+         .print-btn:hover {
+         background-color: #45a049;
+         }
+         @media print {
+         .print-btn {
+         display: none;
+         }
+         body {
+         padding: 0;
+         margin: 0;
+         width: 100%;
+         }
+         .container {
+         width: 100%;
+         max-width: none;
+         }
+         table {
+         page-break-inside: avoid;
+         width: 100%;
+         table-layout: fixed;
+         font-size: 12px;
+         }
+         th, td {
+         padding: 3px;
+         font-size: 12px;
+         }
+         .roll-col {
+         width: 6%;
+         }
+         .name-col {
+         width: 15%;
+         }
+         .mark-col {
+         width: 3%;
+         }
+         @page {
+         size: A4 landscape;
+         margin: 0.5cm;
+         }
+         }
+         .loading-overlay {
+         position: fixed;
+         top: 0;
+         left: 0;
+         width: 100%;
+         height: 100%;
+         background-color: rgba(255, 255, 255, 0.8);
+         backdrop-filter: blur(4px);
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         z-index: 9999;
+         }
+         .spinner {
+         width: 60px;
+         height: 60px;
+         border: 6px solid rgba(79, 70, 229, 0.3);
+         border-radius: 50%;
+         border-top-color: var(--primary);
+         animation: spin 1s ease-in-out infinite;
+         }
+         @keyframes spin {
+         to {
+         transform: rotate(360deg);
+         }
+         }
+         .hidden {
+         display: none;
+         }
+      </style>
+   </head>
+   <body>
+      <!-- Loading Overlay -->
+      <div id="loading-overlay" class="loading-overlay">
+         <div class="spinner"></div>
+      </div>
+      <div class="container">
+         <div class="header">
+            <div class="school-name">Jamna Vidyapeeth</div>
+            <div class="exam-session"><span id="exam-name"></span> (Session 2025-26)</div>
+            <div class="class-info">Class: <span id="class-name"></span></div>
+         </div>
+         <table id="marks-table">
+            <!-- Table will be dynamically generated -->
+         </table>
+         <div style="text-align: center;">
+            <button class="print-btn" onclick="window.print()">Print Marks Statement</button>
+         </div>
+      </div>
+      <script>
+         // DOM elements
+         const loadingOverlay = document.getElementById('loading-overlay');
+         
+         // Marks data (will be loaded from server)
+         let marks = [];
+         
+         const selectedSubjects = ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science', 'GK'];
+         let selectedExam = '';
+         let selectedClass = '';
+         
+         
+         async function generateTable() {
+         // Set header information
+         document.getElementById('exam-name').textContent = selectedExam;
+         document.getElementById('class-name').textContent = selectedClass;
+         
+         // Filter marks based on selection
+         const filteredMarks = marks.filter(mark => 
+             mark.exam === selectedExam && 
+             mark.class === selectedClass && 
+             selectedSubjects.includes(mark.subject)
+         );
+         
+         // Get unique students and sort alphabetically
+         const uniqueStudents = [...new Set(filteredMarks.map(mark => mark.student))].sort();
+         
+         // Create roll numbers
+         const classNumber = selectedClass.split('-')[0];
+         const sectionNumber = selectedClass.split('-')[1];
+         const sectionDigit = sectionNumber.charAt(1);
+         
+         // Generate the table
+         const table = document.getElementById('marks-table');
+         
+         // Create header row with subject columns
+         const headerRow1 = document.createElement('tr');
+         const headerRow2 = document.createElement('tr');
+         
+         // Add Roll No and Name headers
+         const rollHeader = document.createElement('th');
+         rollHeader.textContent = 'Roll No.';
+         rollHeader.rowSpan = 2;
+         rollHeader.classList.add('roll-col');
+         headerRow1.appendChild(rollHeader);
+         
+         const nameHeader = document.createElement('th');
+         nameHeader.textContent = 'Student Name';
+         nameHeader.rowSpan = 2;
+         nameHeader.classList.add('name-col');
+         headerRow1.appendChild(nameHeader);
+         
+         // Add subject headers
+         selectedSubjects.forEach(subject => {
+             const subjectHeader = document.createElement('th');
+             subjectHeader.textContent = subject;
+             subjectHeader.colSpan = 2;
+             subjectHeader.classList.add('subject-header');
+             headerRow1.appendChild(subjectHeader);
+             
+             const mark20Header = document.createElement('th');
+             mark20Header.textContent = '20M';
+             mark20Header.classList.add('mark-col');
+             headerRow2.appendChild(mark20Header);
+             
+             const mark10Header = document.createElement('th');
+             mark10Header.textContent = '10M';
+             mark10Header.classList.add('mark-col');
+             headerRow2.appendChild(mark10Header);
+         });
+         
+         // Add Total header
+         const totalHeader = document.createElement('th');
+         totalHeader.textContent = 'Total';
+         totalHeader.colSpan = 2;
+         headerRow1.appendChild(totalHeader);
+         
+         const total20Header = document.createElement('th');
+         total20Header.textContent = '20M';
+         headerRow2.appendChild(total20Header);
+         
+         const total10Header = document.createElement('th');
+         total10Header.textContent = '10M';
+         headerRow2.appendChild(total10Header);
+         
+         table.appendChild(headerRow1);
+         table.appendChild(headerRow2);
+         
+         // Create student rows
+         uniqueStudents.forEach((student, idx) => {
+             const row = document.createElement('tr');
+             
+             // Generate roll number
+             const serialNum = (idx + 1).toString().padStart(2, '0');
+             const rollNo = `${classNumber}${sectionDigit}${serialNum}`;
+             
+             // Add roll number cell
+             const rollCell = document.createElement('td');
+             rollCell.textContent = rollNo;
+             row.appendChild(rollCell);
+             
+             // Add name cell
+             const nameCell = document.createElement('td');
+             nameCell.textContent = student.toUpperCase();
+             nameCell.style.textAlign = 'left';
+             row.appendChild(nameCell);
+             
+             // Calculate total marks
+             let total20M = 0;
+             
+             // Add subject marks cells
+             selectedSubjects.forEach(subject => {
+                 const studentSubjectMark = filteredMarks.find(mark => 
+                     mark.student === student && mark.subject === subject
+                 );
+                 
+                 // 20M cell
+                 const mark20Cell = document.createElement('td');
+                 if (studentSubjectMark) {
+                     if (studentSubjectMark.marks === null) {
+                         mark20Cell.textContent = 'Ab';
+                     } else {
+                         const mark20 = Math.ceil(studentSubjectMark.marks);
+                         mark20Cell.textContent = mark20;
+                         total20M += mark20;
+                     }
+                 } else {
+                     mark20Cell.textContent = '-';
+                 }
+                 row.appendChild(mark20Cell);
+                 
+                 // 10M cell
+                 const mark10Cell = document.createElement('td');
+                 if (studentSubjectMark) {
+                     if (studentSubjectMark.marks === null) {
+                         mark10Cell.textContent = 'Ab';
+                     } else {
+                         const mark10 = Math.ceil(studentSubjectMark.marks / 2);
+                         mark10Cell.textContent = mark10;
+                     }
+                 } else {
+                     mark10Cell.textContent = '-';
+                 }
+                 row.appendChild(mark10Cell);
+             });
+             
+             // Add total cells
+             const total20Cell = document.createElement('td');
+             total20Cell.textContent = total20M;
+             row.appendChild(total20Cell);
+             
+             const total10Cell = document.createElement('td');
+             total10Cell.textContent = Math.ceil(total20M / 2);
+             row.appendChild(total10Cell);
+             
+             table.appendChild(row);
+         });
+         
+         }
+         
+          // Check authentication status when the window loads
+          window.addEventListener('load', async () => {
+          showLoading();
+          
+          try {
+             const isAuthenticated = await checkAuth();
+             
+             if (isAuthenticated) {
+                 // Load all marks data for the grade specified in the URL params
+                 await loadMarks();
+                 // Generate marks table
+                 generateTable();
+                 // Hide loading screen
+                 hideLoading();
+             } else {
+                 // User is not logged in, redirect back to dashboard
+                 window.location.href = "https://sourabhsuneja.github.io/redirect/jvp-marks-management/";
+             }
+          } catch (error) {
+             console.error('Auth check error:', error);
+          } finally {
+             
+          }
+          });
+               
+          function showLoading() {
+          loadingOverlay.classList.remove('hidden');
+          }
+          
+          function hideLoading() {
+          loadingOverlay.classList.add('hidden');
+          }
+         
+          async function loadMarks() {
+          // Get the "class" parameter from the URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const classValue = urlParams.get("class") || '9-A2';
+          const exam = urlParams.get("exam") || 'PT-1 (20M)';
+         
+          // Store in global variables as well
+         selectedExam = exam;
+         selectedClass = classValue;
+          
+          // If class & exam are present and not falsy
+          if (classValue && exam) {
+          try {
+          // Call selectData to get records from "marks" table
+          const results = await selectData(
+          "marks",            // tableName
+          false,              // fetchSingle
+          "*",                // columns
+          ["class", "exam"],          // matchColumns
+          [classValue, exam],       // matchValues
+          "student",          // orderByColumn
+          "asc"               // orderDirection
+          );
+          marks = results;
+          return true;
+          } catch (error) {
+          console.error("Failed to load marks:", error);
+          return null;
+          }
+          } else {
+          // No class or exam parameters found, redirect user back to dashboard
+          window.location.href = "https://sourabhsuneja.github.io/redirect/jvp-marks-management/";
+          }
+          }
+      </script>
+   </body>
+</html>
