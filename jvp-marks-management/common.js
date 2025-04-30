@@ -33,12 +33,10 @@ let filteredSubjects = [];
 
 // Common pre-decided exams
 const exams = [
-             {'name': 'PT-1 (20M)', 'mm': 20},
-             {'name': 'PT-2 (20M)', 'mm': 20},
-             {'name': 'Term-1 (70M)', 'mm': 70},
-             {'name': 'PT-3 (20M)', 'mm': 20},
-             {'name': 'PT-4 (20M)', 'mm': 20},
-             {'name': 'Term-2 (70M)', 'mm': 70},
+             {'name': 'PT-1', 'mm': 20},
+             {'name': 'PT-2', 'mm': 20},
+             {'name': 'PT-3', 'mm': 20},
+             {'name': 'PT-4', 'mm': 20}
         ];
 
 // Color mapping for updated remarks
