@@ -192,6 +192,40 @@
          let selectedClass = '';
          
          
+         // Helper function to calculate ranks from an array of values
+         function calculateRanks(values) {
+         // Create a copy of the values with their original indices
+         const indexedValues = values.map((value, index) => ({ value, index }));
+         
+         // Sort in descending order
+         indexedValues.sort((a, b) => b.value - a.value);
+         
+         // Calculate ranks (same value gets same rank)
+         const ranks = new Array(values.length).fill(0);
+         let currentRank = 1;
+         
+         for (let i = 0; i < indexedValues.length; i++) {
+         // If this is not the first element and has same value as previous
+         // assign the same rank, otherwise use currentRank
+         if (i > 0 && indexedValues[i].value === indexedValues[i-1].value) {
+            ranks[indexedValues[i].index] = ranks[indexedValues[i-1].index];
+         } else {
+            ranks[indexedValues[i].index] = currentRank;
+            // Only increment currentRank when we move to a new value
+            // This ensures the next different score gets the next sequential rank
+         }
+         
+         // If we're at the last element or the next element has a different value
+         // then increment the rank for the next different value
+         if (i === indexedValues.length - 1 || 
+            indexedValues[i].value !== indexedValues[i+1].value) {
+            currentRank++;
+         }
+         }
+         
+         return ranks;
+         }
+         
          async function generateTable() {
          // Set header information
          document.getElementById('exam-name').textContent = selectedExam;
@@ -199,9 +233,9 @@
          
          // Filter marks based on selection
          const filteredMarks = marks.filter(mark => 
-             mark.exam === selectedExam && 
-             mark.class === selectedClass && 
-             selectedSubjects.includes(mark.subject)
+         mark.exam === selectedExam && 
+         mark.class === selectedClass && 
+         selectedSubjects.includes(mark.subject)
          );
          
          // Get unique students and sort alphabetically
@@ -214,6 +248,7 @@
          
          // Generate the table
          const table = document.getElementById('marks-table');
+         table.innerHTML = ''; // Clear existing table
          
          // Create header row with subject columns
          const headerRow1 = document.createElement('tr');
@@ -234,21 +269,21 @@
          
          // Add subject headers
          selectedSubjects.forEach(subject => {
-             const subjectHeader = document.createElement('th');
-             subjectHeader.textContent = subject;
-             subjectHeader.colSpan = 2;
-             subjectHeader.classList.add('subject-header');
-             headerRow1.appendChild(subjectHeader);
-             
-             const mark20Header = document.createElement('th');
-             mark20Header.textContent = '20M';
-             mark20Header.classList.add('mark-col');
-             headerRow2.appendChild(mark20Header);
-             
-             const mark10Header = document.createElement('th');
-             mark10Header.textContent = '10M';
-             mark10Header.classList.add('mark-col');
-             headerRow2.appendChild(mark10Header);
+         const subjectHeader = document.createElement('th');
+         subjectHeader.textContent = subject;
+         subjectHeader.colSpan = 2;
+         subjectHeader.classList.add('subject-header');
+         headerRow1.appendChild(subjectHeader);
+         
+         const mark20Header = document.createElement('th');
+         mark20Header.textContent = '20M';
+         mark20Header.classList.add('mark-col');
+         headerRow2.appendChild(mark20Header);
+         
+         const mark10Header = document.createElement('th');
+         mark10Header.textContent = '10M';
+         mark10Header.classList.add('mark-col');
+         headerRow2.appendChild(mark10Header);
          });
          
          // Add Total header
@@ -265,81 +300,126 @@
          total10Header.textContent = '10M';
          headerRow2.appendChild(total10Header);
          
+         // Add Rank header
+         const rankHeader = document.createElement('th');
+         rankHeader.textContent = 'Rank';
+         rankHeader.colSpan = 2;
+         headerRow1.appendChild(rankHeader);
+         
+         const rank20Header = document.createElement('th');
+         rank20Header.textContent = '20M';
+         headerRow2.appendChild(rank20Header);
+         
+         const rank10Header = document.createElement('th');
+         rank10Header.textContent = '10M';
+         headerRow2.appendChild(rank10Header);
+         
          table.appendChild(headerRow1);
          table.appendChild(headerRow2);
          
+         // Arrays to store the total marks for each student
+         const studentTotals20M = [];
+         const studentTotals10M = [];
+         const studentRows = [];
+         
          // Create student rows
          uniqueStudents.forEach((student, idx) => {
-             const row = document.createElement('tr');
-             
-             // Generate roll number
-             const serialNum = (idx + 1).toString().padStart(2, '0');
-             const rollNo = `${classNumber}${sectionDigit}${serialNum}`;
-             
-             // Add roll number cell
-             const rollCell = document.createElement('td');
-             rollCell.textContent = rollNo;
-             row.appendChild(rollCell);
-             
-             // Add name cell
-             const nameCell = document.createElement('td');
-             nameCell.textContent = student.toUpperCase();
-             nameCell.style.textAlign = 'left';
-             row.appendChild(nameCell);
-             
-             // Calculate total marks
-             let total20M = 0;
-             let total10M = 0;
-             
-             // Add subject marks cells
-             selectedSubjects.forEach(subject => {
-                 const studentSubjectMark = filteredMarks.find(mark => 
-                     mark.student === student && mark.subject === subject
-                 );
-                 
-                 // 20M cell
-                 const mark20Cell = document.createElement('td');
-                 if (studentSubjectMark) {
-                     if (studentSubjectMark.marks === null) {
-                         mark20Cell.textContent = 'Ab';
-                     } else {
-                         const mark20 = Math.ceil(studentSubjectMark.marks);
-                         mark20Cell.textContent = mark20;
-                         total20M += mark20;
-                     }
-                 } else {
-                     mark20Cell.textContent = '-';
-                 }
-                 row.appendChild(mark20Cell);
-                 
-                 // 10M cell
-                 const mark10Cell = document.createElement('td');
-                 if (studentSubjectMark) {
-                     if (studentSubjectMark.marks === null) {
-                         mark10Cell.textContent = 'Ab';
-                     } else {
-                         const mark10 = Math.ceil(studentSubjectMark.marks / 2);
-                         mark10Cell.textContent = mark10;
-                         total10M += mark10;
-                     }
-                 } else {
-                     mark10Cell.textContent = '-';
-                 }
-                 row.appendChild(mark10Cell);
-             });
-             
-             // Add total cells
-             const total20Cell = document.createElement('td');
-             total20Cell.textContent = total20M;
-             row.appendChild(total20Cell);
-             
-             const total10Cell = document.createElement('td');
-             total10Cell.textContent = total10M;
-             row.appendChild(total10Cell);
-             
-             table.appendChild(row);
+         const row = document.createElement('tr');
+         
+         // Generate roll number
+         const serialNum = (idx + 1).toString().padStart(2, '0');
+         const rollNo = `${classNumber}${sectionDigit}${serialNum}`;
+         
+         // Add roll number cell
+         const rollCell = document.createElement('td');
+         rollCell.textContent = rollNo;
+         row.appendChild(rollCell);
+         
+         // Add name cell
+         const nameCell = document.createElement('td');
+         nameCell.textContent = student.toUpperCase();
+         nameCell.style.textAlign = 'left';
+         row.appendChild(nameCell);
+         
+         // Calculate total marks
+         let total20M = 0;
+         let total10M = 0;
+         
+         // Add subject marks cells
+         selectedSubjects.forEach(subject => {
+            const studentSubjectMark = filteredMarks.find(mark => 
+                mark.student === student && mark.subject === subject
+            );
+            
+            // 20M cell
+            const mark20Cell = document.createElement('td');
+            if (studentSubjectMark) {
+                if (studentSubjectMark.marks === null) {
+                    mark20Cell.textContent = 'Ab';
+                } else {
+                    const mark20 = Math.ceil(studentSubjectMark.marks);
+                    mark20Cell.textContent = mark20;
+                    total20M += mark20;
+                }
+            } else {
+                mark20Cell.textContent = '-';
+            }
+            row.appendChild(mark20Cell);
+            
+            // 10M cell
+            const mark10Cell = document.createElement('td');
+            if (studentSubjectMark) {
+                if (studentSubjectMark.marks === null) {
+                    mark10Cell.textContent = 'Ab';
+                } else {
+                    const mark10 = Math.ceil(studentSubjectMark.marks / 2);
+                    mark10Cell.textContent = mark10;
+                    total10M += mark10;
+                }
+            } else {
+                mark10Cell.textContent = '-';
+            }
+            row.appendChild(mark10Cell);
          });
          
+         // Add total cells
+         const total20Cell = document.createElement('td');
+         total20Cell.textContent = total20M;
+         row.appendChild(total20Cell);
+         
+         const total10Cell = document.createElement('td');
+         total10Cell.textContent = total10M;
+         row.appendChild(total10Cell);
+         
+         // Add empty rank cells (to be filled later)
+         const rank20Cell = document.createElement('td');
+         rank20Cell.classList.add('rank-20m-cell');
+         row.appendChild(rank20Cell);
+         
+         const rank10Cell = document.createElement('td');
+         rank10Cell.classList.add('rank-10m-cell');
+         row.appendChild(rank10Cell);
+         
+         // Store the row, total20M, and total10M for later use
+         studentRows.push(row);
+         studentTotals20M.push(total20M);
+         studentTotals10M.push(total10M);
+         
+         table.appendChild(row);
+         });
+         
+         // Calculate ranks for both 20M and 10M totals
+         const ranks20M = calculateRanks(studentTotals20M);
+         const ranks10M = calculateRanks(studentTotals10M);
+         
+         // Fill in the rank cells
+         studentRows.forEach((row, idx) => {
+         const rank20Cell = row.querySelector('.rank-20m-cell');
+         rank20Cell.textContent = ranks20M[idx];
+         
+         const rank10Cell = row.querySelector('.rank-10m-cell');
+         rank10Cell.textContent = ranks10M[idx];
+         });
          }
          
           // Check authentication status when the window loads
