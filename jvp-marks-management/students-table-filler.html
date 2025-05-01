@@ -120,14 +120,15 @@ async function sendToSupabase() {
   for(const classValue in students) {
     const names = students[classValue];
     for(const name of names) {
-      const data = {name, 'class': classValue};
+      const nameValue = name.toUpperCase().trim();
+      const data = {'name': nameValue, 'class': classValue};
       dataArray.push(data);
     }
   }
 
-//document.write(JSON.stringify(dataArray));
-  //const result = await insertData('students', dataArray);
-  //document.write('Rows inserted: ' + JSON.stringify(result));
+  //document.write(JSON.stringify(dataArray));
+  //const result = await upsertData('students', dataArray, ['name', 'class']);
+  //document.write('Rows upserted: ' + JSON.stringify(result));
 }
       </script>
    </body>
