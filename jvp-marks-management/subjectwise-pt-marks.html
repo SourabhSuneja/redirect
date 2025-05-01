@@ -221,7 +221,7 @@
          // Marks data (will be loaded from server)
          let marks = [];
          
-         const selectedSubjects = ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science', 'GK'];
+         let selectedSubjects = [];
          let selectedExam = '';
          let selectedClass = '';
          
@@ -488,6 +488,9 @@
              // Store in global variables as well
              selectedExam = exam;
              selectedClass = classValue;
+
+          // Fetch subject list according to class
+          selectedSubjects = getSubjectsForClass(selectedClass);
              
              // If class & exam are present and not falsy
              if (classValue && exam) {
