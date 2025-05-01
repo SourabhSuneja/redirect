@@ -187,7 +187,7 @@
          // Marks data (will be loaded from server)
          let marks = [];
          
-         const selectedSubjects = ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science', 'GK'];
+         let selectedSubjects = [];
          let selectedExam = '';
          let selectedClass = '';
          
@@ -458,12 +458,15 @@
           async function loadMarks() {
           // Get the "class" parameter from the URL
           const urlParams = new URLSearchParams(window.location.search);
-          const classValue = urlParams.get("class") || '9-A2';
-          const exam = urlParams.get("exam") || 'PT-1 (20M)';
+          const classValue = urlParams.get("class");
+          const exam = urlParams.get("exam");
          
           // Store in global variables as well
          selectedExam = exam;
          selectedClass = classValue;
+
+          // Fetch subject list according to class
+          selectedSubjects = getSubjectsForClass(selectedClass);
           
           // If class & exam are present and not falsy
           if (classValue && exam) {
