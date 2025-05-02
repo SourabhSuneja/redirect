@@ -4,6 +4,7 @@ DROP TRIGGER IF EXISTS backup_marks_trigger ON marks;
 DROP TRIGGER IF EXISTS marks_view_insert ON marks_view;
 DROP TRIGGER IF EXISTS marks_view_update ON marks_view;
 DROP TRIGGER IF EXISTS marks_view_delete ON marks_view;
+DROP TRIGGER IF EXISTS check_marks_before_delete ON students;
 
 -- Drop views
 DROP VIEW IF EXISTS marks_view;
@@ -14,6 +15,7 @@ DROP FUNCTION IF EXISTS backup_marks_function();
 DROP FUNCTION IF EXISTS marks_view_insert_function();
 DROP FUNCTION IF EXISTS marks_view_update_function();
 DROP FUNCTION IF EXISTS marks_view_delete_function();
+DROP FUNCTION IF EXISTS prevent_student_delete();
 
 -- Drop tables (in reverse order of creation to handle foreign key dependencies)
 DROP TABLE IF EXISTS marks_backup;
@@ -536,3 +538,37 @@ CREATE TRIGGER marks_view_delete
 INSTEAD OF DELETE ON marks_view
 FOR EACH ROW
 EXECUTE FUNCTION marks_view_delete_function();
+
+
+-- Trigger function to prevent accidental deletion of students whose mark records still exist in the marks table
+CREATE OR REPLACE FUNCTION prevent_student_delete()
+RETURNS TRIGGER AS $$
+DECLARE
+    marks_count INTEGER;
+BEGIN
+    -- Check if there are any marks records for this student
+    SELECT COUNT(*) INTO marks_count
+    FROM marks
+    WHERE student_id = OLD.id;
+    
+    -- If there are marks records, update the class to 'NONE' instead of deleting
+    IF marks_count > 0 THEN
+        -- Cancel the delete operation
+        UPDATE students
+        SET class = 'NONE'
+        WHERE id = OLD.id;
+        
+        -- Return NULL to prevent the original DELETE operation
+        RETURN NULL;
+    ELSE
+        -- No marks records found, proceed with normal deletion
+        RETURN OLD;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create the trigger on the students table
+CREATE TRIGGER check_marks_before_delete
+BEFORE DELETE ON students
+FOR EACH ROW
+EXECUTE FUNCTION prevent_student_delete();
