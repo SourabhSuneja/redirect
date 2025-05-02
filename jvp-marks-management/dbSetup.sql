@@ -540,28 +540,28 @@ FOR EACH ROW
 EXECUTE FUNCTION marks_view_delete_function();
 
 
--- Trigger function to prevent accidental deletion of students whose mark records still exist in the marks table
+-- Trigger function to prevent deletion of students with non-NULL marks records
 CREATE OR REPLACE FUNCTION prevent_student_delete()
 RETURNS TRIGGER AS $$
 DECLARE
-    marks_count INTEGER;
+    non_null_marks_count INTEGER;
 BEGIN
-    -- Check if there are any marks records for this student
-    SELECT COUNT(*) INTO marks_count
+    -- Check if there are any marks records with non-NULL marks for this student
+    SELECT COUNT(*) INTO non_null_marks_count
     FROM marks
-    WHERE student_id = OLD.id;
-    
-    -- If there are marks records, update the class to 'NONE' instead of deleting
-    IF marks_count > 0 THEN
+    WHERE student_id = OLD.id AND marks IS NOT NULL;
+
+    -- If there are non-NULL marks records, update the class by appending " (LEFT NOW)" to the existing class
+    IF non_null_marks_count > 0 THEN
         -- Cancel the delete operation
         UPDATE students
-        SET class = 'NONE'
+        SET class = OLD.class || ' (LEFT NOW)'
         WHERE id = OLD.id;
-        
+
         -- Return NULL to prevent the original DELETE operation
         RETURN NULL;
     ELSE
-        -- No marks records found, proceed with normal deletion
+        -- No non-NULL marks records found, proceed with normal deletion
         RETURN OLD;
     END IF;
 END;
