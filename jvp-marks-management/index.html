@@ -722,6 +722,9 @@
          
          // Initialize empty marks array
          let marks = [];
+
+         // Hold maximum marks for the currently selected exam for validation checks later on
+         let maxMarksForSelectedExam = Infinity;
          
          // DOM Elements
          const loginSection = document.getElementById('login-section');
@@ -1235,6 +1238,8 @@
          if (maxMarks) {
             maxMarksDisplay.textContent = `Maximum Marks: ${maxMarks}`;
             maxMarksInput.value = maxMarks;
+            // Also store in the global variable for validation checks
+            maxMarksForSelectedExam = Number(maxMarks);
          }
          } else {
          marksFormContainer.classList.add('hidden');
@@ -1432,117 +1437,130 @@
                         
          // Submit form
          submitBtn.addEventListener('click', async () => {
-         const selectedClass = classSelect.value;
-         const selectedExam = examSelect.value;
-         const selectedSubject = subjectSelect.value;
-         
-         if (!selectedClass || !selectedExam || !selectedSubject) return;
-         
-         showLoading();
-         
-         try {
-         const inputs = document.querySelectorAll('.marks-input');
-         let updatedMarks = false;
-         const marksToSync = [];
-         
-         inputs.forEach(input => {
-         const studentName = input.dataset.student;
-         const marksValue = input.value.trim() === '' ? null : parseFloat(input.value);
-         
-         // Find if record already exists
-         const existingIndex = marks.findIndex(record => 
-             record.class === selectedClass && 
-             record.student === studentName && 
-             record.exam === selectedExam &&
-             record.subject === selectedSubject
-         );
-         
-         // Current timestamp for updated_at field
-         const now = new Date();
-         const options = { timeZone: 'Asia/Kolkata', hour12: false };
-         const formatter = new Intl.DateTimeFormat('en-GB', { 
-         ...options,
-         year: 'numeric', month: '2-digit', day: '2-digit',
-         hour: '2-digit', minute: '2-digit', second: '2-digit' 
-         });
-         const parts = formatter.formatToParts(now);
-         const currentTime = `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}T${parts.find(p => p.type === 'hour').value}:${parts.find(p => p.type === 'minute').value}:${parts.find(p => p.type === 'second').value}`;
-         
-         if (existingIndex !== -1) {
-             // Update existing record in global array
-             marks[existingIndex].marks = marksValue;
-             marks[existingIndex].updated_at = currentTime;
-             
-             // Add to sync array
-             marksToSync.push({
-                 'exam': selectedExam,
-                 'student': studentName,
-                 'class': selectedClass,
-                 'subject': selectedSubject,
-                 'marks': marksValue,
-                 'updated_at': currentTime
-             });
-         } else {
-             // Create new record object
-             const newRecord = {
-                 'exam': selectedExam,
-                 'student': studentName,
-                 'class': selectedClass,
-                 'subject': selectedSubject,
-                 'marks': marksValue,
-                 'updated_at': currentTime
-             };
-             
-             // Add to global array
-             //marks.push(newRecord);
-             
-             // Add to sync array
-             marksToSync.push(newRecord);
-         }
-         
-         updatedMarks = true;
-         });
-         
-         if (updatedMarks) {
-         // Sync with Supabase - using insert to handle both updates and inserts via a trigger on marks_view
-         
-         const syncResult = await insertData(
-             'marks_view', 
-             marksToSync
-         );
-         
-         if (syncResult) {
-             // Show success message
-         await showDialog({
-         title: 'Success',
-         message: 'Marks saved successfully!',
-         type: 'alert'
-         });
-             showFeedback('Marks saved successfully!', 'success');
-             
-             // Update statistics
-             //updateStatistics();
-         } else {
-         await showDialog({
-         title: 'Error',
-         message: 'Error syncing with database. Please try again.',
-         type: 'alert'
-         });
-             showFeedback('Error syncing with database. Please try again.', 'error');
-         }
-         }
-         } catch (error) {
-         console.error('Error saving marks:', error);
-         await showDialog({
-         title: 'Error',
-         message: 'An error occurred while saving marks.',
-         type: 'alert'
-         });
-         showFeedback('An error occurred while saving marks.', 'error');
-         } finally {
-         hideLoading();
-         }
-         });
+    const selectedClass = classSelect.value;
+    const selectedExam = examSelect.value;
+    const selectedSubject = subjectSelect.value;
+    
+    if (!selectedClass || !selectedExam || !selectedSubject) return;
+    
+    // Check if any marks value exceeds the maximum allowed for the selected exam
+    const inputs = document.querySelectorAll('.marks-input');
+    for (const input of inputs) {
+        const marksValue = input.value.trim() === '' ? null : parseFloat(input.value);
+        if (marksValue !== null && marksValue > maxMarksForSelectedExam) {
+            await showDialog({
+                title: 'Invalid Marks',
+                message: `Marks cannot exceed the maximum value of ${maxMarksForSelectedExam} for this exam.`,
+                type: 'alert'
+            });
+            return; // Exit the handler without further processing
+        }
+    }
+    
+    showLoading();
+    
+    try {
+        let updatedMarks = false;
+        const marksToSync = [];
+        
+        inputs.forEach(input => {
+            const studentName = input.dataset.student;
+            const marksValue = input.value.trim() === '' ? null : parseFloat(input.value);
+            
+            // Find if record already exists
+            const existingIndex = marks.findIndex(record => 
+                record.class === selectedClass && 
+                record.student === studentName && 
+                record.exam === selectedExam &&
+                record.subject === selectedSubject
+            );
+            
+            // Current timestamp for updated_at field
+            const now = new Date();
+            const options = { timeZone: 'Asia/Kolkata', hour12: false };
+            const formatter = new Intl.DateTimeFormat('en-GB', { 
+                ...options,
+                year: 'numeric', month: '2-digit', day: '2-digit',
+                hour: '2-digit', minute: '2-digit', second: '2-digit' 
+            });
+            const parts = formatter.formatToParts(now);
+            const currentTime = `${parts.find(p => p.type === 'year').value}-${parts.find(p => p.type === 'month').value}-${parts.find(p => p.type === 'day').value}T${parts.find(p => p.type === 'hour').value}:${parts.find(p => p.type === 'minute').value}:${parts.find(p => p.type === 'second').value}`;
+            
+            if (existingIndex !== -1) {
+                // Update existing record in global array
+                marks[existingIndex].marks = marksValue;
+                marks[existingIndex].updated_at = currentTime;
+                
+                // Add to sync array
+                marksToSync.push({
+                    'exam': selectedExam,
+                    'student': studentName,
+                    'class': selectedClass,
+                    'subject': selectedSubject,
+                    'marks': marksValue,
+                    'updated_at': currentTime
+                });
+            } else {
+                // Create new record object
+                const newRecord = {
+                    'exam': selectedExam,
+                    'student': studentName,
+                    'class': selectedClass,
+                    'subject': selectedSubject,
+                    'marks': marksValue,
+                    'updated_at': currentTime
+                };
+                
+                // Add to global array
+                //marks.push(newRecord);
+                
+                // Add to sync array
+                marksToSync.push(newRecord);
+            }
+            
+            updatedMarks = true;
+        });
+        
+        if (updatedMarks) {
+            // Sync with Supabase - using insert to handle both updates and inserts via a trigger on marks_view
+            
+            const syncResult = await insertData(
+                'marks_view', 
+                marksToSync
+            );
+            
+            if (syncResult) {
+                // Show success message
+                await showDialog({
+                    title: 'Success',
+                    message: 'Marks saved successfully!',
+                    type: 'alert'
+                });
+                showFeedback('Marks saved successfully!', 'success');
+                
+                // Update statistics
+                //updateStatistics();
+            } else {
+                await showDialog({
+                    title: 'Error',
+                    message: 'Error syncing with database. Please try again.',
+                    type: 'alert'
+                });
+                showFeedback('Error syncing with database. Please try again.', 'error');
+            }
+        }
+    } catch (error) {
+        console.error('Error saving marks:', error);
+        await showDialog({
+            title: 'Error',
+            message: 'An error occurred while saving marks.',
+            type: 'alert'
+        });
+        showFeedback('An error occurred while saving marks.', 'error');
+    } finally {
+        hideLoading();
+    }
+});
          
          // Clear form
          clearBtn.addEventListener('click', () => {
