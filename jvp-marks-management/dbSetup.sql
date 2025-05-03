@@ -572,3 +572,72 @@ CREATE TRIGGER check_marks_before_delete
 BEFORE DELETE ON students
 FOR EACH ROW
 EXECUTE FUNCTION prevent_student_delete();
+
+
+-- Create a function to fetch duplicate entries in the marks_backup_view for fraud detection or version tracking
+CREATE OR REPLACE FUNCTION get_multiple_marks_updates()
+RETURNS TABLE (
+  id UUID,
+  exam TEXT,
+  subject TEXT,
+  student TEXT,
+  class TEXT,
+  marks NUMERIC(5,2),
+  updated_at TIMESTAMP WITHOUT TIME ZONE,
+  backup_timestamp TIMESTAMP WITHOUT TIME ZONE,
+  backup_id UUID
+) 
+SECURITY INVOKER
+AS $$
+BEGIN
+  RETURN QUERY
+  WITH student_exam_subject_counts AS (
+    SELECT 
+      mbv.student AS student_name,
+      mbv.class AS class_name,
+      mbv.exam AS exam_name,
+      mbv.subject AS subject_name,
+      COUNT(*) as update_count,
+      SUM(CASE WHEN mbv.marks IS NULL THEN 1 ELSE 0 END) as null_count
+    FROM 
+      marks_backup_view mbv
+    GROUP BY 
+      mbv.student, mbv.class, mbv.exam, mbv.subject
+    HAVING 
+      COUNT(*) > 1
+  ),
+  filtered_students AS (
+    SELECT 
+      ses.student_name,
+      ses.class_name,
+      ses.exam_name,
+      ses.subject_name
+    FROM 
+      student_exam_subject_counts ses
+    WHERE 
+      NOT (ses.update_count = 2 AND ses.null_count = 1)
+  )
+  SELECT 
+    mbv.id,
+    mbv.exam,
+    mbv.subject,
+    mbv.student,
+    mbv.class,
+    mbv.marks,
+    mbv.updated_at,
+    mbv.backup_timestamp,
+    mbv.backup_id
+  FROM 
+    marks_backup_view mbv
+  JOIN 
+    filtered_students fs 
+    ON mbv.student = fs.student_name 
+   AND mbv.class = fs.class_name
+   AND mbv.exam = fs.exam_name 
+   AND mbv.subject = fs.subject_name
+  ORDER BY 
+    mbv.class ASC,
+    mbv.student ASC,
+    mbv.backup_timestamp DESC;
+END;
+$$ LANGUAGE plpgsql;
