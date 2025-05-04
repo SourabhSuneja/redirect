@@ -256,6 +256,18 @@ CREATE POLICY marks_backup_insert_policy ON marks_backup
     FOR INSERT
     WITH CHECK (auth.role() = 'service_role');
 
+-- Policy for SELECT: Allow only admins to read marks_backup table
+CREATE POLICY marks_backup_read_access_for_admins
+ON marks_backup
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1 
+    FROM admins 
+    WHERE admins.id = auth.uid()
+  )
+);
+
 -- Create a function for the trigger
 CREATE OR REPLACE FUNCTION backup_marks_function()
 RETURNS TRIGGER AS $$
