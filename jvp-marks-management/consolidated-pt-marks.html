@@ -293,11 +293,11 @@
          headerRow1.appendChild(totalHeader);
          
          const total20Header = document.createElement('th');
-         total20Header.textContent = '20M';
+         total20Header.textContent = (20 * selectedSubjects.length) + "M";
          headerRow2.appendChild(total20Header);
          
          const total10Header = document.createElement('th');
-         total10Header.textContent = '10M';
+         total10Header.textContent = (10 * selectedSubjects.length) + "M";
          headerRow2.appendChild(total10Header);
          
          // Add Rank header
