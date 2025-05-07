@@ -671,7 +671,7 @@ BEGIN
     RETURN QUERY
     SELECT 
         mv.exam,
-        'Total' AS subject, -- Replacing subject with 'Total' to indicate aggregation
+        'Overall Aggregate' AS subject, -- Replacing subject with 'Overall Aggregate' to indicate aggregation
         mv.student,
         mv.class,
         SUM(mv.marks) AS marks
