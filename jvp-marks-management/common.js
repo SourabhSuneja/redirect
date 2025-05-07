@@ -52,7 +52,7 @@ const classwiseSubjects = {
    9: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science'],
    10: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science'],
   '12-SCI': ['English', 'Physics', 'Chemistry', 'Biology', 'Maths', 'P.E.', 'I.P.', 'Geography', 'Economics'],
-  '12-COM': ['English', 'Accountancy', 'B. St.', 'Economics', 'Maths', 'P.E.', 'I.P.'],
+  '12-COM': ['English', 'Accountancy', 'B.St.', 'Economics', 'Maths', 'P.E.', 'I.P.'],
   '12-HUM': ['English', 'History', 'Geography', 'Pol. Sci.', 'Maths', 'P.E.', 'I.P.', 'Economics']
 }
 
@@ -131,8 +131,15 @@ function getPassingMark(examName) {
 }
 
 function getSubjectsForClass(classValue, useFilteredSubjects=false) {
-  // Extract class number from 'classValue' like '6-A2'
-  let classNumber = parseInt(classValue.split('-')[0]);
+
+  let classNumber = null;
+
+  // Extract class number from 'classValue' like '6-A2' if 'classValue' does not begin with 11 or 12
+  if(!classValue.startsWith('11') && !classValue.startsWith('12')) {
+  classNumber = parseInt(classValue.split('-')[0]);
+  } else {
+  classNumber = classValue;
+  }
 
   // Get the relevant subjects for that class
   let classSubjects = classwiseSubjects[classNumber];
@@ -154,6 +161,6 @@ function getAggregateMarks(classValue, examName) {
   if (classData && classData[examName]) {
     return classData[examName];
   } else {
-    return null; // or you can throw an error or return a custom message
+    return null;
   }
 }
