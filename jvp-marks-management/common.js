@@ -51,7 +51,9 @@ const classwiseSubjects = {
   8: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Sanskrit', 'Data Science', 'GK'],
    9: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science'],
    10: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science'],
-  '12-SCI': ['English', 'Physics', 'Chemistry', 'Biology', 'Maths', 'P.E.', 'I.P.', 'Geography', 'Economics']
+  '12-SCI': ['English', 'Physics', 'Chemistry', 'Biology', 'Maths', 'P.E.', 'I.P.', 'Geography', 'Economics'],
+  '12-COM': ['English', 'Accountancy', 'B. St.', 'Economics', 'Maths', 'P.E.', 'I.P.'],
+  '12-HUM': ['English', 'History', 'Geography', 'Pol. Sci.', 'Maths', 'P.E.', 'I.P.', 'Economics']
 }
 
 let filteredClasses = [];
