@@ -1,5 +1,5 @@
 // Classes to fetch student lists for
-let classes = ['3-A1', '3-A2', '3-A3', '3-A4', '4-A1', '4-A2', '4-A3', '4-A4', '5-A1', '5-A2', '5-A3', '5-A4', '6-A1', '6-A2', '6-A3', '6-A4', '7-A1', '7-A2', '7-A3', '7-A4', '8-A1', '8-A2', '8-A3', '9-A1', '9-A2', '9-A3', '10-A1', '10-A2', '10-A3'];
+let classes = ['3-A1', '3-A2', '3-A3', '3-A4', '4-A1', '4-A2', '4-A3', '4-A4', '5-A1', '5-A2', '5-A3', '5-A4', '6-A1', '6-A2', '6-A3', '6-A4', '7-A1', '7-A2', '7-A3', '7-A4', '8-A1', '8-A2', '8-A3', '9-A1', '9-A2', '9-A3', '10-A1', '10-A2', '10-A3', '12-SCI', '12-COM', '12-HUM'];
 
 // Global array of subjects
 let subjects = [
@@ -11,7 +11,18 @@ let subjects = [
   "Sanskrit",
   "Computer",
   "Data Science",
-  "GK"
+  "GK",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "P.E.",
+  "I.P.",
+  "Geography",
+  "Accountancy",
+  "B.St.",
+  "Economics",
+  "History",
+  "Pol. Sci."
 ];
 
 // Class and exam-wise aggregate maximum marks, considering all subjects
@@ -40,6 +51,7 @@ const classwiseSubjects = {
   8: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Sanskrit', 'Data Science', 'GK'],
    9: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science'],
    10: ['English', 'Hindi', 'Maths', 'Science', 'Social Science', 'Data Science'],
+  '12-SCI': ['English', 'Physics', 'Chemistry', 'Biology', 'Maths', 'P.E.', 'I.P.', 'Geography', 'Economics']
 }
 
 let filteredClasses = [];
