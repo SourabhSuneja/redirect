@@ -14,6 +14,20 @@ let subjects = [
   "GK"
 ];
 
+// Class and exam-wise aggregate maximum marks, considering all subjects
+const aggregateMarks = {
+  3: {'PT-1': 140, 'PT-2': 140, 'PT-3': 140, 'PT-4': 140},
+  4: {'PT-1': 140, 'PT-2': 140, 'PT-3': 140, 'PT-4': 140},
+  5: {'PT-1': 140, 'PT-2': 140, 'PT-3': 140, 'PT-4': 140},
+  6: {'PT-1': 160, 'PT-2': 160, 'PT-3': 160, 'PT-4': 160},
+  7: {'PT-1': 160, 'PT-2': 160, 'PT-3': 160, 'PT-4': 160},
+  8: {'PT-1': 160, 'PT-2': 160, 'PT-3': 160, 'PT-4': 160},
+  9: {'PT-1': 120, 'PT-2': 120, 'PT-3': 120, 'PT-4': 120},
+  10: {'PT-1': 120, 'PT-2': 120, 'PT-3': 120, 'PT-4': 120},
+  11: {'PT-1': 100, 'PT-2': 100, 'PT-3': 100, 'PT-4': 100},
+  12: {'PT-1': 100, 'PT-2': 100, 'PT-3': 100, 'PT-4': 100},
+};
+
 // Global class-wise list of subjects
 const classwiseSubjects = {
   1: ['English', 'Hindi', 'Maths', 'EVS', 'Computer', 'GK'],
