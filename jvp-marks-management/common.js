@@ -131,3 +131,15 @@ function getSubjectsForClass(classValue, useFilteredSubjects=false) {
 
   return arr.filter(subject => classSubjects.includes(subject));
 }
+
+// Get aggregate max marks for a given class-exam combination (such as, PT-1 for class 6)
+function getAggregateMarks(classValue, examName) {
+  const classNumber = parseInt(classValue.split('-')[0]);
+  const classData = aggregateMarks[classNumber];
+
+  if (classData && classData[examName]) {
+    return classData[examName];
+  } else {
+    return null; // or you can throw an error or return a custom message
+  }
+}
