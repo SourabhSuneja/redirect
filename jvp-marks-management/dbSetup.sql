@@ -17,6 +17,7 @@ DROP FUNCTION IF EXISTS marks_view_update_function();
 DROP FUNCTION IF EXISTS marks_view_delete_function();
 DROP FUNCTION IF EXISTS prevent_student_delete();
 DROP FUNCTION IF EXISTS get_multiple_marks_updates();
+DROP FUNCTION IF EXISTS get_total_marks(TEXT, TEXT);
 
 -- Drop tables (in reverse order of creation to handle foreign key dependencies)
 DROP TABLE IF EXISTS marks_backup;
@@ -652,5 +653,36 @@ BEGIN
     mbv.class ASC,
     mbv.student ASC,
     mbv.backup_timestamp DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Function to aggregate marks of all subjects for a particular exam and class
+CREATE OR REPLACE FUNCTION get_total_marks(p_exam TEXT, p_class TEXT)
+RETURNS TABLE (
+    exam TEXT,
+    subject TEXT,
+    student TEXT,
+    class TEXT,
+    marks NUMERIC
+) 
+SECURITY INVOKER AS
+$$
+BEGIN
+    RETURN QUERY
+    SELECT 
+        mv.exam,
+        'Total' AS subject, -- Replacing subject with 'Total' to indicate aggregation
+        mv.student,
+        mv.class,
+        SUM(mv.marks) AS marks
+    FROM 
+        marks_view mv
+    WHERE 
+        mv.exam = p_exam
+        AND mv.class = p_class
+    GROUP BY 
+        mv.student, mv.class, mv.exam
+    ORDER BY 
+        mv.student ASC;
 END;
 $$ LANGUAGE plpgsql;
