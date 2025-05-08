@@ -211,6 +211,8 @@ async function selectData(
          else if (filter.operator === "eq") query = query.eq(filter.column, filter.value);
          else if (filter.operator === "lt") query = query.lt(filter.column, filter.value);
          else if (filter.operator === "gt") query = query.gt(filter.column, filter.value);
+         else if (filter.operator === "cs") query = query.cs(filter.column, filter.value);  // contains
+         else if (filter.operator === "ov") query = query.overlaps(filter.column, filter.value);  // overlaps
          // Add more operators if needed
       }
 
