@@ -1792,15 +1792,17 @@
          
          async function fetchStudentList(classValue, subjectValue=null) {
          showLoading();
+         let results = [];
          let isClass11or12 = (classValue.startsWith('11') || classValue.startsWith('12'));
          let isOptionalSub = false;
          if(isClass11or12 && subjectValue) {
            isOptionalSub = optionalSubjects[classValue].includes(subjectValue);
          }
          if(isClass11or12 && isOptionalSub) {
-
+             results = await selectData('students', false, 'name', ['class'], [classValue], 'name', 'asc', [
+   { column: "opted_subjects", operator: "ov", value: [subjectValue] } ]);
          } else {
-             const results = await selectData('students', false, 'name', ['class'], [classValue], 'name', 'asc');
+             results = await selectData('students', false, 'name', ['class'], [classValue], 'name', 'asc');
          }
          students[classValue] = results.map(result => result.name);
          hideLoading();
