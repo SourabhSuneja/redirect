@@ -50,7 +50,8 @@ CREATE TABLE students (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     name TEXT NOT NULL,
     class TEXT NOT NULL,
-    house TEXT,   
+    house TEXT,
+    opted_subjects TEXT[]
     CONSTRAINT unique_name_class UNIQUE (name, class)
 );
 
