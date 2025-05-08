@@ -25,6 +25,12 @@ let subjects = [
   "Pol. Sci."
 ];
 
+let optionalSubjects = {
+'12-HUM': ['Maths', 'P.E.', 'I.P.', 'Economics'],
+'12-COM': ['Maths', 'P.E.', 'I.P.'],
+'12-SCI': ['Biology', 'Maths', 'P.E.', 'I.P.', 'Geography', 'Economics']
+};
+
 // Class and exam-wise aggregate maximum marks, considering all subjects
 const aggregateMarks = {
   3: {'PT-1': 140, 'PT-2': 140, 'PT-3': 140, 'PT-4': 140},
