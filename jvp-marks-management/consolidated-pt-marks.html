@@ -160,6 +160,9 @@
          .hidden {
          display: none;
          }
+         .highlight-rank {
+         font-weight: bold;
+         }
       </style>
    </head>
    <body>
@@ -419,9 +422,17 @@
          studentRows.forEach((row, idx) => {
          const rank20Cell = row.querySelector('.rank-20m-cell');
          rank20Cell.textContent = ranks20M[idx];
+         // Highlight cell by adding highlight-rank class if rank is 1, 2 or 3
+         if(ranks20M[idx] === 1 || ranks20M[idx] === 2 || ranks20M[idx] === 3) {
+           rank20Cell.classList.add('highlight-rank');
+         }
          
          const rank10Cell = row.querySelector('.rank-10m-cell');
          rank10Cell.textContent = ranks10M[idx];
+         // Highlight cell by adding highlight-rank class if rank is 1, 2 or 3
+         if(ranks10M[idx] === 1 || ranks10M[idx] === 2 || ranks10M[idx] === 3) {
+           rank10Cell.classList.add('highlight-rank');
+         }
          });
          }
          
