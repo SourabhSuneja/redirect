@@ -1191,8 +1191,8 @@
          
          // Only update the subject dropdown when class changes, not when exam/subject changes, also fetch students list for the selected class
          if (event.target === classSelect && selectedClass) {
-         await fetchStudentList(selectedClass);
          selectedSubject = updateSubjectDropdown(selectedClass, true);
+         await fetchStudentList(selectedClass, selectedSubject);
          }
          
          // Only update the exam dropdown when class or subject changes, not when exam changes
@@ -1790,9 +1790,18 @@
          }
          });
          
-         async function fetchStudentList(classValue) {
+         async function fetchStudentList(classValue, subjectValue=null) {
          showLoading();
-         const results = await selectData('students', false, 'name', ['class'], [classValue], 'name', 'asc');
+         let isClass11or12 = (classValue.startsWith('11') || classValue.startsWith('12'));
+         let isOptionalSub = false;
+         if(isClass11or12 && subjectValue) {
+           isOptionalSub = optionalSubjects[classValue].includes(subjectValue);
+         }
+         if(isClass11or12 && isOptionalSub) {
+
+         } else {
+             const results = await selectData('students', false, 'name', ['class'], [classValue], 'name', 'asc');
+         }
          students[classValue] = results.map(result => result.name);
          hideLoading();
          return true;
