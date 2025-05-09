@@ -925,7 +925,7 @@
              filteredData.forEach((item, index) => {
                  const maxMarks = (selectedSubject === 'Overall Aggregate') ? getAggregateMarks(selectedClass, selectedExam) : getMaxMarks(selectedExam);
                  const percentage = item.marks !== null ? ((item.marks / maxMarks) * 100).toFixed(2) : '-';
-                 const remark = getPerformanceRemark(item.marks, selectedExam);
+                 const remark = (selectedSubject === 'Overall Aggregate') ? getPerformanceRemark(item.marks, selectedExam, maxMarks) : getPerformanceRemark(item.marks, selectedExam);
                  const remarkClass = getRemarkClass(remark);
          
                  // Store the computed percentage and remark in the global selectedMarks as well
