@@ -1243,7 +1243,7 @@
          let fetchedMarks;
          // If subject is set to "Overall Aggregate", then fetch data by invoking a function on Supabase to get aggregates
          if(selectedSubject === 'Overall Aggregate') {
-         fetchedMarks = 0
+         fetchedMarks = await invokeFunction('get_total_marks', {'p_exam': selectedExam , 'p_class': selectedClass});
          } else {
          fetchedMarks = await selectData(
          "marks_view",                                   // tableName
@@ -1263,7 +1263,18 @@
          
          // Update global marks array with fetched data
          fetchedMarks.forEach(fetchedMark => {
-         const existingIndex = marks.findIndex(mark => mark.id === fetchedMark.id);
+         let existingIndex;
+         const studentName = fetchedMark.student;
+         if(selectedSubject === 'Overall Aggregate') {
+         existingIndex = marks.findIndex(record => 
+                record.class === selectedClass && 
+                record.student === studentName && 
+                record.exam === selectedExam &&
+                record.subject === selectedSubject
+         );
+         } else {
+         existingIndex = marks.findIndex(mark => mark.id === fetchedMark.id);
+         }
          
          // Handle null marks by converting to empty string
          const marksValue = fetchedMark.marks === null ? null : fetchedMark.marks;
@@ -1271,7 +1282,7 @@
          if (existingIndex !== -1) {
          // Update existing record
          marks[existingIndex].marks = marksValue;
-         marks[existingIndex].updated_at = fetchedMark.updated_at;
+         marks[existingIndex].updated_at = fetchedMark.updated_at || null;
          } else {
          // Add new record (with the potentially modified marks value)
          const newMark = {...fetchedMark, marks: marksValue};
