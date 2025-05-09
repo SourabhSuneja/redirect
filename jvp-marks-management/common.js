@@ -105,11 +105,13 @@ function getMaxMarks(examName) {
 function getPerformanceRemark(marks, examName, computedPercentage = null) {
    let percentage;
 
+   // If marks are not available, return 'Absent'
+   if (marks === null) return 'Absent';
+
    // If an already computed percentage value is given, generate a remark based on that
    if (computedPercentage) {
       percentage = computedPercentage;
    } else {
-      if (marks === null) return 'Absent';
       const maxMarks = getMaxMarks(examName);
       percentage = (marks / maxMarks) * 100;
    }
