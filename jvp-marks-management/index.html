@@ -1372,12 +1372,8 @@
          try {
             // Show loading screen
             showLoading();
-            // 1. Delete records from Supabase 'marks_view'
-            const deletedMarks = await deleteRow(
-                'marks_view',
-                ['class', 'subject', 'exam'],
-                [selectedClass, selectedSubject, selectedExam]
-            );
+            // 1. Delete records from Supabase 'marks' table by calling a pre-defined function on Supabase
+            const deletedMarks = await invokeFunction('delete_marks_by_exam_subject_class', {'p_exam': selectedExam, 'p_subject': selectedSubject, 'p_class': selectedClass});
             
             if (!deletedMarks) {
                 throw new Error("Failed to delete marks records from database");
