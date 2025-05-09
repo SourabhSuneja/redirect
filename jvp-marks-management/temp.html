@@ -652,6 +652,7 @@
                   <label for="subject-select">Subject</label>
                   <select id="subject-select">
                      <option value="">Select Subject</option>
+                     <option value="Overall Aggregate">Overall Aggregate</option>
                      <script>
                        for (var i = 0; i < subjects.length; i++) {
                            document.write('<option value="' + subjects[i] + '">' + subjects[i] + '</option>');
@@ -1160,8 +1161,8 @@
          // Store current selection if needed
          const currentSelection = preserveSelection ? subjectSelect.value : null;
          
-         // Clear existing options (except the placeholder)
-         while (subjectSelect.options.length > 1) {
+         // Clear existing options (except the placeholder and Overall Aggregate option)
+         while (subjectSelect.options.length > 2) {
          subjectSelect.remove(1);
          }
          
