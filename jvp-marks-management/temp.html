@@ -1240,7 +1240,12 @@
           async function syncMarksData(selectedClass, selectedExam, selectedSubject) {
          try {
          // Fetch marks data from Supabase for the selected filters
-         const fetchedMarks = await selectData(
+         let fetchedMarks;
+         // If subject is set to "Overall Aggregate", then fetch data by invoking a function on Supabase to get aggregates
+         if(selectedSubject === 'Overall Aggregate') {
+         fetchedMarks = 0
+         } else {
+         fetchedMarks = await selectData(
          "marks_view",                                   // tableName
          false,                                     // fetchSingle (we want multiple records)
          "*",                                       // columns (fetch all columns)
@@ -1249,6 +1254,7 @@
          "student",                                 // orderByColumn (sort by student name)
          "asc"                                      // orderDirection
          );
+         }
          
          // If no data fetched or error occurred, resolve with true (nothing to sync)
          if (!fetchedMarks || fetchedMarks.length === 0) {
