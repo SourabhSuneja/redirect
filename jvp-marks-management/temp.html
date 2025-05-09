@@ -923,7 +923,7 @@
              
              // Add new rows to the table
              filteredData.forEach((item, index) => {
-                 const maxMarks = getMaxMarks(selectedExam);
+                 const maxMarks = (selectedSubject === 'Overall Aggregate') ? getAggregateMarks(selectedClass, selectedExam) : getMaxMarks(selectedExam);
                  const percentage = item.marks !== null ? ((item.marks / maxMarks) * 100).toFixed(2) : '-';
                  const remark = getPerformanceRemark(item.marks, selectedExam);
                  const remarkClass = getRemarkClass(remark);
