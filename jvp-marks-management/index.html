@@ -1372,9 +1372,9 @@
          try {
             // Show loading screen
             showLoading();
-            // 1. Delete records from Supabase 'marks' table
+            // 1. Delete records from Supabase 'marks_view'
             const deletedMarks = await deleteRow(
-                'marks',
+                'marks_view',
                 ['class', 'subject', 'exam'],
                 [selectedClass, selectedSubject, selectedExam]
             );
