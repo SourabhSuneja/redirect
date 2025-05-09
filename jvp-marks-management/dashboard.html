@@ -652,6 +652,7 @@
                   <label for="subject-select">Subject</label>
                   <select id="subject-select">
                      <option value="">Select Subject</option>
+                     <option value="Overall Aggregate">Overall Aggregate</option>
                      <script>
                        for (var i = 0; i < subjects.length; i++) {
                            document.write('<option value="' + subjects[i] + '">' + subjects[i] + '</option>');
@@ -922,9 +923,9 @@
              
              // Add new rows to the table
              filteredData.forEach((item, index) => {
-                 const maxMarks = getMaxMarks(selectedExam);
+                 const maxMarks = (selectedSubject === 'Overall Aggregate') ? getAggregateMarks(selectedClass, selectedExam) : getMaxMarks(selectedExam);
                  const percentage = item.marks !== null ? ((item.marks / maxMarks) * 100).toFixed(2) : '-';
-                 const remark = getPerformanceRemark(item.marks, selectedExam);
+                 const remark = (selectedSubject === 'Overall Aggregate') ? getPerformanceRemark(item.marks, selectedExam, percentage) : getPerformanceRemark(item.marks, selectedExam);
                  const remarkClass = getRemarkClass(remark);
          
                  // Store the computed percentage and remark in the global selectedMarks as well
@@ -1160,9 +1161,9 @@
          // Store current selection if needed
          const currentSelection = preserveSelection ? subjectSelect.value : null;
          
-         // Clear existing options (except the placeholder)
-         while (subjectSelect.options.length > 1) {
-         subjectSelect.remove(1);
+         // Clear existing options (except the placeholder and Overall Aggregate option)
+         while (subjectSelect.options.length > 2) {
+         subjectSelect.remove(2);
          }
          
          // Get subjects for the chosen class
@@ -1239,7 +1240,12 @@
           async function syncMarksData(selectedClass, selectedExam, selectedSubject) {
          try {
          // Fetch marks data from Supabase for the selected filters
-         const fetchedMarks = await selectData(
+         let fetchedMarks;
+         // If subject is set to "Overall Aggregate", then fetch data by invoking a function on Supabase to get aggregates
+         if(selectedSubject === 'Overall Aggregate') {
+         fetchedMarks = await invokeFunction('get_total_marks', {'p_exam': selectedExam , 'p_class': selectedClass});
+         } else {
+         fetchedMarks = await selectData(
          "marks_view",                                   // tableName
          false,                                     // fetchSingle (we want multiple records)
          "*",                                       // columns (fetch all columns)
@@ -1248,6 +1254,7 @@
          "student",                                 // orderByColumn (sort by student name)
          "asc"                                      // orderDirection
          );
+         }
          
          // If no data fetched or error occurred, resolve with true (nothing to sync)
          if (!fetchedMarks || fetchedMarks.length === 0) {
@@ -1256,7 +1263,18 @@
          
          // Update global marks array with fetched data
          fetchedMarks.forEach(fetchedMark => {
-         const existingIndex = marks.findIndex(mark => mark.id === fetchedMark.id);
+         let existingIndex;
+         const studentName = fetchedMark.student;
+         if(selectedSubject === 'Overall Aggregate') {
+         existingIndex = marks.findIndex(record => 
+                record.class === selectedClass && 
+                record.student === studentName && 
+                record.exam === selectedExam &&
+                record.subject === selectedSubject
+         );
+         } else {
+         existingIndex = marks.findIndex(mark => mark.id === fetchedMark.id);
+         }
          
          // Handle null marks by converting to empty string
          const marksValue = fetchedMark.marks === null ? null : fetchedMark.marks;
@@ -1264,7 +1282,7 @@
          if (existingIndex !== -1) {
          // Update existing record
          marks[existingIndex].marks = marksValue;
-         marks[existingIndex].updated_at = fetchedMark.updated_at;
+         marks[existingIndex].updated_at = fetchedMark.updated_at || null;
          } else {
          // Add new record (with the potentially modified marks value)
          const newMark = {...fetchedMark, marks: marksValue};
