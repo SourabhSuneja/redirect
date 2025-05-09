@@ -459,7 +459,7 @@ BEGIN
     
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 -- Create a function to be called by the UPDATE trigger
 CREATE OR REPLACE FUNCTION marks_view_update_function()
@@ -513,7 +513,7 @@ BEGIN
     
     RETURN NEW;
 END;
-$$ LANGUAGE plpgsql;
+$$ LANGUAGE plpgsql SECURITY INVOKER;
 
 
 -- Create the INSERT trigger on marks_view
