@@ -3,7 +3,6 @@
 DROP TRIGGER IF EXISTS backup_marks_trigger ON marks;
 DROP TRIGGER IF EXISTS marks_view_insert ON marks_view;
 DROP TRIGGER IF EXISTS marks_view_update ON marks_view;
-DROP TRIGGER IF EXISTS marks_view_delete ON marks_view;
 DROP TRIGGER IF EXISTS check_marks_before_delete ON students;
 
 -- Drop views
@@ -14,7 +13,6 @@ DROP VIEW IF EXISTS marks_backup_view;
 DROP FUNCTION IF EXISTS backup_marks_function();
 DROP FUNCTION IF EXISTS marks_view_insert_function();
 DROP FUNCTION IF EXISTS marks_view_update_function();
-DROP FUNCTION IF EXISTS marks_view_delete_function();
 DROP FUNCTION IF EXISTS prevent_student_delete();
 DROP FUNCTION IF EXISTS get_multiple_marks_updates();
 DROP FUNCTION IF EXISTS get_total_marks(TEXT, TEXT);
@@ -517,24 +515,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Create a function to be called by the DELETE trigger
-CREATE OR REPLACE FUNCTION marks_view_delete_function()
-RETURNS TRIGGER AS $$
-DECLARE
-    affected_rows INTEGER;
-BEGIN
-    -- Delete from the marks table
-    DELETE FROM marks WHERE id = OLD.id;
-    
-    GET DIAGNOSTICS affected_rows = ROW_COUNT;
-    
-    IF affected_rows = 0 THEN
-        RAISE EXCEPTION 'Record with ID % not found in marks table', OLD.id;
-    END IF;
-    
-    RETURN OLD;
-END;
-$$ LANGUAGE plpgsql;
 
 -- Create the INSERT trigger on marks_view
 CREATE TRIGGER marks_view_insert
@@ -547,12 +527,6 @@ CREATE TRIGGER marks_view_update
 INSTEAD OF UPDATE ON marks_view
 FOR EACH ROW
 EXECUTE FUNCTION marks_view_update_function();
-
--- Create the DELETE trigger on marks_view
-CREATE TRIGGER marks_view_delete
-INSTEAD OF DELETE ON marks_view
-FOR EACH ROW
-EXECUTE FUNCTION marks_view_delete_function();
 
 
 -- Trigger function to prevent deletion of students with non-NULL marks records
@@ -687,3 +661,29 @@ BEGIN
         mv.student ASC;
 END;
 $$ LANGUAGE plpgsql;
+
+-- Function to allow deletions from the marks table by targeting a specific exam, class and subject
+CREATE OR REPLACE FUNCTION delete_marks_by_exam_subject_class(
+    p_exam TEXT,
+    p_subject TEXT,
+    p_class TEXT
+)
+RETURNS INTEGER
+LANGUAGE plpgsql
+SECURITY INVOKER
+AS $$
+DECLARE
+    v_deleted_count INTEGER;
+BEGIN
+    DELETE FROM marks
+    WHERE exam = p_exam
+      AND subject = p_subject
+      AND student_id IN (
+          SELECT id FROM students WHERE class = p_class
+      );
+
+    GET DIAGNOSTICS v_deleted_count = ROW_COUNT;
+
+    RETURN v_deleted_count;
+END;
+$$;
