@@ -687,3 +687,89 @@ BEGIN
     RETURN v_deleted_count;
 END;
 $$;
+
+-- Function to calculate percentages for all classes based on an aggregate marks map
+CREATE OR REPLACE FUNCTION calculate_class_percentages(
+    exam_name TEXT,
+    aggregate_marks JSONB,
+    VARIADIC subjects TEXT[] DEFAULT ARRAY['All']
+) 
+RETURNS TABLE (
+    class_name TEXT,
+    obtained_marks NUMERIC,
+    total_marks NUMERIC,
+    percentage NUMERIC(6,3),
+    rank BIGINT
+) 
+SECURITY INVOKER
+AS $$
+BEGIN
+    RETURN QUERY
+    WITH student_class_data AS (
+        SELECT 
+            mv.class,
+            SPLIT_PART(mv.class, '-', 1) AS class_num,
+            mv.student,
+            SUM(mv.marks) AS student_marks
+        FROM 
+            marks_view mv
+        WHERE 
+            mv.exam = exam_name
+            AND mv.marks IS NOT NULL
+            AND (
+                subjects[1] = 'All' 
+                OR 
+                mv.subject = ANY(subjects)
+            )
+        GROUP BY 
+            mv.class,
+            mv.student
+    ),
+    class_data AS (
+        SELECT 
+            scd.class,
+            scd.class_num,
+            COUNT(DISTINCT scd.student) AS student_count,
+            SUM(scd.student_marks) AS total_obtained_marks
+        FROM 
+            student_class_data scd
+        GROUP BY 
+            scd.class,
+            scd.class_num
+    ),
+    class_percentages AS (
+        SELECT 
+            cd.class,
+            cd.total_obtained_marks,
+            cd.student_count * (aggregate_marks->cd.class_num->>exam_name)::NUMERIC AS max_total_marks,
+            CASE 
+                WHEN cd.student_count * (aggregate_marks->cd.class_num->>exam_name)::NUMERIC = 0 THEN 0
+                ELSE ROUND((cd.total_obtained_marks / (cd.student_count * (aggregate_marks->cd.class_num->>exam_name)::NUMERIC) * 100), 3)
+            END AS percent
+        FROM 
+            class_data cd
+        WHERE
+            (aggregate_marks->cd.class_num->>exam_name) IS NOT NULL
+    ),
+    ranked_percentages AS (
+        SELECT 
+            cp.class,
+            cp.total_obtained_marks,
+            cp.max_total_marks,
+            cp.percent,
+            DENSE_RANK() OVER (ORDER BY cp.percent DESC) AS class_rank
+        FROM 
+            class_percentages cp
+    )
+    SELECT 
+        rp.class,
+        rp.total_obtained_marks,
+        rp.max_total_marks,
+        rp.percent,
+        rp.class_rank
+    FROM 
+        ranked_percentages rp
+    ORDER BY 
+        rp.class_rank, rp.class;
+END;
+$$ LANGUAGE plpgsql;
