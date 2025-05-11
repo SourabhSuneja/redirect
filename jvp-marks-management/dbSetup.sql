@@ -199,10 +199,17 @@ UNIQUE (exam, subject, student_id);
 -- Enable RLS on marks table
 ALTER TABLE marks ENABLE ROW LEVEL SECURITY;
 
--- Policy for SELECT: Any authenticated user can view marks
-CREATE POLICY marks_select_policy ON marks
-    FOR SELECT
-    USING (auth.role() = 'authenticated');
+-- Policy for SELECT: Allow only teachers to read all marks
+CREATE POLICY marks_select_policy
+ON marks
+FOR SELECT
+USING (
+  EXISTS (
+    SELECT 1
+    FROM teachers
+    WHERE teachers.id = auth.uid()
+  )
+);
 
 -- Policy for INSERT: Teachers can only insert marks for their assigned subjects and classes
 CREATE POLICY marks_insert_policy ON marks
