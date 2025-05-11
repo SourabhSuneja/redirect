@@ -710,7 +710,7 @@
          
          // Remark
          const tdRemark = document.createElement('td');
-         const remark = getPerformanceRemark(null, null, data.percentage);
+         const remark = getPerformanceRemark('NA', null, data.percentage);
          const remarkBadge = document.createElement('span');
          tdRemark.className = `${getRemarkClass(remark)}`;
          remarkBadge.textContent = remark;
