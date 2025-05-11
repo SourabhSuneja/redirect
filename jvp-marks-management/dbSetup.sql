@@ -16,6 +16,16 @@ DROP FUNCTION IF EXISTS marks_view_update_function();
 DROP FUNCTION IF EXISTS prevent_student_delete();
 DROP FUNCTION IF EXISTS get_multiple_marks_updates();
 DROP FUNCTION IF EXISTS get_total_marks(TEXT, TEXT);
+DROP FUNCTION IF EXISTS calculate_class_percentages(
+    TEXT,
+    JSONB,
+    TEXT[]
+);
+DROP FUNCTION IF EXISTS delete_marks_by_exam_subject_class(
+    TEXT,
+    TEXT,
+    TEXT
+);
 
 -- Drop tables (in reverse order of creation to handle foreign key dependencies)
 DROP TABLE IF EXISTS marks_backup;
