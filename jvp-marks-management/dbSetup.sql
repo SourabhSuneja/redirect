@@ -66,11 +66,17 @@ CREATE TABLE students (
 -- Enable RLS on students table
 ALTER TABLE students ENABLE ROW LEVEL SECURITY;
 
--- Select policy for authenticated users
-CREATE POLICY "authenticated_users_can_read_students"
+-- Select policy for teachers: Allow only teachers to read student data
+CREATE POLICY "teachers_can_read_students"
 ON students
 FOR SELECT
-USING (auth.role() = 'authenticated');
+USING (
+  EXISTS (
+    SELECT 1
+    FROM teachers
+    WHERE teachers.id = auth.uid()
+  )
+);
 
 -- Insert policy for admin users
 CREATE POLICY "admins_can_insert_students"
