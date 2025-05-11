@@ -120,7 +120,8 @@ function getPerformanceRemark(marks, examName, computedPercentage = null) {
    if (percentage < 70) return 'Fair performance';
    if (percentage < 80) return 'Good performance';
    if (percentage < 90) return 'Very good performance';
-   return 'Outstanding performance';
+   if (percentage <= 100) return 'Outstanding performance';
+   return 'Absent';
 }
 
 // Function to get CSS class for remark
