@@ -26,6 +26,15 @@ DROP FUNCTION IF EXISTS delete_marks_by_exam_subject_class(
     TEXT,
     TEXT
 );
+DROP FUNCTION IF EXISTS secure_join_tables(
+    text,
+    text,
+    text,
+    text,
+    text[],
+    text[],
+    text
+);
 
 -- Drop tables (in reverse order of creation to handle foreign key dependencies)
 DROP TABLE IF EXISTS marks_backup;
