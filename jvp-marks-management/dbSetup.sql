@@ -59,8 +59,10 @@ CREATE TABLE students (
     name TEXT NOT NULL,
     class TEXT NOT NULL,
     house TEXT,
-    opted_subjects TEXT[]
-    CONSTRAINT unique_name_class UNIQUE (name, class)
+    opted_subjects TEXT[],
+    access_token UUID NOT NULL DEFAULT gen_random_uuid(),
+    CONSTRAINT unique_name_class UNIQUE (name, class),
+    CONSTRAINT unique_access_token UNIQUE (access_token)
 );
 
 -- Enable RLS on students table
