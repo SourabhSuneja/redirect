@@ -796,3 +796,83 @@ BEGIN
         rp.class_rank, rp.class;
 END;
 $$ LANGUAGE plpgsql;
+
+
+-- Function to securely join two tables based on an access token
+CREATE OR REPLACE FUNCTION secure_join(
+    table1 text,
+    table2 text,
+    match_column1 text,
+    match_column2 text,
+    columns_table1 text[],
+    columns_table2 text[],
+    access_token text
+) RETURNS SETOF record
+SECURITY DEFINER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    query_text text;
+    access_token_column_exists boolean;
+    column_list text := '';
+    col_name text;
+BEGIN
+    -- Check if access_token column exists in table1
+    EXECUTE format('
+        SELECT EXISTS (
+            SELECT 1
+            FROM information_schema.columns
+            WHERE table_name = %L AND column_name = %L
+        )', table1, 'access_token')
+    INTO access_token_column_exists;
+    
+    -- Validate conditions for access_token
+    IF NOT access_token_column_exists THEN
+        RAISE EXCEPTION 'Access token column does not exist in %', table1;
+    END IF;
+    
+    IF access_token IS NULL OR access_token = '' THEN
+        RAISE EXCEPTION 'Access token cannot be null or empty';
+    END IF;
+    
+    -- Validate UUID format of access_token
+    BEGIN
+        -- Attempt to cast access_token to UUID
+        PERFORM access_token::uuid;
+    EXCEPTION
+        WHEN others THEN
+            RAISE EXCEPTION 'Invalid UUID format for access_token: %', access_token;
+    END;
+    
+    -- Build the column list for the result set
+    -- First add columns from table1
+    FOR i IN 1..array_length(columns_table1, 1) LOOP
+        IF i > 1 THEN
+            column_list := column_list || ', ';
+        END IF;
+        column_list := column_list || format('%I.%I', table1, columns_table1[i]);
+    END LOOP;
+    
+    -- Then add columns from table2
+    IF array_length(columns_table1, 1) > 0 AND array_length(columns_table2, 1) > 0 THEN
+        column_list := column_list || ', ';
+    END IF;
+    
+    FOR i IN 1..array_length(columns_table2, 1) LOOP
+        IF i > 1 THEN
+            column_list := column_list || ', ';
+        END IF;
+        column_list := column_list || format('%I.%I', table2, columns_table2[i]);
+    END LOOP;
+    
+    -- Construct and execute the query
+    query_text := format('
+        SELECT %s
+        FROM %I
+        JOIN %I ON %I.%I = %I.%I
+        WHERE %I.access_token = %L::uuid
+    ', column_list, table1, table2, table1, match_column1, table2, match_column2, table1, access_token);
+    
+    RETURN QUERY EXECUTE query_text;
+END;
+$$;
