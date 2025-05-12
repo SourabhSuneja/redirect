@@ -809,7 +809,7 @@ CREATE OR REPLACE FUNCTION secure_join(
     columns_table1 text[],
     columns_table2 text[],
     access_token text
-) RETURNS SETOF record
+) RETURNS json
 SECURITY DEFINER
 LANGUAGE plpgsql
 AS $$
@@ -817,7 +817,7 @@ DECLARE
     query_text text;
     access_token_column_exists boolean;
     column_list text := '';
-    col_name text;
+    result_json json;
 BEGIN
     -- Check if access_token column exists in table1
     EXECUTE format('
@@ -852,7 +852,7 @@ BEGIN
         IF i > 1 THEN
             column_list := column_list || ', ';
         END IF;
-        column_list := column_list || format('%I.%I', table1, columns_table1[i]);
+        column_list := column_list || format('%I.%I as %I', table1, columns_table1[i], columns_table1[i]);
     END LOOP;
     
     -- Then add columns from table2
@@ -864,17 +864,23 @@ BEGIN
         IF i > 1 THEN
             column_list := column_list || ', ';
         END IF;
-        column_list := column_list || format('%I.%I', table2, columns_table2[i]);
+        column_list := column_list || format('%I.%I as %I', table2, columns_table2[i], columns_table2[i]);
     END LOOP;
     
-    -- Construct and execute the query
+    -- Construct and execute the query with to_json to materialize the results
     query_text := format('
-        SELECT %s
-        FROM %I
-        JOIN %I ON %I.%I = %I.%I
-        WHERE %I.access_token = %L::uuid
+        SELECT json_agg(row_to_json(t))
+        FROM (
+            SELECT %s
+            FROM %I
+            JOIN %I ON %I.%I = %I.%I
+            WHERE %I.access_token = %L::uuid
+        ) t
     ', column_list, table1, table2, table1, match_column1, table2, match_column2, table1, access_token);
     
-    RETURN QUERY EXECUTE query_text;
+    EXECUTE query_text INTO result_json;
+    
+    -- Return empty array instead of null if no results found
+    RETURN COALESCE(result_json, '[]'::json);
 END;
 $$;
