@@ -801,7 +801,7 @@ $$ LANGUAGE plpgsql;
 
 
 -- Function to securely join two tables based on an access token
-CREATE OR REPLACE FUNCTION secure_join(
+CREATE OR REPLACE FUNCTION secure_join_tables(
     table1 text,
     table2 text,
     match_column1 text,
