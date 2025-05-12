@@ -818,7 +818,79 @@ DECLARE
     access_token_column_exists boolean;
     column_list text := '';
     result_json json;
+    -- Whitelist definitions
+    allowed_tables text[] := ARRAY['students', 'marks'];
+    allowed_columns_table1 text[] := ARRAY['name', 'class'];
+    allowed_columns_table2 text[] := ARRAY['subject', 'exam', 'marks'];
+    allowed_match_columns text[] := ARRAY['id', 'student_id'];
+    column_valid boolean;
+    regex_pattern text := '^[a-zA-Z0-9_]+$'; -- Only alphanumeric and underscore
 BEGIN
+    -- Validate table names format before checking whitelist
+    IF table1 !~ regex_pattern OR table2 !~ regex_pattern THEN
+        RAISE EXCEPTION 'Invalid table name format. Only alphanumeric characters and underscores allowed.';
+    END IF;
+    
+    -- Check if tables are in the whitelist (exact match required)
+    IF NOT (table1 = ANY(allowed_tables) AND table2 = ANY(allowed_tables)) THEN
+        RAISE EXCEPTION 'Invalid table names. Only "students" and "marks" are allowed';
+    END IF;
+    
+    -- Validate match columns format and against whitelist
+    IF match_column1 !~ regex_pattern OR match_column2 !~ regex_pattern THEN
+        RAISE EXCEPTION 'Invalid match column format. Only alphanumeric characters and underscores allowed.';
+    END IF;
+    
+    IF NOT (match_column1 = ANY(allowed_match_columns) AND match_column2 = ANY(allowed_match_columns)) THEN
+        RAISE EXCEPTION 'Invalid match columns. Allowed columns are: "id", "student_id", "mark_id"';
+    END IF;
+    
+    -- Check if columns for table1 are valid format and in the whitelist
+    IF array_length(columns_table1, 1) > 0 THEN
+        FOR i IN 1..array_length(columns_table1, 1) LOOP
+            -- Validate format
+            IF columns_table1[i] !~ regex_pattern THEN
+                RAISE EXCEPTION 'Invalid column name format "%" for table1. Only alphanumeric characters and underscores allowed.', columns_table1[i];
+            END IF;
+            
+            -- Check against whitelist
+            column_valid := false;
+            FOR j IN 1..array_length(allowed_columns_table1, 1) LOOP
+                IF columns_table1[i] = allowed_columns_table1[j] THEN
+                    column_valid := true;
+                    EXIT;
+                END IF;
+            END LOOP;
+            
+            IF NOT column_valid THEN
+                RAISE EXCEPTION 'Invalid column name "%" for table1. Allowed columns are: "name", "class"', columns_table1[i];
+            END IF;
+        END LOOP;
+    END IF;
+    
+    -- Check if columns for table2 are valid format and in the whitelist
+    IF array_length(columns_table2, 1) > 0 THEN
+        FOR i IN 1..array_length(columns_table2, 1) LOOP
+            -- Validate format
+            IF columns_table2[i] !~ regex_pattern THEN
+                RAISE EXCEPTION 'Invalid column name format "%" for table2. Only alphanumeric characters and underscores allowed.', columns_table2[i];
+            END IF;
+            
+            -- Check against whitelist
+            column_valid := false;
+            FOR j IN 1..array_length(allowed_columns_table2, 1) LOOP
+                IF columns_table2[i] = allowed_columns_table2[j] THEN
+                    column_valid := true;
+                    EXIT;
+                END IF;
+            END LOOP;
+            
+            IF NOT column_valid THEN
+                RAISE EXCEPTION 'Invalid column name "%" for table2. Allowed columns are: "subject", "exam", "marks"', columns_table2[i];
+            END IF;
+        END LOOP;
+    END IF;
+
     -- Check if access_token column exists in table1
     EXECUTE format('
         SELECT EXISTS (
@@ -827,16 +899,16 @@ BEGIN
             WHERE table_name = %L AND column_name = %L
         )', table1, 'access_token')
     INTO access_token_column_exists;
-    
+
     -- Validate conditions for access_token
     IF NOT access_token_column_exists THEN
         RAISE EXCEPTION 'Access token column does not exist in %', table1;
     END IF;
-    
+
     IF access_token IS NULL OR access_token = '' THEN
         RAISE EXCEPTION 'Access token cannot be null or empty';
     END IF;
-    
+
     -- Validate UUID format of access_token
     BEGIN
         -- Attempt to cast access_token to UUID
@@ -845,7 +917,7 @@ BEGIN
         WHEN others THEN
             RAISE EXCEPTION 'Invalid UUID format for access_token: %', access_token;
     END;
-    
+
     -- Build the column list for the result set
     -- First add columns from table1
     FOR i IN 1..array_length(columns_table1, 1) LOOP
@@ -854,19 +926,19 @@ BEGIN
         END IF;
         column_list := column_list || format('%I.%I as %I', table1, columns_table1[i], columns_table1[i]);
     END LOOP;
-    
+
     -- Then add columns from table2
     IF array_length(columns_table1, 1) > 0 AND array_length(columns_table2, 1) > 0 THEN
         column_list := column_list || ', ';
     END IF;
-    
+
     FOR i IN 1..array_length(columns_table2, 1) LOOP
         IF i > 1 THEN
             column_list := column_list || ', ';
         END IF;
         column_list := column_list || format('%I.%I as %I', table2, columns_table2[i], columns_table2[i]);
     END LOOP;
-    
+
     -- Construct and execute the query with to_json to materialize the results
     query_text := format('
         SELECT json_agg(row_to_json(t))
@@ -877,9 +949,9 @@ BEGIN
             WHERE %I.access_token = %L::uuid
         ) t
     ', column_list, table1, table2, table1, match_column1, table2, match_column2, table1, access_token);
-    
+
     EXECUTE query_text INTO result_json;
-    
+
     -- Return empty array instead of null if no results found
     RETURN COALESCE(result_json, '[]'::json);
 END;
