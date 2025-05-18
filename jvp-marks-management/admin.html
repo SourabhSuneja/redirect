@@ -401,6 +401,7 @@
             <div class="tabs">
                <div class="tab active" data-tab="add-teacher">Add Teacher</div>
                <div class="tab" data-tab="assign-subjects">Assign Subjects</div>
+               <div class="tab" data-tab="assign-classteacher">Assign Classteachership</div>
                <div class="tab" data-tab="view-teachers">View Teachers</div>
             </div>
             <!-- Add Teacher Tab -->
@@ -445,6 +446,38 @@
                   </div>
                </div>
                <button id="assign-btn" class="btn-primary">Assign Subjects</button>
+            </div>
+            <!-- Assign class teachership tab -->
+            <div id="assign-classteacher-tab" class="tab-content">
+               <div id="assign-classteacher-alert" class="alert hidden"></div>
+               <div class="form-group">
+                  <label for="classteacher-teacher">Select Teacher</label>
+                  <select id="classteacher-teacher">
+                     <option value="">Select a teacher</option>
+                  </select>
+               </div>
+               <div class="form-group">
+                  <label>Select Classes</label>
+                  <div id="classteacher-classes" class="checkbox-group">
+                     <!-- Classes checkboxes will be added dynamically -->
+                  </div>
+               </div>
+               <button id="assign-classteacher-btn" class="btn-primary">Assign Class Teachership</button>
+               <div class="table-container">
+                  <h3>Current Class Teachers</h3>
+                  <table id="classteachers-table">
+                     <thead>
+                        <tr>
+                           <th>Class</th>
+                           <th>Teacher Name</th>
+                           <th class="action-column">Actions</th>
+                        </tr>
+                     </thead>
+                     <tbody id="classteachers-list">
+                        <!-- Class teacher data will be added dynamically -->
+                     </tbody>
+                  </table>
+               </div>
             </div>
             <!-- View Teachers Tab -->
             <div id="view-teachers-tab" class="tab-content">
@@ -491,6 +524,54 @@
          const assignSubjectsAlert = document.getElementById('assign-subjects-alert');
          const teachersList = document.getElementById('teachers-list');
          const viewTeachersAlert = document.getElementById('view-teachers-alert');
+         const classteacherTeacher = document.getElementById('classteacher-teacher');
+         const classteacherClasses = document.getElementById('classteacher-classes');
+         const assignClassteacherBtn = document.getElementById('assign-classteacher-btn');
+         const assignClassteacherAlert = document.getElementById('assign-classteacher-alert');
+         const classteachersList = document.getElementById('classteachers-list');
+         
+         // Global variables to cache data
+         let globalTeachers = [];
+         let globalClassSubjectAssignments = [];
+         let globalClassTeacherships = [];
+         
+         // Load all necessary data at once
+         async function loadAllData() {
+         try {
+         showLoading();
+         
+         // Load teachers
+         globalTeachers = await selectData('teachers', false, '*', [], [], 'name', 'asc', []);
+         
+         // Load all class subject assignments in one go
+         globalClassSubjectAssignments = await selectData('class_subject_assignments');
+         
+         // Load all class teacherships in one go
+         globalClassTeacherships = await selectData('class_teachers');
+         
+         hideLoading();
+         return true;
+         } catch (error) {
+         console.error('Error loading data:', error);
+         hideLoading();
+         return false;
+         }
+         }
+         
+         // Find assignments for a specific teacher from the global cache
+         function getTeacherAssignments(teacherId) {
+         return globalClassSubjectAssignments.filter(assignment => assignment.teacher_id === teacherId);
+         }
+         
+         // Find class teacherships for a specific teacher from the global cache
+         function getTeacherClassTeacherships(teacherId) {
+         return globalClassTeacherships.filter(ct => ct.teacher_id === teacherId);
+         }
+         
+         // Find teacher by ID from the global cache
+         function getTeacherById(teacherId) {
+         return globalTeachers.find(teacher => teacher.id === teacherId);
+         }
          
          // Helper Functions
          function showLoading() {
@@ -534,223 +615,243 @@
          
          // Initialize the page
          async function initPage() {
-             // Show loading
-             showLoading();
-             // Populate classes dropdown
-             classes.forEach(className => {
-                 const option = document.createElement('option');
-                 option.value = className;
-                 option.textContent = className;
-                 assignClass.appendChild(option);
-             });
+         // Show loading
+         showLoading();
          
-             // Populate subjects checkboxes
-             subjects.forEach(subject => {
-                 const checkboxItem = document.createElement('div');
-                 checkboxItem.className = 'checkbox-item';
-                 
-                 const checkbox = document.createElement('input');
-                 checkbox.type = 'checkbox';
-                 checkbox.id = 'subject-' + subject.toLowerCase().replace(/\s+/g, '-');
-                 checkbox.value = subject;
-                 
-                 const label = document.createElement('label');
-                 label.htmlFor = checkbox.id;
-                 label.textContent = subject;
-                 
-                 checkboxItem.appendChild(checkbox);
-                 checkboxItem.appendChild(label);
-                 subjectsCheckboxes.appendChild(checkboxItem);
-             });
+         // Populate classes dropdown
+         classes.forEach(className => {
+         const option = document.createElement('option');
+         option.value = className;
+         option.textContent = className;
+         assignClass.appendChild(option);
+         });
          
-             // Check authentication status on page load
-             const isAuthenticated = await checkAuth();
-             if (isAuthenticated) {
-                 // Check if the user has admin privileges
-                 const adminId = await selectData('admins', true, 'id', ['id'], [window.userId]);
-                 if(!adminId) {
-                       await signOutUser();
-                       hideLoading();
-                       return;
-                 }
-                 loginSection.classList.add('hidden');
-                 appSection.classList.remove('hidden');
-                 await loadTeachers();
-                 await loadTeacherDropdown();
-             } else {
-                 hideLoading();
-             }
+         // Populate subjects checkboxes
+         subjects.forEach(subject => {
+         const checkboxItem = document.createElement('div');
+         checkboxItem.className = 'checkbox-item';
+         
+         const checkbox = document.createElement('input');
+         checkbox.type = 'checkbox';
+         checkbox.id = 'subject-' + subject.toLowerCase().replace(/\s+/g, '-');
+         checkbox.value = subject;
+         
+         const label = document.createElement('label');
+         label.htmlFor = checkbox.id;
+         label.textContent = subject;
+         
+         checkboxItem.appendChild(checkbox);
+         checkboxItem.appendChild(label);
+         subjectsCheckboxes.appendChild(checkboxItem);
+         });
+         
+         // Check authentication status on page load
+         const isAuthenticated = await checkAuth();
+         if (isAuthenticated) {
+         // Check if the user has admin privileges
+         const adminId = await selectData('admins', true, 'id', ['id'], [window.userId]);
+         if(!adminId) {
+            await signOutUser();
+            hideLoading();
+            return;
          }
          
-         // Load teachers for the dropdown
-         async function loadTeacherDropdown() {
-             try {
-                 showLoading();
-                 const teachers = await selectData('teachers');
-                 
-                 // Clear existing options except the first one
-                 while (assignTeacher.options.length > 1) {
-                     assignTeacher.options.remove(1);
-                 }
-                 
-                 if (teachers && teachers.length > 0) {
-                     teachers.forEach(teacher => {
-                         const option = document.createElement('option');
-                         option.value = teacher.id;
-                         option.textContent = teacher.name;
-                         assignTeacher.appendChild(option);
-                     });
-                 }
-             } catch (error) {
-                 console.error('Error loading teachers:', error);
-             } finally {
-                 hideLoading();
-             }
+         loginSection.classList.add('hidden');
+         appSection.classList.remove('hidden');
+         
+         // Load all data at once
+         await loadAllData();
+         
+         // Initialize the UI with the loaded data
+         loadTeacherDropdown();
+         loadTeachers();
+         initClassTeachership();
+         } else {
+         hideLoading();
+         }
          }
          
-         // Load teachers and their assignments
-         async function loadTeachers() {
-             try {
-                 showLoading();
-                 const teachers = await selectData('teachers');
-                 
-                 // Clear the table body
-                 teachersList.innerHTML = '';
-                 
-                 if (teachers && teachers.length > 0) {
-                     for (const teacher of teachers) {
-                         // Get assignments for this teacher
-                         const assignments = await selectData(
-                             'class_subject_assignments',
-                             false,
-                             '*',
-                             ['teacher_id'],
-                             [teacher.id]
-                         );
-                         
-                         
-                         // Group assignments by class
-                         const classMappings = {};
-                         if (assignments && assignments.length > 0) {
-                             assignments.forEach(assignment => {
-                                 if (!classMappings[assignment.class]) {
-                                     classMappings[assignment.class] = [];
-                                 }
-                                 classMappings[assignment.class].push(assignment.subject);
-                             });
-                         }
-                         
-                         // Create HTML for assignments
-                         let assignmentsHtml = '';
-                         for (const [className, subjectList] of Object.entries(classMappings)) {
-                             assignmentsHtml += `<div><strong>${className}:</strong> `;
-                             subjectList.forEach(subject => {
-                                 assignmentsHtml += `<span class="assignment-pill">${subject}</span>`;
-                             });
-                             assignmentsHtml += `</div>`;
-                         }
-                         
-                         if (assignmentsHtml === '') {
-                             assignmentsHtml = '<em>No assignments</em>';
-                         }
-                         
-                         // Create the table row
-                         const row = document.createElement('tr');
-                         row.innerHTML = `
-                             <td>${teacher.name}</td>
-                             <td>${teacher.email}</td>
-                             <td>${assignmentsHtml}</td>
-                             <td class="action-column">
-                                 <button class="btn-danger btn-sm delete-teacher" data-id="${teacher.id}">Delete</button>
-                             </td>
-                         `;
-                         
-                         teachersList.appendChild(row);
-                     }
-                     
-                     // Add event listeners to delete buttons
-                     document.querySelectorAll('.delete-teacher').forEach(button => {
-                         button.addEventListener('click', handleDeleteTeacher);
-                     });
-                 } else {
-                     teachersList.innerHTML = '<tr><td colspan="4" style="text-align: center;">No teachers found</td></tr>';
-                 }
-             } catch (error) {
-                 console.error('Error loading teachers:', error);
-                 showAlert('view-teachers-alert', 'Failed to load teachers: ' + error.message);
-             } finally {
-                 hideLoading();
-             }
+         // Load teachers for the dropdown using cached data
+         function loadTeacherDropdown() {
+         try {
+         // Clear existing options except the first one in assignTeacher
+         while (assignTeacher.options.length > 1) {
+            assignTeacher.options.remove(1);
          }
          
+         // Clear existing options except the first one in classteacherTeacher
+         while (classteacherTeacher.options.length > 1) {
+            classteacherTeacher.options.remove(1);
+         }
+         
+         if (globalTeachers && globalTeachers.length > 0) {
+            globalTeachers.forEach(teacher => {
+                // For subject assignment dropdown
+                const option1 = document.createElement('option');
+                option1.value = teacher.id;
+                option1.textContent = teacher.name;
+                assignTeacher.appendChild(option1);
+                
+                // For class teachership dropdown
+                const option2 = document.createElement('option');
+                option2.value = teacher.id;
+                option2.textContent = teacher.name;
+                classteacherTeacher.appendChild(option2);
+            });
+         }
+         } catch (error) {
+         console.error('Error loading teachers dropdown:', error);
+         }
+         }
+         
+         // Load teachers and their assignments using cached data
+         function loadTeachers() {
+         try {
+         // Clear the table body
+         teachersList.innerHTML = '';
+         
+         if (globalTeachers && globalTeachers.length > 0) {
+            for (const teacher of globalTeachers) {
+                // Get assignments for this teacher from cached data
+                const assignments = getTeacherAssignments(teacher.id);
+                
+                // Get class teachership assignments for this teacher from cached data
+                const classTeacherships = getTeacherClassTeacherships(teacher.id);
+                
+                // Group assignments by class
+                const classMappings = {};
+                if (assignments && assignments.length > 0) {
+                    assignments.forEach(assignment => {
+                        if (!classMappings[assignment.class]) {
+                            classMappings[assignment.class] = [];
+                        }
+                        classMappings[assignment.class].push(assignment.subject);
+                    });
+                }
+                
+                // Create HTML for assignments
+                let assignmentsHtml = '';
+                for (const [className, subjectList] of Object.entries(classMappings)) {
+                    assignmentsHtml += `<div><strong>${className}:</strong> `;
+                    subjectList.forEach(subject => {
+                        assignmentsHtml += `<span class="assignment-pill">${subject}</span>`;
+                    });
+                    assignmentsHtml += `</div>`;
+                }
+                
+                // Add class teachership information
+                if (classTeacherships && classTeacherships.length > 0) {
+                    assignmentsHtml += `<div style="margin-top: 8px;"><strong>Class Teacher for:</strong> `;
+                    classTeacherships.forEach(ct => {
+                        assignmentsHtml += `<span class="assignment-pill" style="background-color: var(--secondary);">${ct.class}</span>`;
+                    });
+                    assignmentsHtml += `</div>`;
+                }
+                
+                if (assignmentsHtml === '') {
+                    assignmentsHtml = '<em>No assignments</em>';
+                }
+                
+                // Create the table row
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${teacher.name}</td>
+                    <td>${teacher.email}</td>
+                    <td>${assignmentsHtml}</td>
+                    <td class="action-column">
+                        <button class="btn-danger btn-sm delete-teacher" data-id="${teacher.id}">Delete</button>
+                    </td>
+                `;
+                
+                teachersList.appendChild(row);
+            }
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-teacher').forEach(button => {
+                button.addEventListener('click', handleDeleteTeacher);
+            });
+         } else {
+            teachersList.innerHTML = '<tr><td colspan="4" style="text-align: center;">No teachers found</td></tr>';
+         }
+         } catch (error) {
+         console.error('Error loading teachers:', error);
+         showAlert('view-teachers-alert', 'Failed to load teachers: ' + error.message);
+         }
+         }
+                    
          // Handle teacher deletion
          async function handleDeleteTeacher(event) {
-             const teacherId = event.target.dataset.id;
-             if (!confirm('Are you sure you want to delete this teacher? This will remove all their assignments.')) {
-                 return;
-             }
-             
-             try {
-                 showLoading();
-                 
-                 // First delete their assignments
-                 await deleteRow('class_subject_assignments', ['teacher_id'], [teacherId]);
-                 
-                 // Then delete the teacher
-                 await deleteRow('teachers', ['id'], [teacherId]);
-                 
-                 // Reload the teachers list
-                 await loadTeachers();
-                 await loadTeacherDropdown();
-                 
-                 showAlert('view-teachers-alert', 'Teacher deleted successfully', 'success');
-             } catch (error) {
-                 console.error('Error deleting teacher:', error);
-                 showAlert('view-teachers-alert', 'Failed to delete teacher: ' + error.message);
-             } finally {
-                 hideLoading();
-             }
+         const teacherId = event.target.dataset.id;
+         if (!confirm('Are you sure you want to delete all subjects and classes assigned to this teacher?')) {
+         return;
+         }
+         
+         try {
+         showLoading();
+         
+         // Delete their class subject assignments
+         await deleteRow('class_subject_assignments', ['teacher_id'], [teacherId]);
+               
+         
+         // Reload all data
+         await loadAllData();
+         
+         // Refresh the UI
+         loadTeachers();
+         loadTeacherDropdown();
+         loadClassTeachers();
+         
+         showAlert('view-teachers-alert', 'Teacher deleted successfully', 'success');
+         } catch (error) {
+         console.error('Error deleting teacher:', error);
+         showAlert('view-teachers-alert', 'Failed to delete teacher: ' + error.message);
+         } finally {
+         hideLoading();
+         }
          }
          
          // Handle login
          async function handleLogin() {
-             const usernameValue = username.value.trim();
-             const passwordValue = password.value.trim();
-             
-             if (!usernameValue || !passwordValue) {
-                 showAlert('login-error', 'Please enter both username and password');
-                 return;
-             }
-             
-             try {
-                 showLoading();
-                 const email = usernameValue + '@jvp.com';
-                 const data = await signInUser(email, passwordValue);
+         const usernameValue = username.value.trim();
+         const passwordValue = password.value.trim();
          
-                 const adminId = await selectData('admins', true, 'id', ['id'], [data.user.id]);
-                 if(!adminId) {
-                       await signOutUser();
-                       
-                       throw new Error("You don't have admin privileges to access this section");
-                 }
-                 
-                 loginSection.classList.add('hidden');
-                 appSection.classList.remove('hidden');
-                 
-                 // Load data for the app
-                 await loadTeachers();
-                 await loadTeacherDropdown();
-                 
-                 // Clear login form
-                 username.value = '';
-                 password.value = '';
-                 hideAlert('login-error');
-             } catch (error) {
-                 console.error('Login error:', error);
-                 showAlert('login-error', error.message);
-             } finally {
-                 hideLoading();
-             }
+         if (!usernameValue || !passwordValue) {
+         showAlert('login-error', 'Please enter both username and password');
+         return;
+         }
+         
+         try {
+         showLoading();
+         const email = usernameValue + '@jvp.com';
+         const data = await signInUser(email, passwordValue);
+         
+         const adminId = await selectData('admins', true, 'id', ['id'], [data.user.id]);
+         if(!adminId) {
+            await signOutUser();
+            throw new Error("You don't have admin privileges to access this section");
+         }
+         
+         loginSection.classList.add('hidden');
+         appSection.classList.remove('hidden');
+         
+         // Load all data at once
+         await loadAllData();
+         
+         // Initialize the UI with the loaded data
+         loadTeacherDropdown();
+         loadTeachers();
+         initClassTeachership();
+         
+         // Clear login form
+         username.value = '';
+         password.value = '';
+         hideAlert('login-error');
+         } catch (error) {
+         console.error('Login error:', error);
+         showAlert('login-error', error.message);
+         } finally {
+         hideLoading();
+         }
          }
          
          // Handle logout
@@ -787,31 +888,34 @@
          const userData = await createUserWithoutSession(fullEmail, initialPassword);
          
          if (userData && userData.id) {
-             console.log('Teacher user created:', userData); // Debug log
-             
-             // Insert into teachers table
-             const insertResult = await upsertData('teachers', {
-                 id: userData.id,
-                 name: name,
-                 email: fullEmail
-             }, ['id']);
-             
-             console.log('Insert result:', insertResult); // Debug log
-             
-             // Clear the form
-             teacherName.value = '';
-             teacherEmail.value = '';
-             teacherPassword.value = '';
-             
-             // Show success message
-             showAlert('add-teacher-alert', 'Teacher registered successfully!', 'success');
-             
-             // Reload teachers
-             await loadTeachers();
-             await loadTeacherDropdown();
+            console.log('Teacher user created:', userData); // Debug log
+            
+            // Insert into teachers table
+            const insertResult = await upsertData('teachers', {
+                id: userData.id,
+                name: name,
+                email: fullEmail
+            }, ['id']);
+            
+            console.log('Insert result:', insertResult); // Debug log
+            
+            // Clear the form
+            teacherName.value = '';
+            teacherEmail.value = '';
+            teacherPassword.value = '';
+            
+            // Show success message
+            showAlert('add-teacher-alert', 'Teacher registered successfully!', 'success');
+            
+            // Reload all data
+            await loadAllData();
+            
+            // Refresh the UI
+            loadTeachers();
+            loadTeacherDropdown();
          } else {
-             console.error('User data is incomplete:', userData);
-             showAlert('add-teacher-alert', 'Failed to register teacher: User data is incomplete');
+            console.error('User data is incomplete:', userData);
+            showAlert('add-teacher-alert', 'Failed to register teacher: User data is incomplete');
          }
          } catch (error) {
          console.error('Error registering teacher:', error);
@@ -823,53 +927,56 @@
          
          // Handle subject assignment
          async function handleAssignSubjects() {
-             const teacherId = assignTeacher.value;
-             const className = assignClass.value;
-             const selectedSubjects = [];
-             
-             // Get selected subjects
-             document.querySelectorAll('#subjects-checkboxes input[type="checkbox"]:checked').forEach(checkbox => {
-                 selectedSubjects.push(checkbox.value);
-             });
-             
-             if (!teacherId || !className || selectedSubjects.length === 0) {
-                 showAlert('assign-subjects-alert', 'Please select a teacher, class, and at least one subject');
-                 return;
-             }
-             
-             try {
-                 showLoading();
-                 
-                 // First, delete existing assignments for this teacher and class
-                 await deleteRow('class_subject_assignments', ['teacher_id', 'class'], [teacherId, className]);
-                 
-                 // Create new assignments
-                 const assignments = selectedSubjects.map(subject => ({
-                     teacher_id: teacherId,
-                     subject: subject,
-                     class: className
-                 }));
-                 
-                 // Insert all assignments
-                 await upsertData('class_subject_assignments', assignments, ['teacher_id', 'subject', 'class']);
-                 
-                 // Reset form
-                 assignClass.value = '';
-                 document.querySelectorAll('#subjects-checkboxes input[type="checkbox"]').forEach(checkbox => {
-                     checkbox.checked = false;
-                 });
-                 
-                 // Show success message
-                 showAlert('assign-subjects-alert', 'Subjects assigned successfully!', 'success');
-                 
-                 // Reload teachers to update the view
-                 await loadTeachers();
-             } catch (error) {
-                 console.error('Error assigning subjects:', error);
-                 showAlert('assign-subjects-alert', 'Failed to assign subjects: ' + error.message);
-             } finally {
-                 hideLoading();
-             }
+         const teacherId = assignTeacher.value;
+         const className = assignClass.value;
+         const selectedSubjects = [];
+         
+         // Get selected subjects
+         document.querySelectorAll('#subjects-checkboxes input[type="checkbox"]:checked').forEach(checkbox => {
+         selectedSubjects.push(checkbox.value);
+         });
+         
+         if (!teacherId || !className || selectedSubjects.length === 0) {
+         showAlert('assign-subjects-alert', 'Please select a teacher, class, and at least one subject');
+         return;
+         }
+         
+         try {
+         showLoading();
+         
+         // First, delete existing assignments for this teacher and class
+         await deleteRow('class_subject_assignments', ['teacher_id', 'class'], [teacherId, className]);
+         
+         // Create new assignments
+         const assignments = selectedSubjects.map(subject => ({
+            teacher_id: teacherId,
+            subject: subject,
+            class: className
+         }));
+         
+         // Insert all assignments
+         await upsertData('class_subject_assignments', assignments, ['teacher_id', 'subject', 'class']);
+         
+         // Reset form
+         assignClass.value = '';
+         document.querySelectorAll('#subjects-checkboxes input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+         });
+         
+         // Show success message
+         showAlert('assign-subjects-alert', 'Subjects assigned successfully!', 'success');
+         
+         // Reload all data
+         await loadAllData();
+         
+         // Refresh the UI
+         loadTeachers();
+         } catch (error) {
+         console.error('Error assigning subjects:', error);
+         showAlert('assign-subjects-alert', 'Failed to assign subjects: ' + error.message);
+         } finally {
+         hideLoading();
+         }
          }
          
          // Event Listeners
@@ -885,6 +992,197 @@
                  switchTab(tab.dataset.tab);
              });
          });
+         
+         // Initialize the class teachership section
+         function initClassTeachership() {
+         try {
+         // Create the classes list manually from the globally available 'classes' array
+         // Populate classes checkboxes
+         classteacherClasses.innerHTML = '';
+         
+         if (!classes || classes.length === 0) {
+            console.error('Classes array is empty or undefined');
+            classteacherClasses.innerHTML = '<p>No classes available</p>';
+            return;
+         }
+         
+         classes.forEach(className => {
+            const checkboxItem = document.createElement('div');
+            checkboxItem.className = 'checkbox-item';
+            
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.id = 'classteacher-class-' + className.toLowerCase().replace(/\s+/g, '-');
+            checkbox.value = className;
+            
+            const label = document.createElement('label');
+            label.htmlFor = checkbox.id;
+            label.textContent = className;
+            
+            checkboxItem.appendChild(checkbox);
+            checkboxItem.appendChild(label);
+            classteacherClasses.appendChild(checkboxItem);
+         });
+         
+         // Load current class teachers
+         loadClassTeachers();
+         
+         // When selecting a teacher, check the classes they're already assigned to
+         classteacherTeacher.addEventListener('change', function() {
+            const teacherId = this.value;
+            
+            // Clear all checkboxes first
+            document.querySelectorAll('#classteacher-classes input[type="checkbox"]').forEach(checkbox => {
+                checkbox.checked = false;
+            });
+            
+            if (teacherId) {
+                try {
+                    // Get current class teacherships for this teacher from cached data
+                    const classTeacherships = getTeacherClassTeacherships(teacherId);
+                    
+                    if (classTeacherships && classTeacherships.length > 0) {
+                        // Check the corresponding checkboxes
+                        classTeacherships.forEach(ct => {
+                            const checkbox = document.getElementById('classteacher-class-' + ct.class.toLowerCase().replace(/\s+/g, '-'));
+                            if (checkbox) {
+                                checkbox.checked = true;
+                            }
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error loading class teacherships for teacher:', error);
+                }
+            }
+         });
+         } catch (error) {
+         console.error('Error initializing class teachership:', error);
+         }
+         }
+         
+         // Load class teachers table using cached data
+         function loadClassTeachers() {
+         try {
+         // Clear the table body
+         classteachersList.innerHTML = '';
+         
+         if (globalClassTeacherships && globalClassTeacherships.length > 0) {
+            for (const classTeacher of globalClassTeacherships) {
+                // Get teacher details from cached data
+                const teacher = getTeacherById(classTeacher.teacher_id);
+                
+                if (!teacher) continue;
+                
+                // Create the table row
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${classTeacher.class}</td>
+                    <td>${teacher.name}</td>
+                    <td class="action-column">
+                        <button class="btn-danger btn-sm delete-classteacher" data-id="${classTeacher.id}">Delete</button>
+                    </td>
+                `;
+                
+                classteachersList.appendChild(row);
+            }
+            
+            // Add event listeners to delete buttons
+            document.querySelectorAll('.delete-classteacher').forEach(button => {
+                button.addEventListener('click', handleDeleteClassTeacher);
+            });
+         } else {
+            classteachersList.innerHTML = '<tr><td colspan="3" style="text-align: center;">No class teachers assigned</td></tr>';
+         }
+         } catch (error) {
+         console.error('Error loading class teachers:', error);
+         showAlert('assign-classteacher-alert', 'Failed to load class teachers: ' + error.message);
+         }
+         }
+         
+         // Handle class teachership assignment
+         async function handleAssignClassteacher() {
+         const teacherId = classteacherTeacher.value;
+         const selectedClasses = [];
+         
+         // Get selected classes
+         document.querySelectorAll('#classteacher-classes input[type="checkbox"]:checked').forEach(checkbox => {
+         selectedClasses.push(checkbox.value);
+         });
+         
+         if (!teacherId || selectedClasses.length === 0) {
+         showAlert('assign-classteacher-alert', 'Please select a teacher and at least one class');
+         return;
+         }
+         
+         try {
+         showLoading();
+         
+         // Create class teacher assignments
+         const classTeacherAssignments = [];
+         
+         for (const className of selectedClasses) {
+            classTeacherAssignments.push({
+                teacher_id: teacherId,
+                class: className
+            });
+         }
+         
+         // Insert/update all assignments
+         await upsertData('class_teachers', classTeacherAssignments, ['class']);
+         
+         // Reset form
+         document.querySelectorAll('#classteacher-classes input[type="checkbox"]').forEach(checkbox => {
+            checkbox.checked = false;
+         });
+         
+         // Show success message
+         showAlert('assign-classteacher-alert', 'Class teachership assigned successfully!', 'success');
+         
+         // Reload all data
+         await loadAllData();
+         
+         // Refresh the UI with updated data
+         loadClassTeachers();
+         loadTeachers();
+         } catch (error) {
+         console.error('Error assigning class teachership:', error);
+         showAlert('assign-classteacher-alert', 'Failed to assign class teachership: ' + error.message);
+         } finally {
+         hideLoading();
+         }
+         }
+         
+         // Handle class teacher deletion
+         async function handleDeleteClassTeacher(event) {
+         const classTeacherId = event.target.dataset.id;
+         if (!confirm('Are you sure you want to remove this class teachership?')) {
+         return;
+         }
+         
+         try {
+         showLoading();
+         
+         // Delete the class teacher assignment
+         await deleteRow('class_teachers', ['id'], [classTeacherId]);
+         
+         // Reload all data
+         await loadAllData();
+         
+         // Refresh UI
+         loadClassTeachers();
+         loadTeachers();
+         
+         showAlert('assign-classteacher-alert', 'Class teachership removed successfully', 'success');
+         } catch (error) {
+         console.error('Error deleting class teachership:', error);
+         showAlert('assign-classteacher-alert', 'Failed to remove class teachership: ' + error.message);
+         } finally {
+         hideLoading();
+         }
+         }
+         
+         // Add event listener for the assign class teachership button
+         assignClassteacherBtn.addEventListener('click', handleAssignClassteacher);
          
       </script>
    </body>
