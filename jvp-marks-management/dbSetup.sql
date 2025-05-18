@@ -41,6 +41,7 @@ DROP TABLE IF EXISTS marks_backup;
 DROP TABLE IF EXISTS marks;
 DROP TABLE IF EXISTS custom_exams;
 DROP TABLE IF EXISTS class_subject_assignments;
+DROP TABLE IF EXISTS class_teachers;
 DROP TABLE IF EXISTS teachers;
 DROP TABLE IF EXISTS students;
 DROP TABLE IF EXISTS admins;
@@ -192,6 +193,48 @@ USING (
 -- Delete policy for admin users
 CREATE POLICY "admins_can_delete_class_subject_assignments"
 ON class_subject_assignments
+FOR DELETE
+USING (
+  auth.uid() IN (SELECT id FROM admins)
+);
+
+
+-- Create class_teachers table
+CREATE TABLE class_teachers (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    teacher_id UUID REFERENCES teachers(id) ON DELETE CASCADE,
+    class TEXT NOT NULL,
+    UNIQUE (class)
+);
+
+-- Enable RLS on class_teachers
+ALTER TABLE class_teachers ENABLE ROW LEVEL SECURITY;
+
+-- Select policy for authenticated users
+CREATE POLICY "authenticated_users_can_read_class_teachers"
+ON class_teachers
+FOR SELECT
+USING (auth.role() = 'authenticated');
+
+-- Insert policy for admin users
+CREATE POLICY "admins_can_insert_class_teachers"
+ON class_teachers
+FOR INSERT
+WITH CHECK (
+  auth.uid() IN (SELECT id FROM admins)
+);
+
+-- Update policy for admin users
+CREATE POLICY "admins_can_update_class_teachers"
+ON class_teachers
+FOR UPDATE
+USING (
+  auth.uid() IN (SELECT id FROM admins)
+);
+
+-- Delete policy for admin users
+CREATE POLICY "admins_can_delete_class_teachers"
+ON class_teachers
 FOR DELETE
 USING (
   auth.uid() IN (SELECT id FROM admins)
