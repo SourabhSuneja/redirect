@@ -451,6 +451,128 @@
          #closeAiResponseModal, #closeAiAssistantModal {
          z-index: 20000;
          }
+         /* Print-specific styles */
+.print-content {
+    display: none;
+}
+
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    .print-content, .print-content * {
+        visibility: visible;
+    }
+    
+    .print-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        display: block !important;
+    }
+    
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0;
+        padding: 15px;
+        background: white;
+        color: #000;
+        line-height: 1.4;
+    }
+    
+    .print-header {
+        text-align: center;
+        margin-bottom: 25px;
+        border-bottom: 3px solid #1e3a8a;
+        padding-bottom: 15px;
+    }
+    
+    .print-header h1 {
+        font-size: 24px;
+        color: #1e3a8a;
+        margin: 0;
+        font-weight: bold;
+    }
+    
+    .print-header h2 {
+        font-size: 16px;
+        color: #374151;
+        margin: 8px 0 5px 0;
+        font-weight: normal;
+    }
+    
+    .print-date {
+        font-size: 11px;
+        color: #666;
+        margin-top: 8px;
+    }
+    
+    .print-table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 15px 0;
+        font-size: 9px;
+    }
+    
+    .print-table th,
+    .print-table td {
+        border: 1px solid #ddd;
+        padding: 5px;
+        text-align: left;
+        vertical-align: top;
+        word-wrap: break-word;
+    }
+    
+    .print-table th {
+        background-color: #f8f9fa;
+        font-weight: bold;
+        color: #1e3a8a;
+        font-size: 10px;
+    }
+    
+    .print-table tr:nth-child(even) {
+        background-color: #f9f9f9;
+    }
+    
+    .print-footer {
+        margin-top: 25px;
+        text-align: center;
+        font-size: 8px;
+        color: #666;
+        border-top: 1px solid #ddd;
+        padding-top: 10px;
+    }
+    
+    /* Column widths for print */
+    .col-date { width: 10%; }
+    .col-theme { width: 16%; }
+    .col-class { width: 8%; }
+    .col-anchor { width: 12%; }
+    .col-thought { width: 22%; }
+    .col-word { width: 15%; }
+    .col-news { width: 10%; }
+    .col-roles { width: 7%; }
+    
+    @page {
+        margin: 0.5in;
+        size: A4;
+    }
+}
+
+/* Mobile print button styling */
+@media (max-width: 768px) {
+    .print-button-container {
+        text-align: center;
+        margin-bottom: 1rem;
+    }
+    
+    #printAssemblyBtn {
+        width: 100%;
+        max-width: 200px;
+    }
+}
       </style>
    </head>
    <body class="light-theme">
@@ -642,6 +764,9 @@
          </div>
       </div>
       <!-- Dialog Overlay Ends -->
+      <div class="print-content" id="printContent">
+    <!-- Print content will be populated by JavaScript -->
+</div>
       <!-- Reference the main script -->
       <script src="script.js"></script>
       <script>
@@ -661,29 +786,21 @@ function printAssemblySchedule() {
     
     // Check if there are any assemblies
     if (!assembliesTableBody || assembliesTableBody.children.length === 0) {
-        alert('No assemblies scheduled to print.');
+        showToast('No assemblies scheduled to print.', 'error');
         return;
     }
     
-    // Create the print content
-    const printContent = generatePrintableContent();
+    // Generate and populate print content
+    generatePrintContent();
     
-    // Create a new window for printing
-    const printWindow = window.open('', '_blank', 'width=800,height=600');
-    
-    // Write the content to the new window
-    printWindow.document.write(printContent);
-    printWindow.document.close();
-    
-    // Wait for content to load, then print
-    printWindow.onload = function() {
-        printWindow.focus();
-        printWindow.print();
-        printWindow.close();
-    };
+    // Small delay to ensure content is rendered
+    setTimeout(() => {
+        window.print();
+    }, 100);
 }
 
-function generatePrintableContent() {
+function generatePrintContent() {
+    const printContentDiv = document.getElementById('printContent');
     const assembliesTableBody = document.getElementById('assembliesTableBody');
     const rows = assembliesTableBody.querySelectorAll('tr');
     
@@ -705,20 +822,20 @@ function generatePrintableContent() {
             
             tableRows += `
                 <tr>
-                    <td>${formatDateForPrint(date)}</td>
-                    <td>${theme}</td>
-                    <td>${className}</td>
-                    <td>${anchor}</td>
-                    <td>
+                    <td class="col-date">${formatDateForPrint(date)}</td>
+                    <td class="col-theme">${theme}</td>
+                    <td class="col-class">${className}</td>
+                    <td class="col-anchor">${anchor}</td>
+                    <td class="col-thought">
                         <strong>${thought}</strong><br>
                         <small style="color: #666;">By: ${thoughtBy}</small>
                     </td>
-                    <td>
+                    <td class="col-word">
                         <strong>${word}</strong><br>
                         <small style="color: #666;">By: ${wordBy}</small>
                     </td>
-                    <td>${newsBy}</td>
-                    <td>${additionalRoles}</td>
+                    <td class="col-news">${newsBy}</td>
+                    <td class="col-roles">${additionalRoles}</td>
                 </tr>
             `;
         }
@@ -731,131 +848,36 @@ function generatePrintableContent() {
         day: 'numeric'
     });
     
-    return `
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Assembly Schedule - Jamna Vidyapeeth</title>
-            <style>
-                body {
-                    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-                    margin: 20px;
-                    background: white;
-                    color: #000;
-                    line-height: 1.4;
-                }
-                
-                .header {
-                    text-align: center;
-                    margin-bottom: 30px;
-                    border-bottom: 3px solid #1e3a8a;
-                    padding-bottom: 20px;
-                }
-                
-                .header h1 {
-                    font-size: 28px;
-                    color: #1e3a8a;
-                    margin: 0;
-                    font-weight: bold;
-                }
-                
-                .header h2 {
-                    font-size: 18px;
-                    color: #374151;
-                    margin: 10px 0 5px 0;
-                    font-weight: normal;
-                }
-                
-                .print-date {
-                    font-size: 12px;
-                    color: #666;
-                    margin-top: 10px;
-                }
-                
-                table {
-                    width: 100%;
-                    border-collapse: collapse;
-                    margin: 20px 0;
-                    font-size: 11px;
-                }
-                
-                th, td {
-                    border: 1px solid #ddd;
-                    padding: 8px;
-                    text-align: left;
-                    vertical-align: top;
-                    word-wrap: break-word;
-                }
-                
-                th {
-                    background-color: #f8f9fa;
-                    font-weight: bold;
-                    color: #1e3a8a;
-                    font-size: 12px;
-                }
-                
-                tr:nth-child(even) {
-                    background-color: #f9f9f9;
-                }
-                
-                .footer {
-                    margin-top: 40px;
-                    text-align: center;
-                    font-size: 10px;
-                    color: #666;
-                    border-top: 1px solid #ddd;
-                    padding-top: 15px;
-                }
-                
-                /* Column widths */
-                .col-date { width: 10%; }
-                .col-theme { width: 16%; }
-                .col-class { width: 8%; }
-                .col-anchor { width: 12%; }
-                .col-thought { width: 22%; }
-                .col-word { width: 15%; }
-                .col-news { width: 10%; }
-                .col-roles { width: 7%; }
-                
-                @media print {
-                    body { margin: 15px; }
-                    table { font-size: 10px; }
-                    th, td { padding: 6px; }
-                }
-            </style>
-        </head>
-        <body>
-            <div class="header">
-                <h1>JAMNA VIDYAPEETH</h1>
-                <h2>Morning Assembly Schedule</h2>
-                <div class="print-date">Generated on: ${currentDate}</div>
-            </div>
-            
-            <table>
-                <thead>
-                    <tr>
-                        <th class="col-date">Date</th>
-                        <th class="col-theme">Theme/Topic</th>
-                        <th class="col-class">Class</th>
-                        <th class="col-anchor">Anchoring By</th>
-                        <th class="col-thought">Thought of the Day</th>
-                        <th class="col-word">Word of the Day</th>
-                        <th class="col-news">News By</th>
-                        <th class="col-roles">Other Roles</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    ${tableRows}
-                </tbody>
-            </table>
-            
-            <div class="footer">
-                <p><strong>Jamna Vidyapeeth - Assembly Scheduler</strong></p>
-                <p>This schedule is generated automatically. For any changes or updates, please contact the administration.</p>
-                <p>Crafted by Sourabh Sir with ♥️</p>
-            </div>
-        </body>
-        </html>
+    printContentDiv.innerHTML = `
+        <div class="print-header">
+            <h1>JAMNA VIDYAPEETH</h1>
+            <h2>Morning Assembly Schedule</h2>
+            <div class="print-date">Generated on: ${currentDate}</div>
+        </div>
+        
+        <table class="print-table">
+            <thead>
+                <tr>
+                    <th class="col-date">Date</th>
+                    <th class="col-theme">Theme/Topic</th>
+                    <th class="col-class">Class</th>
+                    <th class="col-anchor">Anchoring By</th>
+                    <th class="col-thought">Thought of the Day</th>
+                    <th class="col-word">Word of the Day</th>
+                    <th class="col-news">News By</th>
+                    <th class="col-roles">Other Roles</th>
+                </tr>
+            </thead>
+            <tbody>
+                ${tableRows}
+            </tbody>
+        </table>
+        
+        <div class="print-footer">
+            <p><strong>Jamna Vidyapeeth - Assembly Scheduler</strong></p>
+            <p>This schedule is generated automatically. For any changes or updates, please contact the administration.</p>
+            <p>Crafted by Sourabh Sir with ♥️</p>
+        </div>
     `;
 }
 
@@ -870,6 +892,23 @@ function formatDateForPrint(dateString) {
         });
     } catch (e) {
         return dateString;
+    }
+}
+
+// Toast function (if not already present)
+function showToast(message, type = 'success') {
+    const toast = document.getElementById('toast');
+    if (toast) {
+        toast.textContent = message;
+        toast.className = 'toast show';
+        if (type === 'error') {
+            toast.classList.add('toast-error');
+        }
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            toast.classList.remove('toast-error');
+        }, 3000);
     }
 }
 </script>
