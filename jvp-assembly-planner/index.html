@@ -547,6 +547,11 @@
             </div>
             <div class="card hidden" id="upcomingAssemblies">
                <h2>Upcoming Assemblies</h2>
+               <div class="print-button-container" style="margin-bottom: 1rem; text-align: right;">
+                  <button class="btn btn-secondary" id="printAssemblyBtn">
+                  <i class="fas fa-print"></i> Print Assembly Plan
+                  </button>
+               </div>
                <div class="table-responsive">
                   <table id="assembliesTable">
                      <thead>
@@ -639,5 +644,234 @@
       <!-- Dialog Overlay Ends -->
       <!-- Reference the main script -->
       <script src="script.js"></script>
+      <script>
+         // Print Assembly Plan functionality
+         document.addEventListener('DOMContentLoaded', function() {
+             const printBtn = document.getElementById('printAssemblyBtn');
+             
+             if (printBtn) {
+                 printBtn.addEventListener('click', function() {
+                     printAssemblySchedule();
+                 });
+             }
+         });
+         
+         function printAssemblySchedule() {
+             const assembliesTableBody = document.getElementById('assembliesTableBody');
+             
+             // Check if there are any assemblies
+             if (!assembliesTableBody || assembliesTableBody.children.length === 0) {
+                 alert('No assemblies scheduled to print.');
+                 return;
+             }
+             
+             // Create the print content
+             const printContent = generatePrintableContent();
+             
+             // Create a new window for printing
+             const printWindow = window.open('', '_blank', 'width=800,height=600');
+             
+             // Write the content to the new window
+             printWindow.document.write(printContent);
+             printWindow.document.close();
+             
+             // Wait for content to load, then print
+             printWindow.onload = function() {
+                 printWindow.focus();
+                 printWindow.print();
+                 printWindow.close();
+             };
+         }
+         
+         function generatePrintableContent() {
+             const assembliesTableBody = document.getElementById('assembliesTableBody');
+             const rows = assembliesTableBody.querySelectorAll('tr');
+             
+             let tableRows = '';
+             
+             rows.forEach(row => {
+                 const cells = row.querySelectorAll('td');
+                 if (cells.length >= 10) {
+                     const date = cells[0].textContent.trim();
+                     const theme = cells[1].textContent.trim();
+                     const className = cells[2].textContent.trim();
+                     const anchor = cells[3].textContent.trim();
+                     const thought = cells[4].textContent.trim();
+                     const thoughtBy = cells[5].textContent.trim();
+                     const word = cells[6].textContent.trim();
+                     const wordBy = cells[7].textContent.trim();
+                     const newsBy = cells[8].textContent.trim();
+                     const additionalRoles = cells[9].textContent.trim();
+                     
+                     tableRows += `
+                         <tr>
+                             <td>${formatDateForPrint(date)}</td>
+                             <td>${theme}</td>
+                             <td>${className}</td>
+                             <td>${anchor}</td>
+                             <td>
+                                 <strong>${thought}</strong><br>
+                                 <small style="color: #666;">By: ${thoughtBy}</small>
+                             </td>
+                             <td>
+                                 <strong>${word}</strong><br>
+                                 <small style="color: #666;">By: ${wordBy}</small>
+                             </td>
+                             <td>${newsBy}</td>
+                             <td>${additionalRoles}</td>
+                         </tr>
+                     `;
+                 }
+             });
+             
+             const currentDate = new Date().toLocaleDateString('en-IN', {
+                 weekday: 'long',
+                 year: 'numeric',
+                 month: 'long',
+                 day: 'numeric'
+             });
+             
+             return `
+                 <!DOCTYPE html>
+                 <html>
+                 <head>
+                     <title>Assembly Schedule - Jamna Vidyapeeth</title>
+                     <style>
+                         body {
+                             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                             margin: 20px;
+                             background: white;
+                             color: #000;
+                             line-height: 1.4;
+                         }
+                         
+                         .header {
+                             text-align: center;
+                             margin-bottom: 30px;
+                             border-bottom: 3px solid #1e3a8a;
+                             padding-bottom: 20px;
+                         }
+                         
+                         .header h1 {
+                             font-size: 28px;
+                             color: #1e3a8a;
+                             margin: 0;
+                             font-weight: bold;
+                         }
+                         
+                         .header h2 {
+                             font-size: 18px;
+                             color: #374151;
+                             margin: 10px 0 5px 0;
+                             font-weight: normal;
+                         }
+                         
+                         .print-date {
+                             font-size: 12px;
+                             color: #666;
+                             margin-top: 10px;
+                         }
+                         
+                         table {
+                             width: 100%;
+                             border-collapse: collapse;
+                             margin: 20px 0;
+                             font-size: 11px;
+                         }
+                         
+                         th, td {
+                             border: 1px solid #ddd;
+                             padding: 8px;
+                             text-align: left;
+                             vertical-align: top;
+                             word-wrap: break-word;
+                         }
+                         
+                         th {
+                             background-color: #f8f9fa;
+                             font-weight: bold;
+                             color: #1e3a8a;
+                             font-size: 12px;
+                         }
+                         
+                         tr:nth-child(even) {
+                             background-color: #f9f9f9;
+                         }
+                         
+                         .footer {
+                             margin-top: 40px;
+                             text-align: center;
+                             font-size: 10px;
+                             color: #666;
+                             border-top: 1px solid #ddd;
+                             padding-top: 15px;
+                         }
+                         
+                         /* Column widths */
+                         .col-date { width: 10%; }
+                         .col-theme { width: 16%; }
+                         .col-class { width: 8%; }
+                         .col-anchor { width: 12%; }
+                         .col-thought { width: 22%; }
+                         .col-word { width: 15%; }
+                         .col-news { width: 10%; }
+                         .col-roles { width: 7%; }
+                         
+                         @media print {
+                             body { margin: 15px; }
+                             table { font-size: 10px; }
+                             th, td { padding: 6px; }
+                         }
+                     </style>
+                 </head>
+                 <body>
+                     <div class="header">
+                         <h1>JAMNA VIDYAPEETH</h1>
+                         <h2>Morning Assembly Schedule</h2>
+                         <div class="print-date">Generated on: ${currentDate}</div>
+                     </div>
+                     
+                     <table>
+                         <thead>
+                             <tr>
+                                 <th class="col-date">Date</th>
+                                 <th class="col-theme">Theme/Topic</th>
+                                 <th class="col-class">Class</th>
+                                 <th class="col-anchor">Anchoring By</th>
+                                 <th class="col-thought">Thought of the Day</th>
+                                 <th class="col-word">Word of the Day</th>
+                                 <th class="col-news">News By</th>
+                                 <th class="col-roles">Other Roles</th>
+                             </tr>
+                         </thead>
+                         <tbody>
+                             ${tableRows}
+                         </tbody>
+                     </table>
+                     
+                     <div class="footer">
+                         <p><strong>Jamna Vidyapeeth - Assembly Scheduler</strong></p>
+                         <p>This schedule is generated automatically. For any changes or updates, please contact the administration.</p>
+                         <p>Crafted by Sourabh Sir with ♥️</p>
+                     </div>
+                 </body>
+                 </html>
+             `;
+         }
+         
+         function formatDateForPrint(dateString) {
+             try {
+                 const date = new Date(dateString);
+                 return date.toLocaleDateString('en-IN', {
+                     weekday: 'short',
+                     day: '2-digit',
+                     month: 'short',
+                     year: '2-digit'
+                 });
+             } catch (e) {
+                 return dateString;
+             }
+         }
+      </script>
    </body>
 </html>
