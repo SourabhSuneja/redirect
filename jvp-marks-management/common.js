@@ -90,8 +90,8 @@ function getMaxMarks(examName) {
    if (commonExam) return commonExam.mm;
 
    // Then check custom exams
-   const selectedClass = classSelect?.value || classValue;
-   const selectedSubject = subjectSelect?.value || subjectValue;
+   const selectedClass = classSelect?.value || globalClassValue;
+   const selectedSubject = subjectSelect?.value || globalSubjectValue;
 
    const customExam = customExams.find(e =>
       e.name === examName &&
