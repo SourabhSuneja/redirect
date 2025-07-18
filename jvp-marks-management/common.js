@@ -7,6 +7,7 @@ let subjects = [
   "Hindi",
   "Science",
   "Maths",
+  "EVS",
   "Social Science",
   "Sanskrit",
   "Computer",
