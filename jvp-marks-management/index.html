@@ -1375,7 +1375,7 @@
             // 1. Delete records from Supabase 'marks' table by calling a pre-defined function on Supabase
             const deletedMarks = await invokeFunction('delete_marks_by_exam_subject_class', {'p_exam': selectedExam, 'p_subject': selectedSubject, 'p_class': selectedClass});
             
-            if (!deletedMarks) {
+            if (!Number.isInteger(deletedMarks)) {
                 throw new Error("Failed to delete marks records from database");
             }
             
