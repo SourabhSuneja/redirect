@@ -442,11 +442,18 @@ FOR DELETE
 TO authenticated
 USING ( true );
 
--- Policy for selecting data
+-- Policy for selecting data for authenticated users
 CREATE POLICY "Allow authenticated users to select data"
 ON custom_exams
 FOR SELECT
 TO authenticated
+USING ( true );
+
+-- Policy for selecting data for anonymous users
+CREATE POLICY "Allow anonymous users to select data"
+ON custom_exams
+FOR SELECT
+TO anon
 USING ( true );
 
 -- Create a view that matches the structure of the original marks table
