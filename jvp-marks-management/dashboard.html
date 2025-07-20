@@ -909,10 +909,13 @@
          
              // Store a copy of filteredData in the global selectedMarks variable for later analysis
              selectedMarks = JSON.parse(JSON.stringify(filteredData)) || [];
+
+              // Fetch max marks for the selected exam
+              const maxMarks = (selectedSubject === 'Overall Aggregate') ? getAggregateMarks(selectedClass, selectedExam) : getMaxMarks(selectedExam);
              
              // Update the marks title and subtitle
              marksTitle.textContent = `Marks Statement: ${selectedExam}`;
-             marksSubtitle.textContent = `Class: ${selectedClass} | Subject: ${selectedSubject} | Exam: ${selectedExam}`;
+             marksSubtitle.textContent = `Class: ${selectedClass} | Subject: ${selectedSubject} | Exam: ${selectedExam} | Max. Marks: ${maxMarks}`;
              
              // Update the print subtitle
              printSubtitle.textContent = `Class: ${selectedClass} | Subject: ${selectedSubject} | Exam: ${selectedExam}`;
@@ -923,7 +926,6 @@
              
              // Add new rows to the table
              filteredData.forEach((item, index) => {
-                 const maxMarks = (selectedSubject === 'Overall Aggregate') ? getAggregateMarks(selectedClass, selectedExam) : getMaxMarks(selectedExam);
                  const percentage = item.marks !== null ? ((item.marks / maxMarks) * 100).toFixed(2) : '-';
                  const remark = (selectedSubject === 'Overall Aggregate') ? getPerformanceRemark(item.marks, selectedExam, percentage) : getPerformanceRemark(item.marks, selectedExam);
                  const remarkClass = getRemarkClass(remark);
