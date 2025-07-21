@@ -653,7 +653,7 @@
             </div>
          </div>
       </div>
-      <!-- Add Exam Modal -->
+      <!-- Add/Edit Exam Modal -->
       <div id="exam-modal" class="modal hidden">
          <div class="modal-content">
             <h3 id="exam-modal-heading">Add New Exam</h3>
@@ -663,7 +663,7 @@
             </div>
             <div class="form-group">
                <label for="new-exam-marks">Maximum Marks</label>
-               <input type="number" id="new-exam-marks" min="1" max="100" value="20">
+               <input type="number" id="new-exam-marks" min="1" max="100" value="10">
             </div>
             <div class="form-group">
                <label>This exam will be added for:</label>
@@ -788,7 +788,7 @@
          return;
          }
 
-         // Set heading to "Edit Exam Details"
+         // Set heading to "Add New Exam"
          examModalHeading.innerText = 'Add New Exam';
 
          // Show Save Exam Button
@@ -809,7 +809,7 @@
          examModal.classList.add('hidden');
          });
 
-         // Handle editing details for an existing custom exam
+         // Edit existing exam button
          editExamBtn.addEventListener('click', () => {
          const selectedClass = classSelect.value;
          const selectedSubject = subjectSelect.value;
