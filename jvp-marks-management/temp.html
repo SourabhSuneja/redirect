@@ -778,7 +778,7 @@
          addExamBtn.addEventListener('click', () => {
          const selectedClass = classSelect.value;
          const selectedSubject = subjectSelect.value;
-         
+
          if (!selectedClass || !selectedSubject) {
          showDialog({
             title: 'Warning',
@@ -787,6 +787,15 @@
          });
          return;
          }
+
+         // Set heading to "Edit Exam Details"
+         examModalHeading.innerText = 'Add New Exam';
+
+         // Show Save Exam Button
+         saveExamBtn.style.display = 'block';
+
+         // Hide "Update Exam Details" Button
+         updateExamDetailsBtn.style.display = 'none';
          
          // Update the modal with selected class and subject
          document.getElementById('exam-class-subject-info').textContent = 
@@ -810,7 +819,7 @@
          examModalHeading.innerText = 'Edit Exam Details';
 
          // Hide Save Exam Button
-         saveExamBtn.style.display = 'none'
+         saveExamBtn.style.display = 'none';
 
          // Show "Update Exam Details" Button
          updateExamDetailsBtn.style.display = 'block';
