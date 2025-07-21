@@ -672,6 +672,7 @@
             <div class="form-actions">
                <button id="cancel-exam-btn">Cancel</button>
                <button id="save-exam-btn" class="btn-secondary">Save</button>
+               <button id="update-exam-details-btn" class="btn-secondary">Update Details</button>
             </div>
          </div>
       </div>
@@ -759,6 +760,7 @@
          const newExamName = document.getElementById('new-exam-name');
          const newExamMarks = document.getElementById('new-exam-marks');
          const saveExamBtn = document.getElementById('save-exam-btn');
+         const updateExamDetailsBtn = document.getElementById('update-exam-details-btn');
          const cancelExamBtn = document.getElementById('cancel-exam-btn');
          const maxMarksInput = document.getElementById('max-marks-input');
          
@@ -791,6 +793,35 @@
          `Class: ${selectedClass}, Subject: ${selectedSubject}`;
          
          examModal.classList.remove('hidden');
+         newExamName.focus();
+         });
+         
+         cancelExamBtn.addEventListener('click', () => {
+         examModal.classList.add('hidden');
+         });
+
+         // Handle editing details for an existing custom exam
+         editExamBtn.addEventListener('click', () => {
+         const selectedClass = classSelect.value;
+         const selectedSubject = subjectSelect.value;
+         const selectedExam = examSelect.value;
+
+         // Set heading to "Edit Exam Details"
+         examModalHeading.innerText = 'Edit Exam Details';
+
+         // Hide Save Exam Button
+         saveExamBtn.style.display = 'none'
+
+         // Show "Update Exam Details" Button
+         updateExamDetailsBtn.style.display = 'block';
+         
+         // Update the modal with selected class and subject
+         document.getElementById('exam-class-subject-info').textContent = 
+         `Class: ${selectedClass}, Subject: ${selectedSubject}`;
+         
+         examModal.classList.remove('hidden');
+         newExamName.value = selectedExam;
+         newExamMarks.value = maxMarksForSelectedExam;
          newExamName.focus();
          });
          
@@ -895,7 +926,7 @@
          }
          });
 
-                  // Save changes made to an existing custom exam
+         // Save changes made to an existing custom exam
          saveExamChangesBtn.addEventListener('click', async () => {
          const examName = newExamName.value.trim();
          const maxMarksInput = newExamMarks.value;
