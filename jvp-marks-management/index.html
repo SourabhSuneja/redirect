@@ -655,7 +655,7 @@
       <!-- Add Exam Modal -->
       <div id="exam-modal" class="modal hidden">
          <div class="modal-content">
-            <h3>Add New Exam</h3>
+            <h3 id="exam-modal-heading">Add New Exam</h3>
             <div class="form-group">
                <label for="new-exam-name">Exam Name</label>
                <input type="text" id="new-exam-name" placeholder="e.g. Test 1">
@@ -753,6 +753,7 @@
          // Add exam functionality
          const addExamBtn = document.getElementById('add-exam-btn');
          const examModal = document.getElementById('exam-modal');
+         const examModalHeading = document.getElementById('exam-modal-heading');
          const newExamName = document.getElementById('new-exam-name');
          const newExamMarks = document.getElementById('new-exam-marks');
          const saveExamBtn = document.getElementById('save-exam-btn');
