@@ -894,6 +894,121 @@
          });
          }
          });
+
+                  // Save changes made to an existing custom exam
+         saveExamChangesBtn.addEventListener('click', async () => {
+         const examName = newExamName.value.trim();
+         const maxMarksInput = newExamMarks.value;
+         const maxMarks = parseInt(maxMarksInput, 10);
+         const selectedClass = classSelect.value;
+         const selectedSubject = subjectSelect.value;
+         const selectedExam = examSelect.value;
+
+         if(!exams.find(e => e.name === selectedExam)) {
+         return;
+         }
+         
+         if (!examName || isNaN(maxMarks) || maxMarks <= 0 || maxMarksInput.includes('.')) {
+         showDialog({
+         title: 'Warning',
+         message: 'Please enter a valid exam name and maximum marks. The maximum marks must be a positive integer without a decimal part.',
+         type: 'alert'
+         });
+         return;
+         }
+         
+         // Check if exam already exists in common exams
+         if (exams.some(exam => exam.name === examName)) {
+         showDialog({
+         title: 'Error',
+         message: 'An exam with this name already exists in common exams.',
+         type: 'alert'
+         });
+         return;
+         }
+         
+         // Check if custom exam already exists for this class and subject
+         if (customExams.some(exam => 
+         exam.name === examName && 
+         exam.class === selectedClass && 
+         exam.subject === selectedSubject)) {
+         showDialog({
+         title: 'Error',
+         message: 'An exam with this name already exists for the chosen class and subject.',
+         type: 'alert'
+         });
+         return;
+         }
+         
+         showLoading();
+         
+         // Update data on Supabase
+         const updatedData = await updateRow(
+                            'custom_exams',
+                            matchColumns = ['name', 'class', 'subject'],
+                            matchValues = [selectedExam, selectedClass, selectedSubject],
+                            updateColumns = ['name', 'mm'],
+                            updateValues = [examName, maxMarks]
+                            );
+         
+         // Only proceed if data was successfully updated
+         if (updatedData) {
+         // Update the local customExams array
+         const foundExam = customExams.find(item =>
+         item.name === selectedExam &&
+         item.subject === selectedSubject &&
+         item.class === selectedClass
+         );
+
+         if (foundExam) {
+         foundExam.name = examName;
+         foundExam.mm = maxMarks;
+         }
+         
+         // Find the option with value equal to selectedExam in the examSelect
+         const option = Array.from(examSelect.options).find(opt => opt.value === selectedExam);
+
+         if (option) {
+         // Update the option's value and text
+         option.value = examName;
+         option.textContent = examName;
+
+         // Apply custom data attribute
+         option.dataset.custom = 'true';
+
+         // Set the select element's value to the updated one
+         examSelect.value = examName;
+         }
+
+         
+         // Update max marks display
+         maxMarksInput.value = maxMarks;
+         
+         // Close modal and clear fields
+         examModal.classList.add('hidden');
+         newExamName.value = '';
+         newExamMarks.value = '20';
+         
+         hideLoading();
+         
+         // Show success message
+         await showDialog({
+         title: 'Success',
+         message: 'Exam added successfully!',
+         type: 'alert'
+         });
+         
+         // Trigger change event to update the form
+         examSelect.dispatchEvent(new Event('change'));
+         } else {
+         // Show error message if data insertion failed
+         showDialog({
+         title: 'Database Error',
+         message: 'Failed to update the custom exam. Please try again later.',
+         type: 'alert'
+         });
+         }
+         });
          
          // Update max marks when exam changes
          examSelect.addEventListener('change', () => {
