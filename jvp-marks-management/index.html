@@ -410,7 +410,7 @@
          @keyframes spin {
          to { transform: rotate(360deg); }
          }
-         #add-exam-btn, #score-insight-btn, #generate-report-btn {
+         #add-exam-btn, #edit-exam-btn, #score-insight-btn, #generate-report-btn {
          margin-top: 10px;
          min-width: 180px;
          display: inline-block;
@@ -602,6 +602,7 @@
                      <label for="max-marks-input" class="hidden">Maximum Marks</label>
                      <input type="number" id="max-marks-input" min="1" max="100" value="20" class="hidden">
                   </div>
+                  <button id="edit-exam-btn" class="btn-secondary" style="display: none">Edit Exam Details</button>
                   <button id="add-exam-btn" class="btn-secondary">Add New Exam</button>
                   <button id="score-insight-btn" class="btn-secondary" data-class="" data-exam="" data-sub="" style="display: none">Score Insight</button>
                   <button id="generate-report-btn" class="btn-secondary" data-class="" style="display: none">Generate Report</button>
@@ -671,6 +672,7 @@
             <div class="form-actions">
                <button id="cancel-exam-btn">Cancel</button>
                <button id="save-exam-btn" class="btn-secondary">Save</button>
+               <button id="update-exam-btn" class="btn-secondary">Update Details</button>
             </div>
          </div>
       </div>
@@ -722,7 +724,7 @@
          
          // Initialize empty marks array
          let marks = [];
-
+         
          // Hold maximum marks for the currently selected exam for validation checks later on
          let maxMarksForSelectedExam = Infinity;
          
@@ -752,11 +754,13 @@
          
          // Add exam functionality
          const addExamBtn = document.getElementById('add-exam-btn');
+         const editExamBtn = document.getElementById('edit-exam-btn');
          const examModal = document.getElementById('exam-modal');
          const examModalHeading = document.getElementById('exam-modal-heading');
          const newExamName = document.getElementById('new-exam-name');
          const newExamMarks = document.getElementById('new-exam-marks');
          const saveExamBtn = document.getElementById('save-exam-btn');
+         const updateExamBtn = document.getElementById('update-exam-btn');
          const cancelExamBtn = document.getElementById('cancel-exam-btn');
          const maxMarksInput = document.getElementById('max-marks-input');
          
@@ -770,7 +774,7 @@
          // Store the selected report type
          let selectedReportType = 'consolidated'; // Default selection
          
-         // Show/hide exam modal with class and subject info
+         // Show exam modal for adding new exam
          addExamBtn.addEventListener('click', () => {
          const selectedClass = classSelect.value;
          const selectedSubject = subjectSelect.value;
@@ -784,6 +788,19 @@
          return;
          }
          
+          // Set heading to "Add New Exam"
+         examModalHeading.innerText = 'Add New Exam';
+         
+         // Show Save Exam Button
+         saveExamBtn.style.display = 'block';
+         
+         // Hide "Update Details" Button
+         updateExamBtn.style.display = 'none';
+         
+         // Reset exam name and mm fields
+         newExamName.value = '';
+         newExamMarks.value = 10;
+         
          // Update the modal with selected class and subject
          document.getElementById('exam-class-subject-info').textContent = 
          `Class: ${selectedClass}, Subject: ${selectedSubject}`;
@@ -794,6 +811,30 @@
          
          cancelExamBtn.addEventListener('click', () => {
          examModal.classList.add('hidden');
+         });
+         
+         // Edit existing exam button  
+         editExamBtn.addEventListener('click', () => {  
+         const selectedClass = classSelect.value;  
+         const selectedSubject = subjectSelect.value;  
+         const selectedExam = examSelect.value;  
+         
+         // Set heading to "Edit Exam Details"  
+         examModalHeading.innerText = 'Edit Exam Details';  
+         
+         // Hide Save Exam Button  
+         saveExamBtn.style.display = 'none';  
+         
+         // Show "Update Details" Button  
+         updateExamBtn.style.display = 'block';  
+         
+         // Update the modal with selected class and subject  
+         document.getElementById('exam-class-subject-info').textContent =   
+         `Class: ${selectedClass}, Subject: ${selectedSubject}`;  
+         
+         examModal.classList.remove('hidden');  
+         newExamName.value = selectedExam;  
+         newExamMarks.value = maxMarksForSelectedExam;
          });
          
          // Save new custom exam
@@ -870,7 +911,7 @@
          // Close modal and clear fields
          examModal.classList.add('hidden');
          newExamName.value = '';
-         newExamMarks.value = '20';
+         newExamMarks.value = '10';
          
          hideLoading();
          
@@ -892,6 +933,127 @@
          });
          }
          });
+         
+         // Save changes made to an existing custom exam
+         updateExamBtn.addEventListener('click', async () => {
+         const examName = newExamName.value.trim();
+         const maxMarksInput = newExamMarks.value;
+         const maxMarks = parseInt(maxMarksInput, 10);
+         const selectedClass = classSelect.value;
+         const selectedSubject = subjectSelect.value;
+         const selectedExam = examSelect.value;
+         
+         if(!customExams.find(e => e.name === selectedExam)) {
+         return;
+         }
+         
+         if (!examName || isNaN(maxMarks) || maxMarks <= 0 || maxMarksInput.includes('.')) {
+         showDialog({
+         title: 'Warning',
+         message: 'Please enter a valid exam name and maximum marks. The maximum marks must be a positive integer without a decimal part.',
+         type: 'alert'
+         });
+         return;
+         }
+         
+         // Check if exam already exists in common exams
+         if (exams.some(exam => exam.name === examName)) {
+         showDialog({
+         title: 'Error',
+         message: 'An exam with this name already exists in common exams.',
+         type: 'alert'
+         });
+         return;
+         }
+         
+         // Check if custom exam already exists for this class and subject (only if new exam name is different from old exam name)
+         if (customExams.some(exam => 
+         exam.name === examName && 
+         exam.class === selectedClass && 
+         exam.subject === selectedSubject) && examName !== selectedExam) {
+         showDialog({
+         title: 'Error',
+         message: 'An exam with this name already exists for the chosen class and subject.',
+         type: 'alert'
+         });
+         return;
+         }
+         
+         showLoading();
+         
+         // Update data on Supabase
+         const updatedData = await invokeFunction(
+            'update_custom_exam',  // PostgreSQL function name
+            {
+                p_old_exam_name: selectedExam,
+                p_new_exam_name: examName,
+                p_new_mm: maxMarks,
+                p_class: selectedClass,
+                p_subject: selectedSubject
+            },
+            true  // fetchSingle = true (since function returns single row)
+         );
+         
+         // Only proceed if data was successfully updated
+         if (updatedData) {
+         // Update the local customExams array
+         const foundExam = customExams.find(item =>
+         item.name === selectedExam &&
+         item.subject === selectedSubject &&
+         item.class === selectedClass
+         );
+         
+         if (foundExam) {
+         foundExam.name = examName;
+         foundExam.mm = maxMarks;
+         }
+         
+         // Find the option with value equal to selectedExam in the examSelect
+         const option = Array.from(examSelect.options).find(opt => opt.value === selectedExam);
+         
+         if (option) {
+         // Update the option's value and text
+         option.value = examName;
+         option.textContent = examName;
+         
+         // Apply custom data attribute
+         option.dataset.custom = 'true';
+         
+         // Set the select element's value to the updated one
+         examSelect.value = examName;
+         }
+         
+         
+         // Update max marks display
+         maxMarksInput.value = maxMarks;
+         
+         // Close modal and clear fields
+         examModal.classList.add('hidden');
+         newExamName.value = '';
+         newExamMarks.value = '10';
+         
+         
+         hideLoading();
+         
+         // Show success message
+         await showDialog({
+         title: 'Success',
+         message: 'Exam details updated successfully!',
+         type: 'alert'
+         });
+         
+         // Trigger change event to update the form
+         examSelect.dispatchEvent(new Event('change'));
+         } else {
+         // Show error message if data insertion failed
+         showDialog({
+         title: 'Database Error',
+         message: 'Failed to update the custom exam. Please try again later.',
+         type: 'alert'
+         });
+         }
+         });
+         
          
          // Update max marks when exam changes
          examSelect.addEventListener('change', () => {
@@ -1186,9 +1348,10 @@
          let selectedSubject = subjectSelect.value;
          let selectedExam = examSelect.value;
          
-          // Hide score insight and generate report buttons at first
+          // Hide edit exam, score insight and generate report buttons at first
          scoreInsightBtn.style.display = 'none';
          generateReportBtn.style.display = 'none';
+         editExamBtn.style.display = 'none';
          
          // Only update the subject dropdown when class changes, not when exam/subject changes, also fetch students list for the selected class
          if (event.target === classSelect && selectedClass) {
@@ -1214,6 +1377,14 @@
          
          // Make generate report button visible
          generateReportBtn.style.display = 'inline-block';
+         
+         // Make edit exam button visible ONLY if the exam is of custom type
+         if (customExams.some(exam => 
+         exam.name === selectedExam && 
+         exam.class === selectedClass && 
+         exam.subject === selectedSubject)) {
+         editExamBtn.style.display = 'inline-block';
+          }
          
          // Set exam, class & subject as data attributes of the score insight and generate report buttons
          scoreInsightBtn.dataset.exam = selectedExam;
@@ -1438,33 +1609,33 @@
                         
          // Submit form
          submitBtn.addEventListener('click', async () => {
-    const selectedClass = classSelect.value;
-    const selectedExam = examSelect.value;
-    const selectedSubject = subjectSelect.value;
-    
-    if (!selectedClass || !selectedExam || !selectedSubject) return;
-    
-    // Check if any marks value exceeds the maximum allowed for the selected exam
-    const inputs = document.querySelectorAll('.marks-input');
-    for (const input of inputs) {
-        const marksValue = input.value.trim() === '' ? null : parseFloat(input.value);
-        if (marksValue !== null && marksValue > maxMarksForSelectedExam) {
+         const selectedClass = classSelect.value;
+         const selectedExam = examSelect.value;
+         const selectedSubject = subjectSelect.value;
+         
+         if (!selectedClass || !selectedExam || !selectedSubject) return;
+         
+         // Check if any marks value exceeds the maximum allowed for the selected exam
+         const inputs = document.querySelectorAll('.marks-input');
+         for (const input of inputs) {
+         const marksValue = input.value.trim() === '' ? null : parseFloat(input.value);
+         if (marksValue !== null && marksValue > maxMarksForSelectedExam) {
             await showDialog({
                 title: 'Invalid Marks',
                 message: `Marks cannot exceed the maximum value of ${maxMarksForSelectedExam} for this exam.`,
                 type: 'alert'
             });
             return; // Exit the handler without further processing
-        }
-    }
-    
-    showLoading();
-    
-    try {
-        let updatedMarks = false;
-        const marksToSync = [];
-        
-        inputs.forEach(input => {
+         }
+         }
+         
+         showLoading();
+         
+         try {
+         let updatedMarks = false;
+         const marksToSync = [];
+         
+         inputs.forEach(input => {
             const studentName = input.dataset.student;
             const marksValue = input.value.trim() === '' ? null : parseFloat(input.value);
             
@@ -1520,9 +1691,9 @@
             }
             
             updatedMarks = true;
-        });
-        
-        if (updatedMarks) {
+         });
+         
+         if (updatedMarks) {
             // Sync with Supabase - using insert to handle both updates and inserts via a trigger on marks_view
             
             const syncResult = await insertData(
@@ -1549,19 +1720,19 @@
                 });
                 showFeedback('Error syncing with database. Please try again.', 'error');
             }
-        }
-    } catch (error) {
-        console.error('Error saving marks:', error);
-        await showDialog({
+         }
+         } catch (error) {
+         console.error('Error saving marks:', error);
+         await showDialog({
             title: 'Error',
             message: 'An error occurred while saving marks.',
             type: 'alert'
-        });
-        showFeedback('An error occurred while saving marks.', 'error');
-    } finally {
-        hideLoading();
-    }
-});
+         });
+         showFeedback('An error occurred while saving marks.', 'error');
+         } finally {
+         hideLoading();
+         }
+         });
          
          // Clear form
          clearBtn.addEventListener('click', () => {
@@ -1674,6 +1845,7 @@
          // Update existing record
          marks[existingIndex].marks = marksValue;
          marks[existingIndex].updated_at = fetchedMark.updated_at;
+         marks[existingIndex].exam = fetchedMark.exam;
          } else {
          // Add new record (with the potentially modified marks value)
          const newMark = {...fetchedMark, marks: marksValue};
@@ -1797,7 +1969,7 @@
          let isOptionalSub = (optionalSubjects[classValue] && optionalSubjects[classValue].includes(subjectValue));
          if(subjectValue && isOptionalSub) {
              results = await selectData('students', false, 'name', ['class'], [classValue], 'name', 'asc', [
-   { column: "opted_subjects", operator: "ov", value: [subjectValue] } ]);
+         { column: "opted_subjects", operator: "ov", value: [subjectValue] } ]);
          } else {
              results = await selectData('students', false, 'name', ['class'], [classValue], 'name', 'asc');
          }
