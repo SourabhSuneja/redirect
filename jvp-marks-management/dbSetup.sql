@@ -35,6 +35,7 @@ DROP FUNCTION IF EXISTS secure_join_tables(
     text[],
     text
 );
+DROP FUNCTION IF EXISTS update_custom_exam(TEXT, TEXT, INTEGER, TEXT, TEXT);
 
 -- Drop tables (in reverse order of creation to handle foreign key dependencies)
 DROP TABLE IF EXISTS marks_backup;
@@ -1013,5 +1014,145 @@ BEGIN
 
     -- Return empty array instead of null if no results found
     RETURN COALESCE(result_json, '[]'::json);
+END;
+$$;
+
+-- Function to allow editing of custom exam details (name & mm) and also update corresponding marks records
+CREATE OR REPLACE FUNCTION update_custom_exam(
+    p_old_exam_name TEXT,
+    p_new_exam_name TEXT,
+    p_new_mm INTEGER,
+    p_class TEXT,
+    p_subject TEXT
+)
+RETURNS TABLE(
+    id UUID,
+    name TEXT,
+    mm INTEGER,
+    class TEXT,
+    subject TEXT,
+    created_at TIMESTAMP,
+    marks_updated_count INTEGER
+)
+LANGUAGE plpgsql
+SECURITY INVOKER
+AS $$
+DECLARE
+    v_exam_exists BOOLEAN := FALSE;
+    v_new_name_conflict BOOLEAN := FALSE;
+    v_marks_updated_count INTEGER := 0;
+    v_custom_exam_record RECORD;
+BEGIN
+    -- Validate input parameters
+    IF p_old_exam_name IS NULL OR p_old_exam_name = '' THEN
+        RAISE EXCEPTION 'Old exam name cannot be null or empty';
+    END IF;
+    
+    IF p_new_exam_name IS NULL OR p_new_exam_name = '' THEN
+        RAISE EXCEPTION 'New exam name cannot be null or empty';
+    END IF;
+    
+    IF p_new_mm IS NULL OR p_new_mm <= 0 THEN
+        RAISE EXCEPTION 'Maximum marks (mm) must be a positive integer';
+    END IF;
+    
+    IF p_class IS NULL OR p_class = '' THEN
+        RAISE EXCEPTION 'Class cannot be null or empty';
+    END IF;
+    
+    IF p_subject IS NULL OR p_subject = '' THEN
+        RAISE EXCEPTION 'Subject cannot be null or empty';
+    END IF;
+
+    -- Check if the exam exists for the specified class and subject
+    SELECT EXISTS(
+        SELECT 1 FROM custom_exams ce
+        WHERE ce.name = p_old_exam_name 
+        AND ce.class = p_class 
+        AND ce.subject = p_subject
+    ) INTO v_exam_exists;
+    
+    IF NOT v_exam_exists THEN
+        RAISE EXCEPTION 'Exam "%" does not exist for class "%" and subject "%"', 
+            p_old_exam_name, p_class, p_subject;
+    END IF;
+
+    -- Check if the new exam name already exists for the same class and subject
+    -- (only if the new name is different from the old name)
+    IF p_old_exam_name != p_new_exam_name THEN
+        SELECT EXISTS(
+            SELECT 1 FROM custom_exams ce
+            WHERE ce.name = p_new_exam_name 
+            AND ce.class = p_class 
+            AND ce.subject = p_subject
+        ) INTO v_new_name_conflict;
+        
+        IF v_new_name_conflict THEN
+            RAISE EXCEPTION 'An exam with name "%" already exists for class "%" and subject "%"', 
+                p_new_exam_name, p_class, p_subject;
+        END IF;
+    END IF;
+
+    -- Update the custom_exams table first
+    UPDATE custom_exams ce
+    SET 
+        name = p_new_exam_name,
+        mm = p_new_mm
+    WHERE 
+        ce.name = p_old_exam_name 
+        AND ce.class = p_class 
+        AND ce.subject = p_subject;
+
+    -- Update the marks table for matching records
+    -- Join with students table to get the class information
+    WITH marks_to_update AS (
+        SELECT m.id
+        FROM marks m
+        INNER JOIN students s ON m.student_id = s.id
+        WHERE 
+            m.exam = p_old_exam_name
+            AND m.subject = p_subject
+            AND s.class = p_class
+    )
+    UPDATE marks m
+    SET 
+        exam = p_new_exam_name,
+        updated_at = CURRENT_TIMESTAMP
+    FROM marks_to_update mtu
+    WHERE m.id = mtu.id;
+
+    -- Get the count of updated marks records
+    GET DIAGNOSTICS v_marks_updated_count = ROW_COUNT;
+
+    -- Retrieve the updated exam record to return
+    SELECT 
+        ce.id, 
+        ce.name, 
+        ce.mm, 
+        ce.class, 
+        ce.subject, 
+        ce.created_at
+    INTO v_custom_exam_record
+    FROM custom_exams ce
+    WHERE 
+        ce.name = p_new_exam_name 
+        AND ce.class = p_class 
+        AND ce.subject = p_subject;
+
+    -- Return the updated exam details along with marks update count
+    RETURN QUERY
+    SELECT 
+        v_custom_exam_record.id,
+        v_custom_exam_record.name,
+        v_custom_exam_record.mm,
+        v_custom_exam_record.class,
+        v_custom_exam_record.subject,
+        v_custom_exam_record.created_at,
+        v_marks_updated_count;
+
+EXCEPTION
+    WHEN OTHERS THEN
+        -- Re-raise the exception to ensure transaction rollback
+        RAISE;
 END;
 $$;
