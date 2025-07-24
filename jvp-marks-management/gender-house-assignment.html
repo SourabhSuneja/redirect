@@ -706,22 +706,21 @@
     }, true);
 console.log('Result', result);
     // Check if function call failed completely
-    if (!result || !Array.isArray(result) || result.length === 0 || result[0].update_students_info === undefined) {
+    if (!result) {
         console.error('Function call failed or did not return expected format');
         alert('Update failed. Please try again or check function permissions.');
         return false;
     }
 
     // Extract the actual return value
-    const updateStatus = result[0].update_students_info;
+    const updateStatus = result.result;
 
-    if (updateStatus === 1) {
+    if (updateStatus >= 1) {
         console.log('✅ Student data updated successfully');
-        alert('Student information has been updated successfully!');
+        alert('Student information has been updated successfully! ' + updateStatus + ' records affected.');
         return true;
-    } else {
-        console.error('❌ Database error occurred during update');
-        alert('An error occurred while updating student data. Please contact support.');
+    } else if (updateStatus === 0) {
+        alert('Nothing to save! You did not make any changes to student information.');
         return false;
     }
 }
