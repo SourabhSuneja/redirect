@@ -82,7 +82,7 @@
          box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
          }
          .select-wrapper::after {
-         content: '▼';
+         content: 'â–¼';
          position: absolute;
          right: 15px;
          top: 50%;
@@ -397,7 +397,7 @@
                </div>
                <div class="save-section">
                   <button id="saveButton" class="save-button" onclick="handleSave()">
-                  💾 Save Changes
+                  ðŸ’¾ Save Changes
                   </button>
                   <p style="margin-top: 10px; color: #7f8c8d; font-size: 0.9rem;">
                      Save all student assignments to the server
@@ -416,12 +416,16 @@
       </div>
       <script>
          // Global variables
-         
          let students = [];
-         
          let houses = {};
-         
          let genderInfo = {};
+         
+         // --- MODIFICATION START ---
+         // Internal variables to track changes in a simple, efficient format.
+         // Format: { studentId: 'new value' }
+         let houseChanges = {};
+         let genderChanges = {};
+         // --- MODIFICATION END ---
          
          // Initialize the application
          document.addEventListener('DOMContentLoaded', function() {
@@ -458,10 +462,10 @@
              const studentCount = document.getElementById('studentCount');
          
              const classStudents = students.filter(student => student.class === className);
-             
+         
              selectedClassSpan.textContent = className;
              studentCount.textContent = `${classStudents.length} student${classStudents.length !== 1 ? 's' : ''} found`;
-             
+         
              if (classStudents.length === 0) {
                  noStudents.style.display = 'block';
                  studentsGrid.innerHTML = '';
@@ -469,7 +473,7 @@
                  noStudents.style.display = 'none';
                  renderStudents(classStudents);
              }
-             
+         
              studentsSection.classList.add('active');
          }
          
@@ -491,10 +495,10 @@
          function createStudentCard(student) {
              const card = document.createElement('div');
              card.className = 'student-card';
-             
+         
              const currentGender = getCurrentGender(student.id);
              const currentHouse = getCurrentHouse(student.id);
-             
+         
              card.innerHTML = `
                  <div class="student-name">
                      ${student.name}
@@ -537,7 +541,7 @@
                      </div>
                  </div>
              `;
-             
+         
              // Add event listeners for gender radio buttons
              const genderRadios = card.querySelectorAll(`input[name="gender-${student.id}"]`);
              genderRadios.forEach(radio => {
@@ -545,7 +549,7 @@
                      updateGender(student.id, this.value);
                  });
              });
-             
+         
              // Add event listeners for house radio buttons
              const houseRadios = card.querySelectorAll(`input[name="house-${student.id}"]`);
              houseRadios.forEach(radio => {
@@ -553,11 +557,14 @@
                      updateHouse(student.id, this.value);
                  });
              });
-             
+         
              return card;
          }
          
          function getCurrentGender(studentId) {
+             if (genderChanges.hasOwnProperty(studentId)) {
+                 return genderChanges[studentId];
+             }
              for (const [gender, ids] of Object.entries(genderInfo)) {
                  if (ids.includes(studentId)) {
                      return gender;
@@ -567,6 +574,9 @@
          }
          
          function getCurrentHouse(studentId) {
+             if (houseChanges.hasOwnProperty(studentId)) {
+                 return houseChanges[studentId];
+             }
              for (const [house, ids] of Object.entries(houses)) {
                  if (ids.includes(studentId)) {
                      return house;
@@ -576,46 +586,18 @@
          }
          
          function updateGender(studentId, newGender) {
-             // Remove student from all gender arrays
-             Object.keys(genderInfo).forEach(gender => {
-                 const index = genderInfo[gender].indexOf(studentId);
-                 if (index > -1) {
-                     genderInfo[gender].splice(index, 1);
-                 }
-             });
-             
-             // Add student to new gender array
-             if (!genderInfo[newGender]) {
-                 genderInfo[newGender] = [];
-             }
-             genderInfo[newGender].push(studentId);
-             
-             console.log('Updated gender:', genderInfo);
+             genderChanges[studentId] = newGender;
+             console.log('Queued gender changes:', genderChanges);
          }
          
          function updateHouse(studentId, newHouse) {
-             // Remove student from all house arrays
-             Object.keys(houses).forEach(house => {
-                 const index = houses[house].indexOf(studentId);
-                 if (index > -1) {
-                     houses[house].splice(index, 1);
-                 }
-             });
-             
-             // Add student to new house array
-             if (!houses[newHouse]) {
-                 houses[newHouse] = [];
-             }
-             houses[newHouse].push(studentId);
-             
-             console.log('Updated houses:', houses);
+             houseChanges[studentId] = newHouse;
+             console.log('Queued house changes:', houseChanges);
          }
          
-         // Loading overlay functions
          function showLoadingOverlay() {
              const overlay = document.getElementById('loadingOverlay');
              const saveButton = document.getElementById('saveButton');
-             
              overlay.classList.add('active');
              saveButton.disabled = true;
              saveButton.textContent = 'Saving...';
@@ -624,121 +606,149 @@
          function hideLoadingOverlay() {
              const overlay = document.getElementById('loadingOverlay');
              const saveButton = document.getElementById('saveButton');
-             
              overlay.classList.remove('active');
              saveButton.disabled = false;
              saveButton.innerHTML = '💾 Save Changes';
          }
          
+         // --- MODIFICATION START ---
+         // This function now transforms the internal change data into the required server format before sending.
          async function updateStudentsWithFeedback() {
-         console.log('Starting student data update...');
+             console.log('Starting student data update...');
          
-         const result = await invokeFunction('update_students_info', {
-         houses: houses,
-         gender_info: genderInfo
-         }, true);
-         console.log('Result', result);
-         // Check if function call failed completely
-         if (!result) {
-         console.error('Function call failed or did not return expected format');
-         alert('Update failed. Please try again or check function permissions.');
-         return false;
-         }
+             if (Object.keys(houseChanges).length === 0 && Object.keys(genderChanges).length === 0) {
+                 console.log('No changes to save.');
+                 alert('No changes have been made.');
+                 return true;
+             }
          
-         // Extract the actual return value
-         const updateStatus = result.result;
+             // Helper function to build the house payload in the required format
+             const buildHousePayload = (changes) => {
+                 const payload = { 'Ruby': [], 'Sapphire': [], 'Topaz': [], 'Emerald': [] };
+                 for (const studentId in changes) {
+                     const newHouse = changes[studentId];
+                     if (payload.hasOwnProperty(newHouse)) {
+                         payload[newHouse].push(studentId);
+                     }
+                 }
+                 return payload;
+             };
          
-         if (updateStatus > 0) {
-         console.log('✅ Student data updated successfully');
-         alert('Student information has been updated successfully!');
-         return true;
-         } else {
-         console.error('Function call failed or did not return expected format');
-         alert('Update failed. Please try again or check function permissions.');
-         }
-         }
+             // Helper function to build the gender payload in the required format
+             const buildGenderPayload = (changes) => {
+                 const payload = { 'male': [], 'female': [] };
+                 for (const studentId in changes) {
+                     const newGender = changes[studentId];
+                     if (payload.hasOwnProperty(newGender)) {
+                         payload[newGender].push(studentId);
+                     }
+                 }
+                 return payload;
+             };
          
+             // 1. Transform the internal change objects into the server-expected format.
+             const housePayload = buildHousePayload(houseChanges);
+             const genderPayload = buildGenderPayload(genderChanges);
          
-         // Save function placeholder - implement your own event handler
-         async function handleSave() {
-             // Show the loading overlay
-             showLoadingOverlay();
+             console.log('Sending House Payload:', housePayload);
+             console.log('Sending Gender Payload:', genderPayload);
+         
+             // 2. Invoke the function with the correctly structured payloads.
+             const result = await invokeFunction('update_students_info', {
+                 houses: housePayload,
+                 gender_info: genderPayload
+             }, true);
              
-             // Invoke function on Supabase to save data
+             console.log('Result', result);
+             if (!result) {
+                 console.error('Function call failed entirely.');
+                 alert('Update failed. Please try again or check function permissions.');
+                 return false;
+             }
+         
+             const updateStatus = result.result;
+             if (updateStatus > 0) {
+                 console.log('✅ Student data updated successfully');
+                 alert('Student information has been updated successfully!');
+         
+                 // 3. On success, update the main 'students' array in memory.
+                 students.forEach(student => {
+                     if (houseChanges.hasOwnProperty(student.id)) {
+                         student.house = houseChanges[student.id];
+                     }
+                     if (genderChanges.hasOwnProperty(student.id)) {
+                         student.gender = genderChanges[student.id] === 'male' ? 'M' : 'F';
+                     }
+                 });
+         
+                 // 4. Re-build the main data objects from the now-updated 'students' array.
+                 updateHouseAndGenderInfo();
+         
+                 // 5. Clear the change trackers for the next set of edits.
+                 houseChanges = {};
+                 genderChanges = {};
+         
+                 return true;
+             } else {
+                 console.error('Update failed on the server:', result);
+                 alert('Update failed. Please check the console and try again.');
+                 return false;
+             }
+         }
+         // --- MODIFICATION END ---
+         
+         async function handleSave() {
+             showLoadingOverlay();
              await updateStudentsWithFeedback();
-                 
-             // Hide loading overlay
              hideLoadingOverlay();
          }
          
-         window.onload = async function () {
-         try {
-         showLoadingOverlay();
-         students = await selectData(
-             'students_backup',
-             false,
-             'id, name, class, house, gender',
-             [],
-             [],
-             'name',
-             'asc'
-         );
-         console.log('Students data loaded:', students);
-         // Update house and gender info in global variables
-         await updateHouseAndGenderInfo();
-         hideLoadingOverlay();
-         } catch (error) {
-         console.error('Error loading students:', error);
-         }
+         window.onload = async function() {
+             try {
+                 showLoadingOverlay();
+                 students = await selectData(
+                     'students_backup',
+                     false,
+                     'id, name, class, house, gender',
+                     [],
+                     [],
+                     'name',
+                     'asc'
+                 );
+                 console.log('Students data loaded:', students);
+                 updateHouseAndGenderInfo();
+                 hideLoadingOverlay();
+             } catch (error) {
+                 console.error('Error loading students:', error);
+                 hideLoadingOverlay();
+             }
          };
          
          function updateHouseAndGenderInfo() {
-         // Ensure global objects exist
-         if (typeof houses !== 'object' || houses === null) {
-         houses = { 'Ruby': [], 'Sapphire': [], 'Topaz': [], 'Emerald': [] };
+             houses = { 'Ruby': [], 'Sapphire': [], 'Topaz': [], 'Emerald': [] };
+             genderInfo = { 'male': [], 'female': [] };
+             
+             const houseSets = { 'Ruby': new Set(), 'Sapphire': new Set(), 'Topaz': new Set(), 'Emerald': new Set() };
+             const genderSets = { 'M': new Set(), 'F': new Set() };
+             
+             for (const student of students) {
+                 const { id, house, gender } = student;
+                 if (house && houseSets.hasOwnProperty(house)) {
+                     houseSets[house].add(id);
+                 }
+                 if (gender === 'M') {
+                     genderSets['M'].add(id);
+                 } else if (gender === 'F') {
+                     genderSets['F'].add(id);
+                 }
+             }
+             
+             for (const house in houseSets) {
+                 houses[house] = Array.from(houseSets[house]);
+             }
+             genderInfo.male = Array.from(genderSets['M']);
+             genderInfo.female = Array.from(genderSets['F']);
          }
-         if (typeof genderInfo !== 'object' || genderInfo === null) {
-         genderInfo = { 'male': [], 'female': [] };
-         }
-         
-         // Helper sets to avoid duplicates
-         const houseSets = {
-         'Ruby': new Set(),
-         'Sapphire': new Set(),
-         'Topaz': new Set(),
-         'Emerald': new Set()
-         };
-         const genderSets = {
-         'M': new Set(),
-         'F': new Set()
-         };
-         
-         // Loop through each student
-         for (const student of students) {
-         const { id, house, gender } = student;
-         
-         // Add to house set if valid
-         if (house && houseSets.hasOwnProperty(house)) {
-             houseSets[house].add(id);
-         }
-         
-         // Add to gender set if valid
-         if (gender === 'M') {
-             genderSets['M'].add(id);
-         } else if (gender === 'F') {
-             genderSets['F'].add(id);
-         }
-         }
-         
-         // Convert sets to arrays and update global vars
-         for (const house in houseSets) {
-         houses[house] = Array.from(houseSets[house]);
-         }
-         genderInfo.male = Array.from(genderSets['M']);
-         genderInfo.female = Array.from(genderSets['F']);
-         }
-         
-         
       </script>
    </body>
 </html>
