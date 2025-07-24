@@ -482,39 +482,9 @@
     </div>
 
     <script>
-        // Global variables (expanded for testing)
-        let classes = ['1-A1', '1-A2', '1-A3', '2-A1', '2-A2', '2-A3', '3-A1', '3-A2', '3-A3', '3-A4', '4-A1', '4-A2', '4-A3', '4-A4', '5-A1', '5-A2', '5-A3', '5-A4', '6-A1', '6-A2', '6-A3', '6-A4', '7-A1', '7-A2', '7-A3', '7-A4', '8-A1', '8-A2', '8-A3', '9-A1', '9-A2', '9-A3', '10-A1', '10-A2', '10-A3', '12-SCI', '12-COM', '12-HUM'];
+        // Global variables
 
-        let students = [
-            // Class 1-A1
-            {'id': '003f2b2f-38cc-48aa-ab33-1a0f61bd66b9', 'name': 'Naksh Saini', 'class': '1-A1'},
-            {'id': '008e8e76-0053-41c1-bc59-0db3e67bfe25', 'name': 'Ayush Sharma', 'class': '1-A1'},
-            {'id': '1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p', 'name': 'Rahul Gupta', 'class': '1-A1'},
-            {'id': '2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q', 'name': 'Priya Singh', 'class': '1-A1'},
-            
-            // Class 1-A2
-            {'id': '0105927c-5d79-47a5-98c8-24d2a3a1c6c5', 'name': 'Bhumika Yadav', 'class': '1-A2'},
-            {'id': '018780ab-c385-43a8-acf4-f35c74b10134', 'name': 'Falak Gupta', 'class': '1-A2'},
-            {'id': '3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r', 'name': 'Arjun Patel', 'class': '1-A2'},
-            {'id': '4d5e6f7g-8h9i-0j1k-2l3m-4n5o6p7q8r9s', 'name': 'Sneha Joshi', 'class': '1-A2'},
-            
-            // Class 2-A1
-            {'id': '5e6f7g8h-9i0j-1k2l-3m4n-5o6p7q8r9s0t', 'name': 'Vikram Kumar', 'class': '2-A1'},
-            {'id': '6f7g8h9i-0j1k-2l3m-4n5o-6p7q8r9s0t1u', 'name': 'Ananya Sharma', 'class': '2-A1'},
-            {'id': '7g8h9i0j-1k2l-3m4n-5o6p-7q8r9s0t1u2v', 'name': 'Rohan Verma', 'class': '2-A1'},
-            
-            // Class 3-A1
-            {'id': '8h9i0j1k-2l3m-4n5o-6p7q-8r9s0t1u2v3w', 'name': 'Kavya Reddy', 'class': '3-A1'},
-            {'id': '9i0j1k2l-3m4n-5o6p-7q8r-9s0t1u2v3w4x', 'name': 'Aditya Agarwal', 'class': '3-A1'},
-            {'id': '0j1k2l3m-4n5o-6p7q-8r9s-0t1u2v3w4x5y', 'name': 'Ishika Bansal', 'class': '3-A1'},
-            {'id': '1k2l3m4n-5o6p-7q8r-9s0t-1u2v3w4x5y6z', 'name': 'Harsh Malhotra', 'class': '3-A1'},
-            {'id': '2l3m4n5o-6p7q-8r9s-0t1u-2v3w4x5y6z7a', 'name': 'Pooja Tiwari', 'class': '3-A1'},
-            
-            // Class 12-SCI
-            {'id': '3m4n5o6p-7q8r-9s0t-1u2v-3w4x5y6z7a8b', 'name': 'Akash Kapoor', 'class': '12-SCI'},
-            {'id': '4n5o6p7q-8r9s-0t1u-2v3w-4x5y6z7a8b9c', 'name': 'Nisha Sinha', 'class': '12-SCI'},
-            {'id': '5o6p7q8r-9s0t-1u2v-3w4x-5y6z7a8b9c0d', 'name': 'Karan Jain', 'class': '12-SCI'},
-        ];
+        let students = [];
 
         let houses = {
             'Ruby': ['003f2b2f-38cc-48aa-ab33-1a0f61bd66b9', '008e8e76-0053-41c1-bc59-0db3e67bfe25', '5e6f7g8h-9i0j-1k2l-3m4n-5o6p7q8r9s0t'],
