@@ -752,6 +752,25 @@
                 genderInfo: genderInfo
             });
         }
+
+        window.onload = async function () {
+    try {
+        const students = await selectData(
+            'students_backup',
+            false,
+            'id, name, class, house, gender',
+            [],
+            [],
+            'name',
+            'asc'
+        );
+        console.log('Students data loaded:', students);
+        // You can now use `students` for further processing here
+    } catch (error) {
+        console.error('Error loading students:', error);
+    }
+};
+
     </script>
 </body>
 </html>
