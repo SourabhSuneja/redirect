@@ -697,22 +697,41 @@
             saveButton.innerHTML = '💾 Save Changes';
         }
 
+        async function updateStudentsWithFeedback() {
+    console.log('Starting student data update...');
+    
+    const result = await invokeFunction('update_students_info', {
+        houses: houses,
+        gender_info: genderInfo
+    }, true);
+    
+    if (result === null) {
+        console.error('Function call failed - check network connection or function permissions');
+        alert('Update failed. Please try again.');
+        return false;
+    }
+    
+    if (result === 1) {
+        console.log('✅ Student data updated successfully');
+        alert('Student information has been updated successfully!');
+        return true;
+    } else {
+        console.error('❌ Database error occurred during update');
+        alert('An error occurred while updating student data. Please contact support.');
+        return false;
+    }
+}
+        
         // Save function placeholder - implement your own event handler
-        function handleSave() {
-            // You can implement your own save logic here
-            // For demonstration, showing the loading overlay
+        async function handleSave() {
+            // Show the loading overlay
             showLoadingOverlay();
             
-            // Example: Hide loading after 2 seconds (remove this in your implementation)
-            setTimeout(() => {
-                hideLoadingOverlay();
-                alert('Data saved successfully! (This is just a demo)');
-            }, 2000);
-            
-            console.log('Current data to save:', {
-                houses: houses,
-                genderInfo: genderInfo
-            });
+            // Invoke function on Supabase to save data
+            await updateStudentsWithFeedback();
+                
+            // Hide loading overlay
+            hideLoadingOverlay();
         }
 
         window.onload = async function () {
