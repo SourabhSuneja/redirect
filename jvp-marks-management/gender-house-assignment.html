@@ -704,7 +704,7 @@
         houses: houses,
         gender_info: genderInfo
     }, true);
-
+console.log('Result', result);
     // Check if function call failed completely
     if (!result || !Array.isArray(result) || result.length === 0 || result[0].update_students_info === undefined) {
         console.error('Function call failed or did not return expected format');
