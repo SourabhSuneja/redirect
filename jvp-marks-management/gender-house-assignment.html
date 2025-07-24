@@ -486,17 +486,9 @@
 
         let students = [];
 
-        let houses = {
-            'Ruby': ['003f2b2f-38cc-48aa-ab33-1a0f61bd66b9', '008e8e76-0053-41c1-bc59-0db3e67bfe25', '5e6f7g8h-9i0j-1k2l-3m4n-5o6p7q8r9s0t'],
-            'Sapphire': ['0105927c-5d79-47a5-98c8-24d2a3a1c6c5', '3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r', '8h9i0j1k-2l3m-4n5o-6p7q-8r9s0t1u2v3w'],
-            'Topaz': ['018780ab-c385-43a8-acf4-f35c74b10134', '6f7g8h9i-0j1k-2l3m-4n5o-6p7q8r9s0t1u', '3m4n5o6p-7q8r-9s0t-1u2v-3w4x5y6z7a8b'],
-            'Emerald': ['1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p', '9i0j1k2l-3m4n-5o6p-7q8r-9s0t1u2v3w4x', '4n5o6p7q-8r9s-0t1u-2v3w-4x5y6z7a8b9c']
-        };
+        let houses = {};
 
-        let genderInfo = {
-            'male': ['003f2b2f-38cc-48aa-ab33-1a0f61bd66b9', '008e8e76-0053-41c1-bc59-0db3e67bfe25', '1a2b3c4d-5e6f-7g8h-9i0j-1k2l3m4n5o6p', '3c4d5e6f-7g8h-9i0j-1k2l-3m4n5o6p7q8r', '5e6f7g8h-9i0j-1k2l-3m4n-5o6p7q8r9s0t', '7g8h9i0j-1k2l-3m4n-5o6p-7q8r9s0t1u2v', '9i0j1k2l-3m4n-5o6p-7q8r-9s0t1u2v3w4x', '1k2l3m4n-5o6p-7q8r-9s0t-1u2v3w4x5y6z', '3m4n5o6p-7q8r-9s0t-1u2v-3w4x5y6z7a8b', '5o6p7q8r-9s0t-1u2v-3w4x-5y6z7a8b9c0d'],
-            'female': ['0105927c-5d79-47a5-98c8-24d2a3a1c6c5', '018780ab-c385-43a8-acf4-f35c74b10134', '2b3c4d5e-6f7g-8h9i-0j1k-2l3m4n5o6p7q', '4d5e6f7g-8h9i-0j1k-2l3m-4n5o6p7q8r9s', '6f7g8h9i-0j1k-2l3m-4n5o-6p7q8r9s0t1u', '8h9i0j1k-2l3m-4n5o-6p7q-8r9s0t1u2v3w', '0j1k2l3m-4n5o-6p7q-8r9s-0t1u2v3w4x5y', '2l3m4n5o-6p7q-8r9s-0t1u-2v3w4x5y6z7a', '4n5o6p7q-8r9s-0t1u-2v3w-4x5y6z7a8b9c']
-        };
+        let genderInfo = {};
 
         // Initialize the application
         document.addEventListener('DOMContentLoaded', function() {
@@ -725,7 +717,8 @@
 
         window.onload = async function () {
     try {
-        const students = await selectData(
+        showLoadingOverlay();
+        students = await selectData(
             'students_backup',
             false,
             'id, name, class, house, gender',
@@ -735,12 +728,61 @@
             'asc'
         );
         console.log('Students data loaded:', students);
-        // You can now use `students` for further processing here
+        // Update house and gender info in global variables
+        await updateHouseAndGenderInfo();
+        hideLoadingOverlay();
     } catch (error) {
         console.error('Error loading students:', error);
     }
 };
 
+function updateHouseAndGenderInfo() {
+    // Ensure global objects exist
+    if (typeof houses !== 'object' || houses === null) {
+        houses = { 'Ruby': [], 'Sapphire': [], 'Topaz': [], 'Emerald': [] };
+    }
+    if (typeof genderInfo !== 'object' || genderInfo === null) {
+        genderInfo = { 'male': [], 'female': [] };
+    }
+
+    // Helper sets to avoid duplicates
+    const houseSets = {
+        'Ruby': new Set(),
+        'Sapphire': new Set(),
+        'Topaz': new Set(),
+        'Emerald': new Set()
+    };
+    const genderSets = {
+        'M': new Set(),
+        'F': new Set()
+    };
+
+    // Loop through each student
+    for (const student of students) {
+        const { id, house, gender } = student;
+
+        // Add to house set if valid
+        if (house && houseSets.hasOwnProperty(house)) {
+            houseSets[house].add(id);
+        }
+
+        // Add to gender set if valid
+        if (gender === 'M') {
+            genderSets['M'].add(id);
+        } else if (gender === 'F') {
+            genderSets['F'].add(id);
+        }
+    }
+
+    // Convert sets to arrays and update global vars
+    for (const house in houseSets) {
+        houses[house] = Array.from(houseSets[house]);
+    }
+    genderInfo.male = Array.from(genderSets['M']);
+    genderInfo.female = Array.from(genderSets['F']);
+}
+
+        
     </script>
 </body>
 </html>
