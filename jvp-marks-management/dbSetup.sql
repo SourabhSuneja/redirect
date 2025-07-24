@@ -70,6 +70,7 @@ CREATE TABLE students (
     name TEXT NOT NULL,
     class TEXT NOT NULL,
     house TEXT,
+    gender TEXT,
     opted_subjects TEXT[],
     access_token UUID NOT NULL DEFAULT gen_random_uuid(),
     CONSTRAINT unique_name_class UNIQUE (name, class),
