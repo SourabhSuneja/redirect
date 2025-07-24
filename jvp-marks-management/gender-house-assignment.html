@@ -699,19 +699,23 @@
 
         async function updateStudentsWithFeedback() {
     console.log('Starting student data update...');
-    
+
     const result = await invokeFunction('update_students_info', {
         houses: houses,
         gender_info: genderInfo
     }, true);
-    
-    if (result === null) {
-        console.error('Function call failed - check network connection or function permissions');
-        alert('Update failed. Please try again.');
+
+    // Check if function call failed completely
+    if (!result || !Array.isArray(result) || result.length === 0 || result[0].update_students_info === undefined) {
+        console.error('Function call failed or did not return expected format');
+        alert('Update failed. Please try again or check function permissions.');
         return false;
     }
-    
-    if (result === 1) {
+
+    // Extract the actual return value
+    const updateStatus = result[0].update_students_info;
+
+    if (updateStatus === 1) {
         console.log('✅ Student data updated successfully');
         alert('Student information has been updated successfully!');
         return true;
@@ -721,6 +725,7 @@
         return false;
     }
 }
+
         
         // Save function placeholder - implement your own event handler
         async function handleSave() {
