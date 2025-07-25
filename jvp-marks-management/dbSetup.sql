@@ -37,6 +37,9 @@ DROP FUNCTION IF EXISTS secure_join_tables(
 );
 DROP FUNCTION IF EXISTS update_custom_exam(TEXT, TEXT, INTEGER, TEXT, TEXT);
 
+-- This function is ANYWAY temporary
+DROP FUNCTION IF EXISTS update_students_info(JSON, JSON);
+
 -- Drop tables (in reverse order of creation to handle foreign key dependencies)
 DROP TABLE IF EXISTS marks_backup;
 DROP TABLE IF EXISTS marks;
@@ -1157,3 +1160,97 @@ EXCEPTION
         RAISE;
 END;
 $$;
+
+
+-- A temporary function used for gender/house details collection from teachers for students table in a quick and unauthenticated manner
+-- This function updates student information based on JSON inputs for house and gender.
+-- It now returns a table with a single 'result' column: 1 for success, 0 for failure.
+CREATE OR REPLACE FUNCTION update_students_info(
+    houses JSON,
+    gender_info JSON
+) 
+RETURNS TABLE(result INTEGER) -- Changed return type to return a table
+SECURITY DEFINER
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    house_key TEXT;
+    house_ids JSON;
+    student_id UUID;
+    gender_key TEXT;
+    gender_ids JSON;
+    update_count INTEGER := 0;
+    total_updates INTEGER := 0;
+BEGIN
+    -- The main logic is wrapped in a block for exception handling.
+    BEGIN
+        -- Process the 'houses' JSON object.
+        -- It iterates through each house (e.g., "Ruby", "Sapphire").
+        FOR house_key IN SELECT json_object_keys(houses)
+        LOOP
+            house_ids := houses->house_key;
+            
+            -- It proceeds only if there are student IDs for the current house.
+            IF json_array_length(house_ids) > 0 THEN
+                -- It updates the 'house' for each student ID in the array.
+                FOR student_id IN 
+                    SELECT (json_array_elements_text(house_ids))::UUID
+                LOOP
+                    UPDATE students_backup 
+                    SET house = house_key
+                    WHERE id = student_id;
+                    
+                    GET DIAGNOSTICS update_count = ROW_COUNT;
+                    total_updates := total_updates + update_count;
+                END LOOP;
+            END IF;
+        END LOOP;
+        
+        -- Process the 'gender_info' JSON object.
+        -- It iterates through each gender (e.g., "male", "female").
+        FOR gender_key IN SELECT json_object_keys(gender_info)
+        LOOP
+            gender_ids := gender_info->gender_key;
+            
+            -- It proceeds only if there are student IDs for the current gender.
+            IF json_array_length(gender_ids) > 0 THEN
+                -- It updates the 'gender' for each student ID in the array.
+                FOR student_id IN 
+                    SELECT (json_array_elements_text(gender_ids))::UUID
+                LOOP
+                    UPDATE students_backup 
+                    SET gender = CASE 
+                        WHEN gender_key = 'male' THEN 'M'
+                        WHEN gender_key = 'female' THEN 'F'
+                        ELSE gender_key
+                    END
+                    WHERE id = student_id;
+                    
+                    GET DIAGNOSTICS update_count = ROW_COUNT;
+                    total_updates := total_updates + update_count;
+                END LOOP;
+            END IF;
+        END LOOP;
+        
+        -- If all updates complete without error, return a row with result = 1.
+        RETURN QUERY SELECT 1;
+        
+    EXCEPTION
+        -- If any error occurs during the process, it's caught here.
+        WHEN OTHERS THEN
+            -- Logs the specific error message to the server logs for debugging.
+            RAISE NOTICE 'Error in update_students_info: %', SQLERRM;
+            -- Returns a row with result = 0 to indicate failure.
+            RETURN QUERY SELECT 0;
+    END;
+END;
+$$;
+
+-- Example usage:
+/*
+-- To call the function and see the result set:
+SELECT * FROM update_students_info(
+    '{"Ruby": ["003f2b2f-38cc-48aa-ab33-1a0f61bd66b9", "008e8e76-0053-41c1-bc59-0db3e67bfe25"], "Sapphire": ["0105927c-5d79-47a5-98c8-24d2a3a1c6c5"], "Topaz": ["018780ab-c385-43a8-acf4-f35c74b10134"], "Emerald": []}'::JSON,
+    '{"male": ["003f2b2f-38cc-48aa-ab33-1a0f61bd66b9", "008e8e76-0053-41c1-bc59-0db3e67bfe25"], "female": ["0105927c-5d79-47a5-98c8-24d2a3a1c6c5", "018780ab-c385-43a8-acf4-f35c74b10134"]}'::JSON
+);
+*/
