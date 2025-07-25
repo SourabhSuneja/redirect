@@ -4,6 +4,7 @@
       <meta charset="UTF-8">
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
       <title>Jamna Vidyapeeth - House List Generator</title>
+      <meta name="description" content="Generate house-wise student lists by class and gender. Quick, easy, and perfect for teachers.">
       <!-- Supabase CRUD Functions -->
       <script type="module" src="supabase-crud.js"></script>
       <!-- Common JS Functions -->
@@ -764,15 +765,7 @@
           window.onload = async function() {
               try {
                   showLoadingOverlay();
-                  students = await selectData(
-                      'students',
-                      false,
-                      'name, class, house, gender',
-                      [],
-                      [],
-                      'name',
-                      'asc'
-                  );
+                  students = await invokeFunction('get_students_sorted');
                   // Initialize the application
                   init();
                   hideLoadingOverlay();
