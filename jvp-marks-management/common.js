@@ -22,6 +22,8 @@ let subjects = [
   "Biology",
   "P.E.",
   "I.P.",
+  "Psychology",
+  "Applied Maths",
   "Geography",
   "Accountancy",
   "B.St.",
