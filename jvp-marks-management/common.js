@@ -24,6 +24,7 @@ let subjects = [
   "I.P.",
   "Psychology",
   "Applied Maths",
+  "Fine Arts",
   "Geography",
   "Accountancy",
   "B.St.",
@@ -33,6 +34,9 @@ let subjects = [
 ];
 
 let optionalSubjects = {
+'11-HUM': ['Applied Maths', 'Maths', 'P.E.', 'I.P.', 'Economics', 'Fine Arts', 'Psychology'],
+'11-COM': ['Applied Maths', 'Maths', 'P.E.', 'I.P.', 'Fine Arts', 'Psychology'],
+'11-SCI': ['Biology', 'Maths', 'P.E.', 'I.P.', 'Geography', 'Economics', 'Fine Arts', 'Psychology'],
 '12-HUM': ['Maths', 'P.E.', 'I.P.', 'Economics'],
 '12-COM': ['Maths', 'P.E.', 'I.P.'],
 '12-SCI': ['Biology', 'Maths', 'P.E.', 'I.P.', 'Geography', 'Economics']
