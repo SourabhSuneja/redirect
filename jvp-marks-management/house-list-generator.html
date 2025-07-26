@@ -246,14 +246,13 @@
          color: #6c757d;
          }
          .gender-unknown { 
-    background: #f5f5f5; 
-    color: #666; 
-}
-
-.house-unknown { 
-    background: #f5f5f5; 
-    color: #666; 
-}
+         background: #f5f5f5; 
+         color: #666; 
+         }
+         .house-unknown { 
+         background: #f5f5f5; 
+         color: #666; 
+         }
          .no-results-icon {
          font-size: 4rem;
          margin-bottom: 20px;
@@ -425,9 +424,9 @@
          background: #fafafa !important;
          }
          th:nth-child(2),
-td:nth-child(2) {
-  text-align: left;
-}
+         td:nth-child(2) {
+         text-align: left;
+         }
          .house-badge,
          .gender-badge {
          background: none !important;
@@ -626,27 +625,27 @@ td:nth-child(2) {
          
          // Apply filters and update the display
          function applyFilters() {
-    const selectedClasses = getSelectedValues('classFilter');
-    const selectedGenders = getSelectedValues('genderFilter');
-    const selectedHouses = getSelectedValues('houseFilter');
-
-    filteredStudents = students.filter(student => {
-        const classMatch = selectedClasses.length === 0 || selectedClasses.includes(student.class);
-        
-        // Safe gender check - ignore null/undefined values
-        const genderMatch = selectedGenders.length === 0 || 
+         const selectedClasses = getSelectedValues('classFilter');
+         const selectedGenders = getSelectedValues('genderFilter');
+         const selectedHouses = getSelectedValues('houseFilter');
+         
+         filteredStudents = students.filter(student => {
+         const classMatch = selectedClasses.length === 0 || selectedClasses.includes(student.class);
+         
+         // Safe gender check - ignore null/undefined values
+         const genderMatch = selectedGenders.length === 0 || 
                            (student.gender && selectedGenders.includes(student.gender));
-        
-        // Safe house check - ignore null/undefined values
-        const houseMatch = selectedHouses.length === 0 || 
+         
+         // Safe house check - ignore null/undefined values
+         const houseMatch = selectedHouses.length === 0 || 
                          (student.house && selectedHouses.includes(student.house));
-        
-        return classMatch && genderMatch && houseMatch;
-    });
-
-    displayStudents(filteredStudents);
-    updateResultsTitle(selectedClasses, selectedGenders, selectedHouses);
-}
+         
+         return classMatch && genderMatch && houseMatch;
+         });
+         
+         displayStudents(filteredStudents);
+         updateResultsTitle(selectedClasses, selectedGenders, selectedHouses);
+         }
          
          // Get selected values from a filter group
          function getSelectedValues(filterId) {
@@ -657,49 +656,49 @@ td:nth-child(2) {
          
          // Display students in the table
          function displayStudents(studentsToShow) {
-    const tableBody = document.getElementById('studentsTableBody');
-    const noResults = document.getElementById('noResults');
-    const table = document.getElementById('studentsTable');
-    const studentCount = document.getElementById('studentCount');
-
-    if (studentsToShow.length === 0) {
-        table.style.display = 'none';
-        noResults.style.display = 'block';
-        studentCount.textContent = '0 Students';
-        return;
-    }
-
-    table.style.display = 'table';
-    noResults.style.display = 'none';
-
-    tableBody.innerHTML = '';
-    studentsToShow.forEach((student, index) => {
-        // Safe gender handling
-        const genderDisplay = student.gender ? 
+         const tableBody = document.getElementById('studentsTableBody');
+         const noResults = document.getElementById('noResults');
+         const table = document.getElementById('studentsTable');
+         const studentCount = document.getElementById('studentCount');
+         
+         if (studentsToShow.length === 0) {
+         table.style.display = 'none';
+         noResults.style.display = 'block';
+         studentCount.textContent = '0 Students';
+         return;
+         }
+         
+         table.style.display = 'table';
+         noResults.style.display = 'none';
+         
+         tableBody.innerHTML = '';
+         studentsToShow.forEach((student, index) => {
+         // Safe gender handling
+         const genderDisplay = student.gender ? 
             (student.gender === 'M' ? 'Boy' : 'Girl') : 
             'Not Specified';
-        const genderClass = student.gender ? 
+         const genderClass = student.gender ? 
             `gender-${student.gender.toLowerCase()}` : 
             'gender-unknown';
-        
-        // Safe house handling
-        const houseDisplay = student.house || 'Not Assigned';
-        const houseClass = student.house ? 
+         
+         // Safe house handling
+         const houseDisplay = student.house || 'Not Assigned';
+         const houseClass = student.house ? 
             `house-${student.house.toLowerCase()}` : 
             'house-unknown';
-        
-        const row = tableBody.insertRow();
-        row.innerHTML = `
+         
+         const row = tableBody.insertRow();
+         row.innerHTML = `
             <td>${index + 1}</td>
             <td>${student.name}</td>
             <td>${student.class}</td>
             <td><span class="gender-badge ${genderClass}">${genderDisplay}</span></td>
             <td><span class="house-badge ${houseClass}">${houseDisplay}</span></td>
-        `;
-    });
-
-    studentCount.textContent = `${studentsToShow.length} Student${studentsToShow.length !== 1 ? 's' : ''}`;
-}
+         `;
+         });
+         
+         studentCount.textContent = `${studentsToShow.length} Student${studentsToShow.length !== 1 ? 's' : ''}`;
+         }
          
          // Update results title based on filters
          function updateResultsTitle(classes, genders, houses) {
@@ -763,32 +762,32 @@ td:nth-child(2) {
          
          // Convert students array to CSV format
          function convertToCSV(students) {
-    const headers = ['S.No.', 'Name', 'Class', 'Gender', 'House'];
-    const csvRows = [];
-    
-    // Add header row
-    csvRows.push(headers.join(','));
-    
-    // Add data rows
-    students.forEach((student, index) => {
-        // Safe handling for null values in CSV export
-        const genderDisplay = student.gender ? 
+         const headers = ['S.No.', 'Name', 'Class', 'Gender', 'House'];
+         const csvRows = [];
+         
+         // Add header row
+         csvRows.push(headers.join(','));
+         
+         // Add data rows
+         students.forEach((student, index) => {
+         // Safe handling for null values in CSV export
+         const genderDisplay = student.gender ? 
             (student.gender === 'M' ? 'Boy' : 'Girl') : 
             'Not Specified';
-        const houseDisplay = student.house || 'Not Assigned';
-        
-        const row = [
+         const houseDisplay = student.house || 'Not Assigned';
+         
+         const row = [
             index + 1,
             `"${student.name}"`,
             `"${student.class}"`,
             `"${genderDisplay}"`,
             `"${houseDisplay}"`
-        ];
-        csvRows.push(row.join(','));
-    });
-    
-    return csvRows.join('\n');
-}
+         ];
+         csvRows.push(row.join(','));
+         });
+         
+         return csvRows.join('\n');
+         }
          
           function showLoadingOverlay() {
               const overlay = document.getElementById('loadingOverlay');
