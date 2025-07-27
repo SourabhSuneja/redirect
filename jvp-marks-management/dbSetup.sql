@@ -1162,6 +1162,42 @@ END;
 $$;
 
 
+
+-- Function to get the entire student list from the students table, first sorted by class and then by student name
+CREATE OR REPLACE FUNCTION get_students_sorted()
+RETURNS TABLE(
+    name TEXT,
+    class TEXT,
+    gender TEXT,
+    house TEXT
+)
+SECURITY INVOKER
+LANGUAGE SQL
+AS $$
+    SELECT 
+        s.name,
+        s.class,
+        s.gender,
+        s.house
+    FROM students s
+    ORDER BY 
+        -- First sort by numeric part of class (grade level)
+        CASE 
+            WHEN s.class ~ '^[0-9]+' THEN 
+                CAST(SUBSTRING(s.class FROM '^([0-9]+)') AS INTEGER)
+            ELSE 999  -- Put non-numeric classes at the end
+        END,
+        -- Then sort by the section part (after hyphen) alphabetically
+        CASE 
+            WHEN s.class ~ '-' THEN 
+                SUBSTRING(s.class FROM '-(.*)$')
+            ELSE s.class  -- For classes without hyphen, use the whole class name
+        END,
+        -- Finally sort by name ascending
+        s.name ASC;
+$$;
+
+
 -- A temporary function used for gender/house details collection from teachers for students table in a quick and unauthenticated manner
 -- This function updates student information based on JSON inputs for house and gender.
 -- It now returns a table with a single 'result' column: 1 for success, 0 for failure.
@@ -1196,7 +1232,7 @@ BEGIN
                 FOR student_id IN 
                     SELECT (json_array_elements_text(house_ids))::UUID
                 LOOP
-                    UPDATE students_backup 
+                    UPDATE students 
                     SET house = house_key
                     WHERE id = student_id;
                     
@@ -1218,7 +1254,7 @@ BEGIN
                 FOR student_id IN 
                     SELECT (json_array_elements_text(gender_ids))::UUID
                 LOOP
-                    UPDATE students_backup 
+                    UPDATE students 
                     SET gender = CASE 
                         WHEN gender_key = 'male' THEN 'M'
                         WHEN gender_key = 'female' THEN 'F'
