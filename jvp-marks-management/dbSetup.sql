@@ -36,6 +36,7 @@ DROP FUNCTION IF EXISTS secure_join_tables(
     text
 );
 DROP FUNCTION IF EXISTS update_custom_exam(TEXT, TEXT, INTEGER, TEXT, TEXT);
+DROP FUNCTION IF EXISTS get_students_sorted();
 
 -- This function is ANYWAY temporary
 DROP FUNCTION IF EXISTS update_students_info(JSON, JSON);
