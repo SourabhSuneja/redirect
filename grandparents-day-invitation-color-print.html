@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grandparents Day Celebration Invitation</title>
+    <meta name="description" content="Invitation to School Dignitaries – Join Class 5 teachers for a joyful Grandparents Day Celebration filled with love, respect, and memorable moments.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;600;700&family=Poppins:wght@300;400;500;600&family=Great+Vibes&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+/* Print-specific styles – keep original colors */
+@media print {
+    body {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+        margin: 0;
+        padding: 10mm;
+    }
+
+    .invitation-card {
+        background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%) !important;
+        border-radius: 25px !important;
+        box-shadow: 
+            0 25px 50px rgba(0, 0, 0, 0.15),
+            0 10px 20px rgba(0, 0, 0, 0.1),
+            inset 0 1px 0 rgba(255, 255, 255, 0.6) !important;
+        border: 3px solid transparent !important;
+        page-break-inside: avoid;
+    }
+
+    .invitation-card::before {
+        content: '' !important;
+        background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #4d9de0, #e15554, #f9ca24) !important;
+        border-radius: 28px !important;
+    }
+
+    .decorative-border {
+        border: 2px dashed #ff6b6b !important;
+        opacity: 0.3 !important;
+    }
+
+    .school-name, 
+    .event-title,
+    .invitation-text,
+    .respectful-address,
+    .closing,
+    .signature,
+    .event-details,
+    .sparkle,
+    .hearts {
+        color: inherit !important;
+        -webkit-print-color-adjust: exact !important;
+        print-color-adjust: exact !important;
+    }
+
+    .grandparents-image {
+        border: 5px solid #fff !important;
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2) !important;
+    }
+
+    .print-button {
+        display: none !important;
+    }
+
+    /* Remove animations but keep layout */
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+    }
+}
+
+        /* Print button styles */
+        .print-button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1em;
+            font-weight: 600;
+            border-radius: 25px;
+            cursor: pointer;
+            margin: 30px auto 0;
+            display: block;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+            transition: all 0.3s ease;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .print-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.6);
+            background: linear-gradient(45deg, #5a6fd8, #6c42a0);
+        }
+
+        .print-button:active {
+            transform: translateY(0);
+        }
+
+        .print-icon {
+            margin-right: 8px;
+            font-size: 1.2em;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .invitation-card {
+            background: linear-gradient(145deg, #ffffff 0%, #f8f9ff 100%);
+            border-radius: 25px;
+            padding: 40px;
+            max-width: 680px;
+            width: 100%;
+            box-shadow: 
+                0 25px 50px rgba(0, 0, 0, 0.15),
+                0 10px 20px rgba(0, 0, 0, 0.1),
+                inset 0 1px 0 rgba(255, 255, 255, 0.6);
+            border: 3px solid transparent;
+            background-clip: padding-box;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .invitation-card::before {
+            content: '';
+            position: absolute;
+            top: -3px;
+            left: -3px;
+            right: -3px;
+            bottom: -3px;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f, #4d9de0, #e15554, #f9ca24);
+            border-radius: 28px;
+            z-index: -1;
+            animation: borderGlow 3s linear infinite;
+        }
+
+        @keyframes borderGlow {
+            0%, 100% { filter: hue-rotate(0deg); }
+            50% { filter: hue-rotate(180deg); }
+        }
+
+        .decorative-border {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            bottom: 15px;
+            border: 2px dashed #ff6b6b;
+            border-radius: 20px;
+            opacity: 0.3;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+        }
+
+        .school-name {
+            font-family: 'Great Vibes', cursive;
+            font-size: 3em;
+            color: #fff;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .event-title {
+            font-family: 'Dancing Script', cursive;
+            font-size: 2.8em;
+            font-weight: 700;
+            background: linear-gradient(45deg, #ff6b6b, #ffd93d, #6bcf7f);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin: 15px 0;
+            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .grandparents-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin: 20px auto;
+            display: block;
+            border: 5px solid #fff;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+            transition: transform 0.3s ease;
+        }
+
+        .grandparents-image:hover {
+            transform: scale(1.05) rotate(2deg);
+        }
+
+        .invitation-text {
+            text-align: center;
+            margin: 25px 0;
+            font-size: 1.1em;
+            line-height: 1.6;
+            color: #34495e;
+            color: white;
+        }
+
+        .respectful-address {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.2em;
+            margin-bottom: 15px;
+        }
+
+        .event-details {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 25px 0;
+            text-align: center;
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .detail-item {
+            margin: 10px 0;
+            font-size: 1.1em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .detail-icon {
+            margin-right: 10px;
+            font-size: 1.3em;
+        }
+
+        .closing {
+            text-align: center;
+            margin-top: 25px;
+            font-style: italic;
+            color: #7f8c8d;
+            font-size: 1em;
+        }
+
+        .signature {
+            text-align: right;
+            margin-top: 25px;
+            font-weight: 500;
+            color: #2c3e50;
+        }
+
+        .hearts {
+            text-align: center;
+            font-size: 1.5em;
+            margin: 15px 0;
+            color: #e74c3c;
+        }
+
+        .floating-hearts {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff6b6b;
+            font-size: 20px;
+            opacity: 0.7;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .heart:nth-child(1) { left: 10%; animation-delay: 0s; }
+        .heart:nth-child(2) { left: 20%; animation-delay: 1s; }
+        .heart:nth-child(3) { left: 80%; animation-delay: 2s; }
+        .heart:nth-child(4) { left: 90%; animation-delay: 3s; }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(100px) rotate(0deg); opacity: 0; }
+            50% { transform: translateY(-100px) rotate(180deg); opacity: 0.7; }
+        }
+
+        .sparkle {
+            display: inline-block;
+            color: #ffd93d;
+            animation: sparkle 2s ease-in-out infinite;
+        }
+
+        @keyframes sparkle {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.2) rotate(180deg); }
+        }
+
+        @media (max-width: 600px) {
+            .invitation-card {
+                padding: 25px;
+                margin: 10px;
+            }
+            
+            .event-title {
+                font-size: 2.2em;
+            }
+            
+            .grandparents-image {
+                width: 150px;
+                height: 150px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="invitation-card animate__animated animate__fadeInUp">
+        <div class="decorative-border"></div>
+        <div class="floating-hearts">
+            <div class="heart">💕</div>
+            <div class="heart">❤️</div>
+            <div class="heart">💕</div>
+            <div class="heart">❤️</div>
+        </div>
+        
+        <div class="header">
+            <div class="school-name">Jamna Vidyapeeth</div>
+            <div class="event-title">
+                <span class="sparkle">✨</span> 
+                Grandparents Day Celebration 
+                <span class="sparkle">✨</span>
+            </div>
+        </div>
+
+        <img src="https://i.postimg.cc/JhgqdfWz/images-12.jpg" alt="Loving Grandparents" class="grandparents-image animate__animated animate__pulse animate__infinite">
+
+        <div class="invitation-text">
+            <div class="respectful-address">
+                Respected Director Sir, Director Ma'am,<br>
+                Principal Ma'am & Vice Principal Ma'am
+            </div>
+            
+            <p>With immense joy and reverence, we, the teachers of <strong>Class 5</strong>, cordially invite you to grace our <strong>Grandparents Day Celebration</strong> with your esteemed presence.</p>
+            
+            <p>This special day is dedicated to honoring the wisdom, love, and precious memories that our grandparents bring to our lives. Your presence would make this celebration even more meaningful and memorable.</p>
+        </div>
+
+        <div class="event-details">
+            <div class="detail-item">
+                <span class="detail-icon">🕘</span>
+                <strong>Time: 9:00 AM onwards</strong>
+            </div>
+            <div class="detail-item">
+                <span class="detail-icon">📍</span>
+                <strong>Venue: School Auditorium</strong>
+            </div>
+            <div class="detail-item">
+                <span class="detail-icon">🎉</span>
+                <strong>A day filled with love, laughter & memories</strong>
+            </div>
+        </div>
+
+        <div class="hearts">💖 💝 💖</div>
+
+        <div class="closing">
+            "Grandparents are a delightful blend of laughter, caring deeds,<br>
+            wonderful stories and love." - Unknown
+        </div>
+
+        <div class="signature">
+            With warm regards,<br>
+            <strong>All Teachers of Class 5</strong>
+        </div>
+
+        <button class="print-button" onclick="printInvitation()">
+            <span class="print-icon">🖨️</span>
+            Print Invitation
+        </button>
+    </div>
+
+    <script>
+        function printInvitation() {
+            // Small delay to ensure all styles are applied
+            setTimeout(() => {
+                window.print();
+            }, 100);
+        }
+
+        // Alternative method if the button doesn't work
+        document.addEventListener('DOMContentLoaded', function() {
+            const printBtn = document.querySelector('.print-button');
+            if (printBtn) {
+                printBtn.addEventListener('click', function() {
+                    window.print();
+                });
+            }
+        });
+    </script>
+</body>
+</html>
