@@ -1,124 +1,1027 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hand Gesture Recognition</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            text-align: center;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
+   <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <meta name="description" content="Easily create and manage school timetables with our smart, user-friendly Timetable Generator app. Perfect for teachers and administrators.">
+      <title>School Timetable Generator</title>
+      <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+      <style>
+         :root {
+         --primary-color: #3f51b5;
+         --primary-dark: #303f9f;
+         --primary-light: #c5cae9;
+         --accent-color: #ff4081;
+         --text-primary: #212121;
+         --text-secondary: #757575;
+         --divider-color: #bdbdbd;
+         --background: #f5f5f5;
+         --white: #ffffff;
+         --error: #f44336;
+         --success: #4caf50;
+         --warning: #ff9800;
+         }
+         * {
+         margin: 0;
+         padding: 0;
+         box-sizing: border-box;
+         max-height: 999999999px;
+         }
+         body {
+         font-family: 'Poppins', sans-serif;
+         background-color: var(--background);
+         color: var(--text-primary);
+         line-height: 1.6;
+         }
+         .container {
+         max-width: 1400px;
+         margin: 0 auto;
+         padding: 20px;
+         }
+         .header {
+         background-color: var(--primary-color);
+         color: var(--white);
+         padding: 20px 0;
+         text-align: center;
+         box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+         margin-bottom: 30px;
+         }
+         .header h1 {
+         font-size: 1.8rem;
+         font-weight: 600;
+         }
+         .header p {
+         font-size: 1.1rem;
+         opacity: 0.9;
+         }
+         .card {
+         background: var(--white);
+         border-radius: 8px;
+         box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+         padding: 25px;
+         margin-bottom: 30px;
+         margin-top: 8px;
+         }
+         .card h2 {
+         color: var(--primary-color);
+         margin-bottom: 20px;
+         display: flex;
+         align-items: center;
+         }
+         .card h2 .material-icons {
+         margin-right: 10px;
+         }
+         .grid-form {
+         display: grid;
+         grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+         gap: 20px;
+         }
+         .input-group {
+         margin-bottom: 10px;
+         }
+         .input-group label {
+         display: block;
+         margin-bottom: 8px;
+         font-weight: 500;
+         color: var(--text-secondary);
+         }
+         .input-group input, .input-group select {
+         width: 100%;
+         padding: 12px 15px;
+         border: 1px solid var(--divider-color);
+         border-radius: 4px;
+         font-size: 1rem;
+         font-family: 'Poppins', sans-serif;
+         }
+         .input-group input:focus, .input-group select:focus {
+         outline: none;
+         border-color: var(--primary-color);
+         box-shadow: 0 0 0 2px var(--primary-light);
+         }
+         .btn {
+         background-color: var(--primary-color);
+         color: var(--white);
+         border: none;
+         padding: 12px 20px;
+         border-radius: 4px;
+         font-size: 1rem;
+         font-weight: 500;
+         cursor: pointer;
+         transition: background-color 0.3s;
+         display: inline-flex;
+         align-items: center;
+         justify-content: center;
+         margin-right: 10px;
+         margin-bottom: 10px;
+         }
+         .btn:hover {
+         background-color: var(--primary-dark);
+         }
+         .btn .material-icons {
+         margin-right: 8px;
+         }
+         .btn-success {
+         background-color: var(--success);
+         }
+         .btn-success:hover {
+         background-color: #388e3c;
+         }
+         .btn-secondary {
+         background-color: var(--text-secondary);
+         }
+         .btn-secondary:hover {
+         background-color: #616161;
+         }
+         .btn-accent {
+         background-color: var(--accent-color);
+         }
+         .btn-accent:hover {
+         background-color: #f50057;
+         }
+         .btn-warning {
+         background-color: var(--warning);
+         }
+         .btn-warning:hover {
+         background-color: #e68a00;
+         }
+         .actions {
+         display: flex;
+         flex-wrap: wrap;
+         margin-top: 20px;
+         }
+         .timetable-container {
+         overflow-x: auto;
+         margin-top: 30px;
+         }
+         .timetable {
+         width: 100%;
+         border-collapse: collapse;
+         background: var(--white);
+         box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+         }
+         .timetable th, .timetable td {
+         border: 1px solid var(--divider-color);
+         padding: 10px;
+         text-align: center;
+         font-size: 0.9rem;
+         }
+         .timetable th {
+         background-color: var(--primary-color);
+         color: var(--white);
+         font-weight: 500;
+         }
+         .timetable tr:nth-child(even) {
+         background-color: #f9f9f9;
+         }
+         .filter-container {
+         display: flex;
+         flex-wrap: wrap;
+         gap: 15px;
+         margin-bottom: 20px;
+         }
+         .filter-container .input-group {
+         flex: 1;
+         min-width: 200px;
+         margin-bottom: 0;
+         }
+         .notification {
+         position: fixed;
+         bottom: 20px;
+         right: 20px;
+         padding: 15px 20px;
+         border-radius: 4px;
+         box-shadow: 0 3px 10px rgba(0, 0, 0, 0.2);
+         transform: translateX(120%);
+         transition: transform 0.3s ease;
+         z-index: 1000;
+         display: flex;
+         align-items: center;
+         }
+         .notification.success {
+         background-color: var(--success);
+         color: white;
+         }
+         .notification.error {
+         background-color: var(--error);
+         color: white;
+         }
+         .notification.show {
+         transform: translateX(0);
+         }
+         .notification .material-icons {
+         margin-right: 10px;
+         }
+         .clash-detected {
+         background-color: #ffebee !important;
+         }
+         footer {
+         margin: 15px;
+         padding: 14px;
+         text-align: center;
+         background: var(--primary-color);
+         color: white;
+         border-radius: 6px;
+         }
+         @media print {
+         .card.control-panel, .actions, .filter-container {
+         display: none;
+         }
+         body {
+         background-color: white;
+         }
+         .container {
+         max-width: 100%;
+         padding: 0;
+         }
+         .timetable {
+         box-shadow: none;
+         }
+         @page {
+         size: landscape;
+         margin: 1cm;
+         }
+         }
+         @media (max-width: 768px) {
+         .grid-form {
+         grid-template-columns: 1fr;
+         }
+         .filter-container {
+         flex-direction: column;
+         }
+         .filter-container .input-group {
+         width: 100%;
+         }
+         }
+         .timetable th, .timetable td {
+         min-width: 80px;
+         max-width: 120px;
+         border: 1px solid var(--divider-color);
+         padding: 8px 5px;
+         text-align: center;
+         font-size: 0.85rem;
+         overflow: hidden;
+         text-overflow: ellipsis;
+         }
+         @media (max-width: 1200px) {
+         .timetable-container {
+         overflow-x: scroll;
+         }
+         }
+         .teacher-allocation-container {
+         overflow-x: auto;
+         margin-top: 20px;
+         }
+         #teacher-allocation-table th, #teacher-allocation-table td {
+         padding: 10px 15px;
+         text-align: left;
+         font-size: 0.9rem;
+         }
+         #teacher-allocation-table th:nth-child(2),
+         #teacher-allocation-table td:nth-child(2) {
+         min-width: 200px;
+         }
+         .teacher-class-count {
+         display: inline-block;
+         background-color: var(--primary-light);
+         color: var(--primary-dark);
+         border-radius: 4px;
+         padding: 2px 6px;
+         margin: 2px;
+         font-size: 0.8rem;
+         white-space: nowrap;
+         }
+         /* For highlighting the row of the currently selected teacher */
+         #teacher-allocation-table tr.selected {
+         background-color: var(--primary-light);
+         }
+         @media (max-width: 768px) {
+         #teacher-allocation-table th, #teacher-allocation-table td {
+         padding: 8px 10px;
+         font-size: 0.85rem;
+         }
+         .teacher-class-count {
+         padding: 2px 4px;
+         font-size: 0.75rem;
+         }
+         }
+/* --- STYLES FOR IN-CELL EDITING --- */
+.timetable td {
+    padding: 3px !important;
+    vertical-align: middle;
+}
 
-        h1 {
-            color: #333;
-            margin-top: 20px;
-        }
+.cell-select {
+    width: 100%;
+    border: 1px solid #e0e0e0;
+    background-color: transparent;
+    font-size: 0.75rem;
+    padding: 3px 2px;
+    border-radius: 3px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23757575%22%20d%3D%22M287%2069.4a17.6%2017.6%200%200%200-13-5.4H18.4c-5%200-9.3%201.8-12.9%205.4A17.6%2017.6%200%200%200%200%2082.2c0%205%201.8%209.3%205.4%2012.9l128%20127.9c3.6%203.6%207.8%205.4%2012.8%205.4s9.2-1.8%2012.8-5.4L287%2095c3.5-3.5%205.4-7.8%205.4-12.8%200-5-1.9-9.2-5.5-12.8z%22%2F%3E%3C%2Fsvg%3E');
+    background-repeat: no-repeat;
+    background-position: right 4px top 50%;
+    background-size: .5em auto;
+    cursor: pointer;
+}
 
-        video {
-            display: block;
-            margin: 20px auto;
-            border: 2px solid #444;
-            border-radius: 8px;
-            max-width: 100%;
-            height: auto;
-        }
+.cell-select:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
 
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            font-size: 16px;
-            cursor: pointer;
-        }
+.cell-select.subject-select {
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 3px;
+}
 
-        button:hover {
-            background-color: #0056b3;
-        }
+.cell-select.teacher-select {
+    color: var(--text-secondary);
+}
 
-        .results {
-            margin-top: 20px;
-        }
+.highlighted {
+    background-color: var(--primary-light) !important;
+}
+      </style>
+   </head>
+   <body>
+      <div class="header">
+         <h1>School Timetable Generator</h1>
+         <p>Create and manage class schedules</p>
+      </div>
+      <div class="container">
+         <!-- Control Panel -->
+         <div class="card control-panel">
+            <h2><span class="material-icons">schedule</span> Schedule Period</h2>
+            <form id="schedule-form">
+               <div class="grid-form">
+                  <div class="input-group">
+                     <label for="class-select">Class</label>
+                     <select id="class-select" required>
+                        <option value="">Select Class</option>
+                        <!-- Will be populated dynamically -->
+                     </select>
+                  </div>
+                  <div class="input-group">
+                     <label for="period-select">Period</label>
+                     <select id="period-select" required>
+                        <option value="">Select Period</option>
+                        <!-- Will be populated dynamically -->
+                     </select>
+                  </div>
+                  <div class="input-group">
+                     <label for="weekday-select">Day</label>
+                     <select id="weekday-select" required>
+                        <option value="">Select Day</option>
+                        <option value="Mon">Monday</option>
+                        <option value="Tue">Tuesday</option>
+                        <option value="Wed">Wednesday</option>
+                        <option value="Thu">Thursday</option>
+                        <option value="Fri">Friday</option>
+                        <option value="Sat">Saturday</option>
+                     </select>
+                  </div>
+                  <div class="input-group">
+                     <label for="subject-select">Subject</label>
+                     <select id="subject-select" required>
+                        <option value="">Select Subject</option>
+                        <option value="English">English</option>
+                        <option value="Hindi">Hindi</option>
+                        <option value="Mathematics">Mathematics</option>
+                        <option value="Science">Science</option>
+                        <option value="Social Science">Social Science</option>
+                        <option value="Physics">Physics</option>
+                        <option value="Chemistry">Chemistry</option>
+                        <option value="Biology">Biology</option>
+                        <option value="Accountancy">Accountancy</option>
+                        <option value="Business Studies">Business Studies</option>
+                        <option value="Economics">Economics</option>
+                        <option value="Computer Science">Computer Science</option>
+                        <option value="GK">GK</option>
+                        <option value="Physical Education">Physical Education</option>
+                        <option value="Informatics Practices">Informatics Practices</option>
+                        <option value="Psychology">Psychology</option>
+                        <option value="Geography">Geography</option>
+                        <option value="History">History</option>
+                        <option value="Political Science">Political Science</option>
+                        <option value="Art">Art</option>
+                        <option value="Music">Music</option>
+                        <option value="Dance">Dance</option>
+                        <option value="Games">Games</option>
+                        <option value="Library">Library</option>
+                        <option value="Activity">Activity</option>
+                     </select>
+                  </div>
+                  <div class="input-group">
+                     <label for="teacher-select">Teacher</label>
+                     <select id="teacher-select" required>
+                        <option value="">Select Teacher</option>
+                        <!-- Will be populated dynamically -->
+                     </select>
+                  </div>
+               </div>
+               <div class="actions">
+                  <button type="submit" class="btn btn-success">
+                  <span class="material-icons">add</span> Add to Schedule
+                  </button>
+                  <button type="button" id="remove-btn" class="btn btn-secondary">
+                  <span class="material-icons">remove</span> Remove Period
+                  </button>
+               </div>
+            </form>
+         </div>
+         <!-- Filter Options -->
+         <div class="card">
+            <h2><span class="material-icons">filter_list</span> View Options</h2>
+            <div class="filter-container">
+               <div class="input-group">
+                  <label for="view-type">View By</label>
+                  <select id="view-type">
+                     <option value="all">All Classes</option>
+                     <option value="class">Specific Class</option>
+                     <option value="teacher">Specific Teacher</option>
+                  </select>
+               </div>
+               <div class="input-group" id="view-class-container" style="display: none;">
+                  <label for="view-class">Select Class</label>
+                  <select id="view-class">
+                     <option value="">Select Class</option>
+                     <!-- Will be populated dynamically -->
+                  </select>
+               </div>
+               <div class="input-group" id="view-teacher-container" style="display: none;">
+                  <label for="view-teacher">Select Teacher</label>
+                  <select id="view-teacher">
+                     <option value="">Select Teacher</option>
+                     <!-- Will be populated dynamically -->
+                  </select>
+               </div>
+            </div>
+            <div class="actions">
+               <button type="button" id="print-btn" class="btn btn-accent">
+               <span class="material-icons">print</span> Print Timetable
+               </button>
+               <button type="button" id="reset-btn" class="btn btn-warning">
+               <span class="material-icons">delete</span> Reset All Data
+               </button>
+            </div>
+         </div>
+         <!-- Timetable Display -->
+         <div class="timetable-container">
+            <table class="timetable" id="timetable">
+               <!-- Table content will be generated dynamically -->
+            </table>
+         </div>
+         <!-- Teacher Allocation Display -->
+         <div class="card">
+            <h2><span class="material-icons">person</span> Teacher Allocations</h2>
+            <div class="teacher-allocation-container">
+               <table class="timetable" id="teacher-allocation-table">
+                  <!-- Table content will be generated dynamically -->
+                  <tr>
+                     <th>Teacher</th>
+                     <th>Classes</th>
+                     <th>Total Periods</th>
+                  </tr>
+               </table>
+            </div>
+         </div>
+      </div>
+      <div id="notification" class="notification">
+         <span class="material-icons">info</span>
+         <span id="notification-message"></span>
+      </div>
+      <footer>Crafted by Sourabh Sir</footer>
+      <script>
+         // Global Variables
+         const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+         const classes = [];
+         for (let i = 1; i <= 12; i++) {
+             for (let j = 1; j <= 4; j++) {
+                 classes.push(`${i}-A${j}`);
+             }
+         }
+         
+         const periods = Array.from({length: 8}, (_, i) => i + 1);
+         
+         const teachers = [
+         "YOGESHWARI SHARMA",
+         "ASHISH YADAV",
+         "ANJALI TOMAR",
+         "USHA SHARMA"
+         ];
+         
+         
+         let timetableData = {};
+         
+         // DOM Elements
+         const classSelect = document.getElementById("class-select");
+         const periodSelect = document.getElementById("period-select");
+         const weekdaySelect = document.getElementById("weekday-select");
+         const subjectSelect = document.getElementById("subject-select");
+         const teacherSelect = document.getElementById("teacher-select");
+         const scheduleForm = document.getElementById("schedule-form");
+         const removeBtn = document.getElementById("remove-btn");
+         const timetableElement = document.getElementById("timetable");
+         const viewType = document.getElementById("view-type");
+         const viewClass = document.getElementById("view-class");
+         const viewClassContainer = document.getElementById("view-class-container");
+         const viewTeacher = document.getElementById("view-teacher");
+         const viewTeacherContainer = document.getElementById("view-teacher-container");
+         const printBtn = document.getElementById("print-btn");
+         const resetBtn = document.getElementById("reset-btn");
+         const notification = document.getElementById("notification");
+         const notificationMessage = document.getElementById("notification-message");
+         
+         // Initialize the page
+         function init() {
+             // Populate class dropdowns
+             populateSelectOptions(classSelect, classes);
+             populateSelectOptions(viewClass, classes);
+             
+             // Populate period dropdown
+             populateSelectOptions(periodSelect, periods);
+             
+             // Populate teacher dropdown
+             populateSelectOptions(teacherSelect, teachers);
+             populateSelectOptions(viewTeacher, teachers);
+             
+             // Load saved data
+             loadTimetableData();
+             
+             // Generate initial timetable
+             generateTimetable();
+         
+             // Set up teacher allocation interaction
+             setupTeacherAllocationInteraction();
+             
+             // Event listeners
+             scheduleForm.addEventListener("submit", handleScheduleSubmit);
+             removeBtn.addEventListener("click", handleRemovePeriod);
+             viewType.addEventListener("change", handleViewTypeChange);
+             viewClass.addEventListener("change", generateTimetable);
+             viewTeacher.addEventListener("change", generateTimetable);
+             printBtn.addEventListener("click", () => window.print());
+             resetBtn.addEventListener("click", handleResetData);
+             // NEW LISTENER for in-cell editing
+             timetableElement.addEventListener('change', handleCellEdit);
+         }
+         
+         // Helper function to populate select dropdowns
+         function populateSelectOptions(selectElement, optionsArray) {
+             selectElement.innerHTML = '<option value="">Select</option>';
+             optionsArray.forEach(option => {
+                 const optionElement = document.createElement("option");
+                 optionElement.value = option;
+                 optionElement.textContent = option;
+                 selectElement.appendChild(optionElement);
+             });
+         }
+         
+         // Handle schedule form submission
+         function handleScheduleSubmit(e) {
+         e.preventDefault();
+         
+         const selectedClass = classSelect.value;
+         const selectedPeriod = periodSelect.value;
+         const selectedWeekday = weekdaySelect.value;
+         const selectedSubject = subjectSelect.value;
+         const selectedTeacher = teacherSelect.value;
+         
+         if (!selectedClass || !selectedPeriod || !selectedWeekday || !selectedSubject || !selectedTeacher) {
+         showNotification("Please fill in all fields", "error");
+         return;
+         }
+         
+         // Check for teacher clash
+         if (hasTeacherClash(selectedClass, selectedPeriod, selectedWeekday, selectedTeacher)) {
+         showNotification("Teacher clash detected! This teacher is already teaching another class in this period on the same day.", "error");
+         return;
+         }
+         
+         // Initialize class object if it doesn't exist
+         if (!timetableData[selectedClass]) {
+         timetableData[selectedClass] = {};
+         }
+         
+         // Initialize period object if it doesn't exist
+         if (!timetableData[selectedClass][selectedPeriod]) {
+         timetableData[selectedClass][selectedPeriod] = {};
+         }
+         
+         // Add period data
+         timetableData[selectedClass][selectedPeriod][selectedWeekday] = {
+         subject: selectedSubject,
+         teacher: selectedTeacher
+         };
+         
+         // Save to localStorage
+         saveTimetableData();
+         
+         // Regenerate timetable
+         generateTimetable();
+         
+         // Show success notification
+         showNotification("Period successfully scheduled", "success");
+         
+         // Generate teacher allocation table
+         generateTeacherAllocationTable();
+         }
+         
+         // Check if there's a teacher clash
+         function hasTeacherClash(currentClass, period, weekday, teacher) {
+         for (const className in timetableData) {
+         if (className !== currentClass && 
+             timetableData[className][period] && 
+             timetableData[className][period][weekday] &&
+             timetableData[className][period][weekday].teacher === teacher) {
+             return true;
+         }
+         }
+         return false;
+         }
+         
+         // Handle remove period
+         function handleRemovePeriod() {
+         const selectedClass = classSelect.value;
+         const selectedPeriod = periodSelect.value;
+         const selectedWeekday = weekdaySelect.value;
+         
+         if (!selectedClass || !selectedPeriod || !selectedWeekday) {
+         showNotification("Please select a class, period, and day to remove", "error");
+         return;
+         }
+         
+         if (timetableData[selectedClass] && 
+         timetableData[selectedClass][selectedPeriod] && 
+         timetableData[selectedClass][selectedPeriod][selectedWeekday]) {
+         
+         delete timetableData[selectedClass][selectedPeriod][selectedWeekday];
+         
+         // If period has no weekdays, remove the period entry
+         if (Object.keys(timetableData[selectedClass][selectedPeriod]).length === 0) {
+             delete timetableData[selectedClass][selectedPeriod];
+             
+             // If class has no periods, remove the class entry
+             if (Object.keys(timetableData[selectedClass]).length === 0) {
+                 delete timetableData[selectedClass];
+             }
+         }
+         
+         // Save and regenerate
+         saveTimetableData();
+         generateTimetable();
+         showNotification("Period successfully removed", "success");
+         } else {
+         showNotification("No scheduled period found to remove", "error");
+         }
+         
+         // Generate teacher allocation table
+         generateTeacherAllocationTable();
+         }
+         
+         // Handle view type change
+         function handleViewTypeChange() {
+             const selectedView = viewType.value;
+             
+             // Hide all view containers first
+             viewClassContainer.style.display = "none";
+             viewTeacherContainer.style.display = "none";
+             
+             // Show the appropriate container based on selection
+             if (selectedView === "class") {
+                 viewClassContainer.style.display = "block";
+             } else if (selectedView === "teacher") {
+                 viewTeacherContainer.style.display = "block";
+             }
+             
+             // Regenerate the timetable
+             generateTimetable();
+         }
+         
+         // Handle reset data
+         function handleResetData() {
+             if (confirm("Are you sure you want to clear all timetable data? This cannot be undone.")) {
+                 timetableData = {};
+                 localStorage.removeItem("schoolTimetableData");
+                 generateTimetable();
+                 showNotification("All timetable data has been reset", "success");
+             }
+            // Generate teacher allocation table
+            generateTeacherAllocationTable();
+         }
+         
+// Generate the timetable
+function generateTimetable() {
+    const selectedView = viewType.value;
+    const selectedClassFilter = viewClass.value;
+    const selectedTeacherFilter = viewTeacher.value;
 
-        #prediction {
-            font-size: 18px;
-            color: #333;
-            font-weight: bold;
-        }
-    </style>
-</head>
-<body>
-    <h1>Hand Gesture Recognition</h1>
-    <video id="video" autoplay></video>
-    <button id="startButton">Start Detecting</button>
-    <div class="results">
-        <h3>Prediction:</h3>
-        <p id="prediction">No prediction yet.</p>
-    </div>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils"></script>
-    <script>
-        const videoElement = document.getElementById('video');
-        const startButton = document.getElementById('startButton');
-        const predictionElement = document.getElementById('prediction');
+    // Pre-build option strings for performance
+    const subjectOptions = document.getElementById('subject-select').innerHTML;
+    const teacherOptions = document.getElementById('teacher-select').innerHTML;
 
-        // Load MediaPipe Hands
-        const hands = new Hands({
-            locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
+    let tableHTML = "";
+
+    // Filter classes to display based on view options
+    let displayClasses = [];
+    if (selectedView === "class" && selectedClassFilter) {
+        displayClasses = [selectedClassFilter];
+    } else if (selectedView === "teacher" && selectedTeacherFilter) {
+        displayClasses = classes.filter(className => {
+            if (!timetableData[className]) return false;
+            return Object.values(timetableData[className]).some(period =>
+                Object.values(period).some(day => day.teacher === selectedTeacherFilter)
+            );
         });
-        hands.setOptions({
-            maxNumHands: 1,
-            modelComplexity: 1,
-            minDetectionConfidence: 0.7,
-            minTrackingConfidence: 0.7
-        });
+    } else {
+        displayClasses = Object.keys(timetableData).length > 0 
+            ? Object.keys(timetableData).sort() 
+            : classes.slice(0, 10);
+    }
 
-        hands.onResults(results => {
-            if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-                const landmarks = results.multiHandLandmarks[0];
-                const thumbIsUp = landmarks[4].y < landmarks[3].y && landmarks[4].y < landmarks[2].y;
-                const fingersAreOpen = landmarks[8].y < landmarks[6].y && landmarks[12].y < landmarks[10].y 
-                                       && landmarks[16].y < landmarks[14].y && landmarks[20].y < landmarks[18].y;
-                const victoryGesture = landmarks[8].y < landmarks[6].y && landmarks[12].y < landmarks[10].y 
-                                       && !(landmarks[16].y < landmarks[14].y) && !(landmarks[20].y < landmarks[18].y);
-                const fistGesture = landmarks[8].y > landmarks[6].y && landmarks[12].y > landmarks[10].y 
-                                    && landmarks[16].y > landmarks[14].y && landmarks[20].y > landmarks[18].y;
+    // Create table header
+    tableHTML = "<tr><th rowspan='2'>Class / Period</th>";
+    periods.forEach(p => tableHTML += `<th colspan='${weekdays.length}'>Period ${p}</th>`);
+    tableHTML += "</tr><tr>";
+    periods.forEach(() => weekdays.forEach(day => tableHTML += `<th>${day}</th>`));
+    tableHTML += "</tr>";
 
-                if (thumbIsUp) {
-                    predictionElement.textContent = "Gesture: Thumb Up 👍 (Confidence: 95%)";
-                } else if (victoryGesture) {
-                    predictionElement.textContent = "Gesture: V Shaped (Victory) ✌️ (Confidence: 95%)";
-                } else if (fistGesture) {
-                    predictionElement.textContent = "Gesture: Fist 👊 (Confidence: 90%)";
-                } else if (fingersAreOpen) {
-                    predictionElement.textContent = "Gesture: Palm Open 🖐️ (Confidence: 90%)";
-                } else {
-                    predictionElement.textContent = "Gesture: Unknown.";
+    // Add rows for each class
+    displayClasses.forEach(className => {
+        tableHTML += `<tr><th>${className}</th>`;
+        periods.forEach(period => {
+            weekdays.forEach(weekday => {
+                const dayData = timetableData[className]?.[period]?.[weekday];
+                const isHighlighted = selectedView === "teacher" && selectedTeacherFilter && dayData?.teacher === selectedTeacherFilter;
+                
+                let subjectSelectHTML = `<select class="cell-select subject-select" data-class="${className}" data-period="${period}" data-day="${weekday}">${subjectOptions}</select>`;
+                let teacherSelectHTML = `<select class="cell-select teacher-select" data-class="${className}" data-period="${period}" data-day="${weekday}">${teacherOptions}</select>`;
+
+                if (dayData) {
+                    // Pre-select the saved options if data exists
+                    if(dayData.subject) subjectSelectHTML = subjectSelectHTML.replace(`value="${dayData.subject}"`, `value="${dayData.subject}" selected`);
+                    if(dayData.teacher) teacherSelectHTML = teacherSelectHTML.replace(`value="${dayData.teacher}"`, `value="${dayData.teacher}" selected`);
                 }
-            } else {
-                predictionElement.textContent = "No hand detected.";
-            }
-        });
 
-        // Start video feed
-        startButton.addEventListener('click', async () => {
-            const stream = await navigator.mediaDevices.getUserMedia({ video: true });
-            videoElement.srcObject = stream;
-
-            const camera = new Camera(videoElement, {
-                onFrame: async () => {
-                    await hands.send({ image: videoElement });
-                },
-                width: 640,
-                height: 480
+                tableHTML += `<td class="${isHighlighted ? 'highlighted' : ''}">${subjectSelectHTML}${teacherSelectHTML}</td>`;
             });
-            camera.start();
         });
-    </script>
-</body>
+        tableHTML += "</tr>";
+    });
+
+    if (displayClasses.length === 0) {
+        const colspan = 1 + periods.length * weekdays.length;
+        let message = "No classes have been scheduled yet.";
+        if (selectedView === 'teacher' && selectedTeacherFilter) message = `No classes scheduled for ${selectedTeacherFilter}`;
+        tableHTML += `<tr><td colspan="${colspan}" style="text-align:center; padding: 20px !important;">${message}</td></tr>`;
+    }
+
+    timetableElement.innerHTML = tableHTML;
+    
+    updateClashStyles();
+    generateTeacherAllocationTable();
+}
+
+         
+         // Show notification
+         function showNotification(message, type) {
+             notification.className = "notification " + type;
+             notificationMessage.textContent = message;
+             notification.classList.add("show");
+             
+             setTimeout(() => {
+                 notification.classList.remove("show");
+             }, 3000);
+         }
+         
+         // Load data from localStorage
+         function loadTimetableData() {
+             const savedData = localStorage.getItem("schoolTimetableData");
+             if (savedData) {
+                 timetableData = JSON.parse(savedData);
+             }
+         // Generate teacher allocation table
+         generateTeacherAllocationTable();
+         }
+         
+         // Save data to localStorage
+         function saveTimetableData() {
+             localStorage.setItem("schoolTimetableData", JSON.stringify(timetableData));
+         }
+         
+         // Function to generate teacher allocation table
+         function generateTeacherAllocationTable() {
+         const teacherAllocationTable = document.getElementById("teacher-allocation-table");
+         
+         // Calculate teacher allocations
+         const teacherAllocations = calculateTeacherAllocations();
+         
+         // Sort teachers by total number of periods (descending)
+         const sortedTeachers = Object.keys(teacherAllocations).sort((a, b) => {
+         return teacherAllocations[b].totalPeriods - teacherAllocations[a].totalPeriods;
+         });
+         
+         // Create table header
+         let tableHTML = "<tr><th>Teacher</th><th>Classes</th><th>Total Periods</th></tr>";
+         
+         // Add rows for each teacher
+         sortedTeachers.forEach(teacher => {
+         const allocation = teacherAllocations[teacher];
+         const selectedClass = viewType.value === "teacher" && viewTeacher.value === teacher ? "selected" : "";
+         
+         // Skip teachers with 0 periods
+         if (allocation.totalPeriods === 0) return;
+         
+         tableHTML += `<tr class="${selectedClass}">
+         <td>${teacher}</td>
+         <td>`;
+         
+         // Add class allocations
+         Object.keys(allocation.classes).sort().forEach(className => {
+         tableHTML += `<span class="teacher-class-count">${className}: ${allocation.classes[className]}</span>`;
+         });
+         
+         tableHTML += `</td>
+         <td>${allocation.totalPeriods}</td>
+         </tr>`;
+         });
+         
+         // Update the table
+         teacherAllocationTable.innerHTML = tableHTML;
+         }
+         
+         // Calculate teacher allocations from timetable data
+         function calculateTeacherAllocations() {
+         const allocations = {};
+         
+         // Initialize allocations for all teachers
+         teachers.forEach(teacher => {
+         allocations[teacher] = {
+         classes: {},
+         totalPeriods: 0
+         };
+         });
+         
+         // Go through timetable data and count periods for each teacher
+         for (const className in timetableData) {
+         for (const period in timetableData[className]) {
+         for (const weekday in timetableData[className][period]) {
+         const teacherName = timetableData[className][period][weekday].teacher;
+         
+         // Make sure the teacher exists in our allocations
+         if (!allocations[teacherName]) {
+          allocations[teacherName] = {
+            classes: {},
+            totalPeriods: 0
+          };
+         }
+         
+         // Increment class-specific count
+         if (!allocations[teacherName].classes[className]) {
+          allocations[teacherName].classes[className] = 1;
+         } else {
+          allocations[teacherName].classes[className]++;
+         }
+         
+         // Increment total
+         allocations[teacherName].totalPeriods++;
+         }
+         }
+         }
+         
+         return allocations;
+         }
+         
+         // Add teacher allocation selection functionality
+         function setupTeacherAllocationInteraction() {
+         const teacherAllocationTable = document.getElementById("teacher-allocation-table");
+         
+         teacherAllocationTable.addEventListener("click", (e) => {
+         // Find closest table row
+         const row = e.target.closest("tr");
+         if (!row || !row.cells || !row.cells[0]) return;
+         
+         // Get teacher name from first cell
+         const teacherName = row.cells[0].textContent;
+         if (!teacherName || teacherName === "Teacher") return;
+         
+         // Switch view to teacher view
+         viewType.value = "teacher";
+         viewTeacherContainer.style.display = "block";
+         viewClassContainer.style.display = "none";
+         viewTeacher.value = teacherName;
+         
+         // Update timetable
+         generateTimetable();
+         });
+         }
+
+// New function to handle edits made directly in the timetable cells
+function handleCellEdit(e) {
+    if (!e.target.classList.contains('cell-select')) return;
+
+    const select = e.target;
+    const { class: className, period, day: weekday } = select.dataset;
+
+    // Find both select elements in the same cell
+    const cell = select.parentElement;
+    const subjectSelect = cell.querySelector('.subject-select');
+    const teacherSelect = cell.querySelector('.teacher-select');
+    
+    const subject = subjectSelect.value;
+    const teacher = teacherSelect.value;
+
+    // If both are empty, remove the entry
+    if (!subject && !teacher) {
+        if (timetableData[className]?.[period]?.[weekday]) {
+            delete timetableData[className][period][weekday];
+        }
+    } else {
+        // Ensure nested objects exist before assignment
+        if (!timetableData[className]) timetableData[className] = {};
+        if (!timetableData[className][period]) timetableData[className][period] = {};
+        
+        timetableData[className][period][weekday] = { subject, teacher };
+    }
+    
+    // --- PROPAGATION LOGIC (FIXED) ---
+    // If the changed day is the first day of the week, propagate to other incomplete cells
+    if (weekday === weekdays[0]) {
+        for (let i = 1; i < weekdays.length; i++) {
+            const nextDay = weekdays[i];
+            const nextDayEntry = timetableData[className]?.[period]?.[nextDay];
+            
+            // Propagate if the target cell is empty OR is missing either a subject or a teacher.
+            // This prevents overwriting cells that have been manually completed.
+            if (!nextDayEntry || !nextDayEntry.subject || !nextDayEntry.teacher) {
+                 if (!timetableData[className][period]) timetableData[className][period] = {};
+                 timetableData[className][period][nextDay] = { subject, teacher };
+
+                // Update the UI dropdowns directly for instant feedback
+                const nextSubSelect = cell.parentElement.querySelector(`[data-day='${nextDay}'][data-period='${period}'].subject-select`);
+                const nextTchSelect = cell.parentElement.querySelector(`[data-day='${nextDay}'][data-period='${period}'].teacher-select`);
+                if(nextSubSelect) nextSubSelect.value = subject;
+                if(nextTchSelect) nextTchSelect.value = teacher;
+            }
+        }
+    }
+
+    saveTimetableData();
+    generateTeacherAllocationTable();
+    updateClashStyles(); // Re-check clashes after every edit
+}
+
+
+// New function to check all clashes and apply styles
+function updateClashStyles() {
+    // Reset all clash styles first
+    document.querySelectorAll('.clash-detected').forEach(cell => cell.classList.remove('clash-detected'));
+
+    const periodTeacherMap = {}; // Tracks teacher allocation for each period/day combo
+
+    for (const className in timetableData) {
+        for (const period in timetableData[className]) {
+            for (const weekday in timetableData[className][period]) {
+                const teacher = timetableData[className][period][weekday].teacher;
+                if (!teacher) continue;
+
+                const key = `${period}-${weekday}`;
+                if (!periodTeacherMap[key]) periodTeacherMap[key] = [];
+                periodTeacherMap[key].push({ teacher, className });
+            }
+        }
+    }
+
+    // Identify clashes and apply styles
+    for (const key in periodTeacherMap) {
+        const allocations = periodTeacherMap[key];
+        const teacherCounts = {};
+        
+        allocations.forEach(alloc => {
+            if (!teacherCounts[alloc.teacher]) teacherCounts[alloc.teacher] = [];
+            teacherCounts[alloc.teacher].push(alloc.className);
+        });
+
+        for (const teacher in teacherCounts) {
+            if (teacherCounts[teacher].length > 1) { // Clash detected
+                const [period, weekday] = key.split('-');
+                teacherCounts[teacher].forEach(clashedClass => {
+                    const selectElem = document.querySelector(`[data-class='${clashedClass}'][data-period='${period}'][data-day='${weekday}']`);
+                    if(selectElem) selectElem.parentElement.classList.add('clash-detected');
+                });
+            }
+        }
+    }
+}
+
+         
+         // Initialize when the DOM is loaded
+         document.addEventListener("DOMContentLoaded", init);
+      </script>
+   </body>
 </html>
