@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Swadarpan – Know Yourself. Transform Yourself.</title>
+<meta name="description" content="Swadarpan offers a holistic blend of Yoga, Reiki and DMIT-based Counseling for a more focused and well-directed life."/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Jost:wght@300;400;500;600&family=Yeseva+One&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+<style>
+:root {
+  --deep: #5A0A4E;
+  --primary: #911B79;
+  --accent: #B3178E;
+  --mid: #C85BA3;
+  --light: #D35FA7;
+  --pale: #EDB8D9;
+  --blush: #F9EDF5;
+  --gold: #D4A843;
+  --gold-light: #F0C96A;
+  --cream: #FDF8F5;
+  --dark-text: #2A1020;
+  --body-text: #4A2040;
+  --white: #ffffff;
+  --shadow: 0 20px 60px rgba(145,27,121,0.15);
+  --shadow-heavy: 0 30px 80px rgba(145,27,121,0.25);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;}
+html{scroll-behavior:smooth;}
+body{font-family:'Jost',sans-serif;color:var(--dark-text);background:var(--cream);overflow-x:hidden;}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar{width:6px;}
+::-webkit-scrollbar-track{background:var(--blush);}
+::-webkit-scrollbar-thumb{background:var(--accent);border-radius:3px;}
+
+/* ── NAV ── */
+nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 5%;display:flex;align-items:center;justify-content:space-between;transition:all 0.4s ease;}
+nav.scrolled{background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);box-shadow:0 2px 30px rgba(145,27,121,0.12);padding:10px 5%;}
+.nav-logo img{height:52px;transition:height 0.3s;}
+nav.scrolled .nav-logo img{height:42px;}
+.nav-links{display:flex;align-items:center;gap:36px;list-style:none;}
+.nav-links a{text-decoration:none;color:var(--white);font-weight:500;font-size:0.88rem;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.3s;position:relative;}
+nav.scrolled .nav-links a{color:var(--body-text);}
+.nav-links a::after{content:'';position:absolute;bottom:-4px;left:0;width:0;height:1.5px;background:var(--accent);transition:width 0.3s;}
+.nav-links a:hover::after{width:100%;}
+.nav-links a:hover{color:var(--accent);}
+.nav-cta{background:var(--gold);color:var(--deep)!important;padding:9px 22px;border-radius:50px;font-weight:600!important;transition:transform 0.2s,box-shadow 0.2s!important;}
+.nav-cta:hover{transform:translateY(-2px);box-shadow:0 8px 25px rgba(212,168,67,0.4);}
+.hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:5px;}
+.hamburger span{width:25px;height:2px;background:var(--white);transition:all 0.3s;border-radius:2px;display:block;}
+nav.scrolled .hamburger span{background:var(--deep);}
+
+/* ── HERO ── */
+#hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;background:linear-gradient(135deg, #3D0635 0%, #5A0A4E 25%, #7A0F66 50%, #911B79 75%, #B3178E 100%);}
+.hero-bg-art{position:absolute;inset:0;overflow:hidden;}
+.mandala-bg{position:absolute;right:-10%;top:50%;transform:translateY(-50%);width:70vmin;height:70vmin;opacity:0.08;animation:spin-slow 40s linear infinite;}
+@keyframes spin-slow{to{transform:translateY(-50%) rotate(360deg);}}
+.particles{position:absolute;inset:0;}
+.particle{position:absolute;border-radius:50%;background:rgba(255,255,255,0.15);animation:float-particle linear infinite;}
+@keyframes float-particle{0%{transform:translateY(100vh) scale(0);}100%{transform:translateY(-10vh) scale(1);opacity:0;}}
+.hero-content{position:relative;z-index:2;padding:0 5%;max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:60px;}
+.hero-text{animation:fade-up 1s ease forwards;}
+.hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);padding:8px 18px;border-radius:50px;color:var(--gold-light);font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;margin-bottom:24px;backdrop-filter:blur(10px);}
+.hero-tag i{font-size:0.7rem;}
+.hero-h1{font-family:'Cormorant Garamond',serif;font-size:clamp(3rem,5.5vw,5.2rem);font-weight:600;color:var(--white);line-height:1.1;margin-bottom:10px;}
+.hero-h1 em{font-style:italic;color:var(--gold-light);}
+.hero-subtitle{font-family:'Cormorant Garamond',serif;font-size:clamp(1.1rem,2vw,1.45rem);color:rgba(255,255,255,0.8);font-style:italic;margin-bottom:28px;line-height:1.6;}
+.hero-desc{color:rgba(255,255,255,0.72);font-size:1rem;line-height:1.8;margin-bottom:40px;max-width:480px;}
+.hero-btns{display:flex;gap:16px;flex-wrap:wrap;}
+.btn-primary{background:var(--gold);color:var(--deep);padding:15px 34px;border-radius:50px;font-weight:600;text-decoration:none;font-size:0.92rem;letter-spacing:0.04em;transition:all 0.3s;box-shadow:0 8px 30px rgba(212,168,67,0.4);display:inline-flex;align-items:center;gap:8px;}
+.btn-primary:hover{background:var(--gold-light);transform:translateY(-3px);box-shadow:0 15px 40px rgba(212,168,67,0.5);}
+.btn-outline{background:transparent;color:var(--white);padding:14px 34px;border-radius:50px;font-weight:500;text-decoration:none;font-size:0.92rem;letter-spacing:0.04em;border:1.5px solid rgba(255,255,255,0.5);transition:all 0.3s;display:inline-flex;align-items:center;gap:8px;}
+.btn-outline:hover{background:rgba(255,255,255,0.12);border-color:var(--white);transform:translateY(-3px);}
+.hero-image-wrap{position:relative;display:flex;justify-content:center;animation:fade-in 1.2s ease forwards;}
+.hero-logo-glow{width:320px;height:320px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,0.18) 0%, rgba(179,23,142,0.25) 40%, transparent 70%);display:flex;align-items:center;justify-content:center;position:relative;animation:pulse-glow 4s ease-in-out infinite;}
+@keyframes pulse-glow{0%,100%{box-shadow:0 0 60px rgba(255,255,255,0.15),0 0 120px rgba(212,168,67,0.1);}50%{box-shadow:0 0 100px rgba(255,255,255,0.25),0 0 200px rgba(212,168,67,0.2);}}
+.hero-logo-glow img{width:240px;filter:drop-shadow(0 10px 40px rgba(255,255,255,0.3));}
+.ring{position:absolute;border-radius:50%;border:1px solid rgba(255,255,255,0.15);animation:expand-ring 4s ease-in-out infinite;}
+.ring:nth-child(1){width:350px;height:350px;animation-delay:0s;}
+.ring:nth-child(2){width:430px;height:430px;animation-delay:0.8s;}
+.ring:nth-child(3){width:510px;height:510px;animation-delay:1.6s;}
+@keyframes expand-ring{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.15;transform:scale(1.03);}}
+.hero-stats{position:absolute;bottom:40px;left:5%;right:5%;display:flex;gap:40px;}
+.stat-card{background:rgba(255,255,255,0.1);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:18px 28px;text-align:center;flex:1;animation:fade-up 1s ease forwards;}
+.stat-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--gold-light);}
+.stat-label{font-size:0.78rem;color:rgba(255,255,255,0.7);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;}
+
+/* ── MARQUEE ── */
+.marquee-section{background:var(--deep);padding:16px 0;overflow:hidden;}
+.marquee-track{display:flex;gap:0;animation:marquee 25s linear infinite;white-space:nowrap;}
+.marquee-item{display:inline-flex;align-items:center;gap:12px;color:var(--pale);font-size:0.82rem;letter-spacing:0.12em;text-transform:uppercase;padding:0 40px;}
+.marquee-item i{color:var(--gold);}
+@keyframes marquee{0%{transform:translateX(0);}100%{transform:translateX(-50%);}}
+
+/* ── SECTION COMMON ── */
+section{padding:100px 5%;}
+.section-inner{max-width:1200px;margin:0 auto;}
+.section-tag{display:inline-flex;align-items:center;gap:8px;color:var(--accent);font-size:0.78rem;letter-spacing:0.14em;text-transform:uppercase;font-weight:600;margin-bottom:12px;}
+.section-tag::before{content:'';width:28px;height:1.5px;background:var(--accent);}
+.section-title{font-family:'Cormorant Garamond',serif;font-size:clamp(2.2rem,4vw,3.4rem);font-weight:600;color:var(--deep);line-height:1.2;margin-bottom:16px;}
+.section-title em{font-style:italic;color:var(--accent);}
+.section-subtitle{color:var(--body-text);font-size:1.05rem;line-height:1.8;max-width:580px;opacity:0.85;}
+
+/* ── ABOUT ── */
+#about{background:var(--white);position:relative;overflow:hidden;}
+#about::before{content:'';position:absolute;top:-100px;right:-100px;width:500px;height:500px;background:radial-gradient(circle, rgba(179,23,142,0.05) 0%, transparent 70%);border-radius:50%;}
+.about-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:center;}
+.about-image-wrap{position:relative;}
+.about-img-frame{border-radius:30px;overflow:hidden;position:relative;aspect-ratio:4/5;}
+.about-img-frame img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;}
+.about-img-frame:hover img{transform:scale(1.04);}
+.about-badge{position:absolute;bottom:-24px;right:-24px;background:var(--gold);border-radius:20px;padding:20px 24px;box-shadow:0 15px 40px rgba(212,168,67,0.35);text-align:center;}
+.about-badge .year{font-family:'Cormorant Garamond',serif;font-size:2.8rem;font-weight:700;color:var(--deep);line-height:1;}
+.about-badge .year-label{font-size:0.75rem;color:var(--deep);letter-spacing:0.08em;text-transform:uppercase;opacity:0.8;}
+.about-text .section-subtitle{max-width:100%;}
+.about-pillars{display:flex;gap:16px;margin-top:32px;flex-wrap:wrap;}
+.pillar{display:flex;align-items:center;gap:8px;background:var(--blush);padding:10px 18px;border-radius:50px;font-size:0.85rem;font-weight:500;color:var(--deep);}
+.pillar i{color:var(--accent);}
+.about-quote{margin-top:32px;border-left:3px solid var(--gold);padding-left:24px;}
+.about-quote p{font-family:'Cormorant Garamond',serif;font-size:1.35rem;font-style:italic;color:var(--body-text);line-height:1.6;}
+.about-quote cite{font-size:0.82rem;color:var(--accent);font-style:normal;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;}
+.founder-meta{display:flex;align-items:center;gap:12px;margin-top:28px;}
+.founder-avatar{width:56px;height:56px;border-radius:50%;border:3px solid var(--pale);overflow:hidden;background:linear-gradient(135deg,var(--light),var(--primary));display:flex;align-items:center;justify-content:center;color:white;font-size:1.4rem;}
+.founder-info strong{font-size:0.95rem;color:var(--deep);display:block;}
+.founder-info span{font-size:0.82rem;color:var(--body-text);opacity:0.7;}
+
+/* ── SERVICES ── */
+#services{background:var(--blush);position:relative;}
+.services-header{text-align:center;margin-bottom:60px;}
+.services-header .section-subtitle{margin:0 auto;}
+.services-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.service-card{background:var(--white);border-radius:28px;overflow:hidden;transition:transform 0.4s ease,box-shadow 0.4s ease;position:relative;}
+.service-card:hover{transform:translateY(-10px);box-shadow:var(--shadow-heavy);}
+.service-card-img{height:220px;overflow:hidden;position:relative;}
+.service-card-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.6s ease;}
+.service-card:hover .service-card-img img{transform:scale(1.08);}
+.service-card-img::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom, transparent 40%, rgba(90,10,78,0.7));}
+.service-icon-bubble{position:absolute;bottom:-20px;right:24px;width:56px;height:56px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--deep);font-size:1.3rem;z-index:2;box-shadow:0 8px 25px rgba(212,168,67,0.4);}
+.service-body{padding:36px 28px 32px;}
+.service-body h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;color:var(--deep);margin-bottom:10px;}
+.service-body p{color:var(--body-text);font-size:0.92rem;line-height:1.75;opacity:0.85;margin-bottom:20px;}
+.service-tags{display:flex;flex-wrap:wrap;gap:8px;}
+.service-tag{background:var(--blush);color:var(--accent);font-size:0.75rem;padding:5px 12px;border-radius:50px;font-weight:500;}
+.service-learn{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-size:0.85rem;font-weight:600;text-decoration:none;margin-top:16px;transition:gap 0.2s;}
+.service-learn:hover{gap:12px;}
+
+/* ── SESSIONS/PRICING ── */
+#sessions{background:var(--white);}
+.sessions-header{text-align:center;margin-bottom:60px;}
+.pricing-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:28px;}
+.pricing-card{border:2px solid var(--pale);border-radius:28px;padding:40px 32px;position:relative;transition:all 0.4s ease;background:var(--white);}
+.pricing-card.featured{border-color:var(--accent);background:linear-gradient(135deg, #FDF0F9 0%, #F5E0F2 100%);}
+.pricing-card:hover{border-color:var(--accent);transform:translateY(-6px);box-shadow:var(--shadow);}
+.featured-label{position:absolute;top:-16px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--white);padding:6px 20px;border-radius:50px;font-size:0.74rem;letter-spacing:0.1em;text-transform:uppercase;font-weight:600;}
+.pricing-icon{width:64px;height:64px;border-radius:20px;background:linear-gradient(135deg,var(--light),var(--accent));display:flex;align-items:center;justify-content:center;color:var(--white);font-size:1.6rem;margin-bottom:24px;}
+.pricing-card h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:600;color:var(--deep);margin-bottom:6px;}
+.pricing-desc{font-size:0.88rem;color:var(--body-text);opacity:0.75;margin-bottom:24px;line-height:1.6;}
+.pricing-price{font-family:'Cormorant Garamond',serif;font-size:3rem;font-weight:700;color:var(--accent);line-height:1;}
+.pricing-price sub{font-size:1rem;font-family:'Jost',sans-serif;font-weight:400;opacity:0.6;}
+.pricing-placeholder{background:var(--blush);border-radius:12px;padding:14px 18px;text-align:center;margin:16px 0;font-size:0.82rem;color:var(--body-text);opacity:0.7;font-style:italic;border:1.5px dashed var(--pale);}
+.pricing-features{list-style:none;margin:20px 0 28px;display:flex;flex-direction:column;gap:10px;}
+.pricing-features li{display:flex;align-items:center;gap:10px;font-size:0.88rem;color:var(--body-text);}
+.pricing-features li i{color:var(--accent);font-size:0.75rem;}
+.btn-book{display:block;text-align:center;background:linear-gradient(135deg,var(--primary),var(--accent));color:var(--white);padding:14px;border-radius:50px;font-weight:600;text-decoration:none;font-size:0.9rem;transition:all 0.3s;letter-spacing:0.04em;}
+.btn-book:hover{background:linear-gradient(135deg,var(--accent),var(--deep));transform:translateY(-2px);box-shadow:0 10px 30px rgba(145,27,121,0.3);}
+.btn-book.gold{background:linear-gradient(135deg,var(--gold),#C5962E);color:var(--deep);}
+.btn-book.gold:hover{box-shadow:0 10px 30px rgba(212,168,67,0.4);}
+
+/* ── HOW IT WORKS ── */
+#process{background:linear-gradient(135deg, #3D0635 0%, #6A1258 50%, #911B79 100%);position:relative;overflow:hidden;}
+.process-bg{position:absolute;inset:0;opacity:0.04;}
+.process-header{text-align:center;margin-bottom:70px;}
+.process-header .section-tag{color:var(--gold-light);}
+.process-header .section-title{color:var(--white);}
+.process-header .section-title em{color:var(--gold-light);}
+.process-header .section-subtitle{color:rgba(255,255,255,0.7);margin:0 auto;}
+.process-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:28px;position:relative;}
+.process-steps::before{content:'';position:absolute;top:48px;left:12%;right:12%;height:1px;background:linear-gradient(to right,transparent,rgba(255,255,255,0.2) 20%,rgba(255,255,255,0.2) 80%,transparent);pointer-events:none;}
+.step-card{text-align:center;position:relative;}
+.step-num{width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,0.1);border:1.5px solid rgba(255,255,255,0.25);display:flex;align-items:center;justify-content:center;margin:0 auto 24px;position:relative;backdrop-filter:blur(10px);transition:all 0.3s;}
+.step-card:hover .step-num{background:var(--gold);border-color:var(--gold);transform:scale(1.08);}
+.step-num i{font-size:1.8rem;color:var(--gold-light);transition:color 0.3s;}
+.step-card:hover .step-num i{color:var(--deep);}
+.step-num .num-badge{position:absolute;top:-6px;right:-6px;width:28px;height:28px;background:var(--gold);border-radius:50%;font-size:0.7rem;font-weight:700;color:var(--deep);display:flex;align-items:center;justify-content:center;}
+.step-card h4{font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--white);margin-bottom:10px;}
+.step-card p{color:rgba(255,255,255,0.65);font-size:0.87rem;line-height:1.7;}
+
+/* ── TESTIMONIALS ── */
+#testimonials{background:var(--blush);}
+.testimonials-header{text-align:center;margin-bottom:60px;}
+.testimonials-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;}
+.testimonial-card{background:var(--white);border-radius:24px;padding:36px 32px;position:relative;transition:transform 0.3s,box-shadow 0.3s;}
+.testimonial-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);}
+.testimonial-card::before{content:'\201C';position:absolute;top:16px;left:24px;font-family:'Cormorant Garamond',serif;font-size:5rem;color:var(--pale);line-height:1;leading-trim:both;}
+.stars{display:flex;gap:4px;margin-bottom:16px;}
+.stars i{color:var(--gold);font-size:0.85rem;}
+.testimonial-text{font-family:'Cormorant Garamond',serif;font-size:1.12rem;color:var(--body-text);line-height:1.75;font-style:italic;margin-bottom:24px;position:relative;z-index:1;}
+.testimonial-author{display:flex;align-items:center;gap:14px;border-top:1px solid var(--blush);padding-top:20px;}
+.author-avatar{width:48px;height:48px;border-radius:50%;overflow:hidden;background:linear-gradient(135deg,var(--light),var(--primary));display:flex;align-items:center;justify-content:center;color:white;font-size:1.1rem;font-family:'Cormorant Garamond',serif;font-weight:600;}
+.author-name{font-weight:600;font-size:0.9rem;color:var(--deep);display:block;}
+.author-role{font-size:0.78rem;color:var(--body-text);opacity:0.6;}
+.featured-testimonial{grid-column:span 2;background:linear-gradient(135deg,var(--deep),var(--primary));color:var(--white);}
+.featured-testimonial .testimonial-text{color:rgba(255,255,255,0.9);}
+.featured-testimonial .author-name{color:var(--gold-light);}
+.featured-testimonial .author-role{color:rgba(255,255,255,0.6);}
+.featured-testimonial::before{color:rgba(255,255,255,0.1);}
+.featured-testimonial .stars i{color:var(--gold-light);}
+.featured-testimonial .testimonial-author{border-top-color:rgba(255,255,255,0.15);}
+
+/* ── BLOG ── */
+#blog{background:var(--white);}
+.blog-header{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:50px;flex-wrap:gap;}
+.blog-grid{display:grid;grid-template-columns:1.6fr 1fr 1fr;grid-template-rows:auto auto;gap:24px;}
+.blog-card{border-radius:24px;overflow:hidden;transition:transform 0.3s,box-shadow 0.3s;background:var(--white);border:1px solid rgba(145,27,121,0.08);}
+.blog-card:hover{transform:translateY(-6px);box-shadow:var(--shadow);}
+.blog-card.featured{grid-row:span 2;}
+.blog-img{overflow:hidden;position:relative;}
+.blog-card.featured .blog-img{height:320px;}
+.blog-card:not(.featured) .blog-img{height:180px;}
+.blog-img img{width:100%;height:100%;object-fit:cover;transition:transform 0.5s;}
+.blog-card:hover .blog-img img{transform:scale(1.06);}
+.blog-cat{position:absolute;top:16px;left:16px;background:var(--accent);color:var(--white);font-size:0.72rem;padding:5px 12px;border-radius:50px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;}
+.blog-body{padding:26px 24px;}
+.blog-body h3{font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--deep);margin-bottom:10px;line-height:1.3;}
+.blog-card.featured .blog-body h3{font-size:1.65rem;}
+.blog-body p{color:var(--body-text);font-size:0.88rem;line-height:1.7;opacity:0.8;margin-bottom:18px;}
+.blog-meta{display:flex;align-items:center;gap:16px;font-size:0.78rem;color:var(--body-text);opacity:0.55;}
+.blog-meta i{color:var(--accent);}
+.blog-read{display:inline-flex;align-items:center;gap:6px;color:var(--accent);font-weight:600;font-size:0.85rem;text-decoration:none;margin-top:8px;transition:gap 0.2s;}
+.blog-read:hover{gap:12px;}
+
+/* ── BLOG ARTICLES FULL ── */
+.articles-section{background:var(--blush);padding:80px 5%;}
+.articles-inner{max-width:860px;margin:0 auto;}
+.article{background:var(--white);border-radius:24px;padding:50px 60px;margin-bottom:40px;box-shadow:0 4px 24px rgba(145,27,121,0.07);}
+.article-header{margin-bottom:32px;border-bottom:1px solid var(--blush);padding-bottom:24px;}
+.article-cat-tag{display:inline-block;background:var(--blush);color:var(--accent);font-size:0.74rem;padding:5px 14px;border-radius:50px;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:14px;}
+.article h2{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:600;color:var(--deep);line-height:1.25;margin-bottom:12px;}
+.article-byline{font-size:0.82rem;color:var(--body-text);opacity:0.6;display:flex;gap:20px;flex-wrap:wrap;}
+.article-body h3{font-family:'Cormorant Garamond',serif;font-size:1.4rem;color:var(--deep);margin:28px 0 12px;}
+.article-body p{color:var(--body-text);font-size:0.97rem;line-height:1.85;margin-bottom:18px;opacity:0.88;}
+.article-body ul,.article-body ol{padding-left:24px;margin-bottom:18px;}
+.article-body li{color:var(--body-text);font-size:0.95rem;line-height:1.8;opacity:0.85;margin-bottom:8px;}
+.article-tip{background:var(--blush);border-left:4px solid var(--accent);border-radius:0 14px 14px 0;padding:20px 24px;margin:24px 0;}
+.article-tip p{margin:0;font-style:italic;font-family:'Cormorant Garamond',serif;font-size:1.05rem;}
+.pose-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin:24px 0;}
+.pose-card{background:var(--blush);border-radius:16px;padding:20px;display:flex;gap:14px;align-items:flex-start;}
+.pose-icon{width:48px;height:48px;border-radius:14px;background:linear-gradient(135deg,var(--light),var(--accent));display:flex;align-items:center;justify-content:center;color:var(--white);font-size:1.2rem;flex-shrink:0;}
+.pose-card h4{font-size:0.92rem;font-weight:600;color:var(--deep);margin-bottom:4px;}
+.pose-card p{font-size:0.82rem;color:var(--body-text);opacity:0.75;line-height:1.6;}
+
+/* ── DMIT HIGHLIGHT ── */
+.dmit-highlight{background:linear-gradient(135deg,var(--deep),var(--primary));border-radius:24px;padding:40px 48px;margin:32px 0;color:var(--white);}
+.dmit-highlight h3{font-family:'Cormorant Garamond',serif;font-size:1.6rem;color:var(--gold-light);margin-bottom:12px;}
+.dmit-highlight p{color:rgba(255,255,255,0.82);font-size:0.95rem;line-height:1.8;}
+.dmit-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:24px;}
+.dmit-step{background:rgba(255,255,255,0.08);border-radius:14px;padding:18px;text-align:center;}
+.dmit-step i{font-size:1.6rem;color:var(--gold-light);margin-bottom:8px;display:block;}
+.dmit-step p{font-size:0.82rem;color:rgba(255,255,255,0.75);}
+
+/* ── CONTACT ── */
+#contact{background:var(--deep);position:relative;overflow:hidden;}
+#contact::before{content:'';position:absolute;top:-200px;right:-200px;width:600px;height:600px;background:radial-gradient(circle,rgba(179,23,142,0.2),transparent 70%);border-radius:50%;}
+.contact-grid{display:grid;grid-template-columns:1fr 1.4fr;gap:80px;align-items:start;}
+.contact-info .section-tag{color:var(--gold-light);}
+.contact-info .section-title{color:var(--white);}
+.contact-info .section-subtitle{color:rgba(255,255,255,0.65);max-width:100%;}
+.contact-ways{display:flex;flex-direction:column;gap:20px;margin-top:36px;}
+.contact-way{display:flex;align-items:center;gap:18px;color:rgba(255,255,255,0.8);text-decoration:none;transition:color 0.3s;}
+.contact-way:hover{color:var(--gold-light);}
+.contact-way-icon{width:52px;height:52px;border-radius:16px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;font-size:1.2rem;color:var(--gold-light);flex-shrink:0;transition:background 0.3s;}
+.contact-way:hover .contact-way-icon{background:rgba(212,168,67,0.2);}
+.contact-way-text strong{display:block;font-size:0.78rem;letter-spacing:0.08em;text-transform:uppercase;color:rgba(255,255,255,0.4);margin-bottom:2px;}
+.contact-way-text span{font-size:0.97rem;}
+.contact-form{background:var(--white);border-radius:28px;padding:48px 44px;}
+.form-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;color:var(--deep);margin-bottom:6px;}
+.form-subtitle{font-size:0.88rem;color:var(--body-text);opacity:0.65;margin-bottom:32px;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.form-group{margin-bottom:18px;}
+.form-group label{font-size:0.8rem;font-weight:600;color:var(--deep);letter-spacing:0.06em;text-transform:uppercase;display:block;margin-bottom:8px;}
+.form-group input,.form-group textarea,.form-group select{width:100%;padding:13px 18px;border:1.5px solid rgba(145,27,121,0.15);border-radius:12px;font-family:'Jost',sans-serif;font-size:0.92rem;color:var(--dark-text);background:var(--cream);transition:border-color 0.3s,box-shadow 0.3s;outline:none;}
+.form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(179,23,142,0.1);}
+.form-group textarea{height:110px;resize:none;}
+.btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,var(--primary),var(--accent));color:var(--white);border:none;border-radius:50px;font-family:'Jost',sans-serif;font-weight:600;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;}
+.btn-submit:hover{background:linear-gradient(135deg,var(--accent),var(--deep));transform:translateY(-2px);box-shadow:0 12px 35px rgba(145,27,121,0.35);}
+
+/* ── FOOTER ── */
+footer{background:#1A0815;padding:60px 5% 30px;}
+.footer-inner{max-width:1200px;margin:0 auto;}
+.footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:50px;}
+.footer-brand img{height:56px;margin-bottom:18px;}
+.footer-brand p{color:rgba(255,255,255,0.5);font-size:0.87rem;line-height:1.8;max-width:280px;}
+.footer-social{display:flex;gap:12px;margin-top:24px;}
+.social-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:0.85rem;text-decoration:none;transition:all 0.3s;}
+.social-btn:hover{background:var(--accent);border-color:var(--accent);color:var(--white);}
+.footer-col h4{color:var(--white);font-size:0.85rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:20px;}
+.footer-col ul{list-style:none;display:flex;flex-direction:column;gap:10px;}
+.footer-col ul a{color:rgba(255,255,255,0.48);text-decoration:none;font-size:0.87rem;transition:color 0.3s;}
+.footer-col ul a:hover{color:var(--gold-light);}
+.footer-bottom{border-top:1px solid rgba(255,255,255,0.07);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;}
+.footer-bottom p{color:rgba(255,255,255,0.3);font-size:0.8rem;}
+.footer-bottom a{color:var(--gold-light);text-decoration:none;}
+
+/* ── PARALLAX HERO ── */
+.parallax-mid{background:linear-gradient(135deg, rgba(61,6,53,0.9), rgba(145,27,121,0.9)), url('https://images.unsplash.com/photo-1545389336-cf090694435e?w=1400&q=80') center/cover fixed;padding:120px 5%;text-align:center;position:relative;overflow:hidden;}
+.parallax-mid-content{position:relative;z-index:2;max-width:700px;margin:0 auto;}
+.parallax-mid h2{font-family:'Cormorant Garamond',serif;font-size:clamp(2.4rem,4.5vw,3.8rem);font-weight:600;color:var(--white);margin-bottom:16px;line-height:1.2;}
+.parallax-mid h2 em{color:var(--gold-light);font-style:italic;}
+.parallax-mid p{color:rgba(255,255,255,0.75);font-size:1.05rem;line-height:1.8;margin-bottom:36px;}
+
+/* ── ANIMATIONS ── */
+@keyframes fade-up{from{opacity:0;transform:translateY(30px);}to{opacity:1;transform:translateY(0);}}
+@keyframes fade-in{from{opacity:0;}to{opacity:1;}}
+.reveal{opacity:0;transform:translateY(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal.visible{opacity:1;transform:none;}
+.reveal-left{opacity:0;transform:translateX(-30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal-left.visible{opacity:1;transform:none;}
+.reveal-right{opacity:0;transform:translateX(30px);transition:opacity 0.7s ease,transform 0.7s ease;}
+.reveal-right.visible{opacity:1;transform:none;}
+
+/* ── MOBILE MENU ── */
+.mobile-menu{display:none;position:fixed;inset:0;background:var(--deep);z-index:999;flex-direction:column;align-items:center;justify-content:center;gap:32px;}
+.mobile-menu.open{display:flex;}
+.mobile-menu a{color:var(--white);text-decoration:none;font-size:1.6rem;font-family:'Cormorant Garamond',serif;font-weight:600;transition:color 0.3s;}
+.mobile-menu a:hover{color:var(--gold-light);}
+.mobile-close{position:absolute;top:24px;right:24px;background:none;border:none;color:var(--white);font-size:1.8rem;cursor:pointer;}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1100px){
+  .about-grid,.contact-grid{grid-template-columns:1fr;}
+  .about-image-wrap{max-width:500px;margin:0 auto;}
+  .footer-top{grid-template-columns:1fr 1fr;}
+  .blog-grid{grid-template-columns:1fr 1fr;}
+  .blog-card.featured{grid-row:span 1;}
+}
+@media(max-width:900px){
+  .hero-content{grid-template-columns:1fr;text-align:center;}
+  .hero-text{order:2;}
+  .hero-image-wrap{order:1;}
+  .hero-logo-glow{width:200px;height:200px;}
+  .hero-logo-glow img{width:160px;}
+  .ring:nth-child(1){width:230px;height:230px;}
+  .ring:nth-child(2){width:280px;height:280px;}
+  .ring:nth-child(3){width:330px;height:330px;}
+  .hero-btns{justify-content:center;}
+  .hero-stats{gap:16px;}
+  .services-grid,.pricing-grid,.testimonials-grid{grid-template-columns:1fr 1fr;}
+  .featured-testimonial{grid-column:span 1;}
+  .process-steps{grid-template-columns:1fr 1fr;}
+  .process-steps::before{display:none;}
+  .article{padding:32px 28px;}
+  .pose-grid{grid-template-columns:1fr;}
+  .dmit-steps{grid-template-columns:1fr;}
+  .form-row{grid-template-columns:1fr;}
+}
+@media(max-width:700px){
+  .nav-links{display:none;}
+  .hamburger{display:flex;}
+  .services-grid,.pricing-grid,.testimonials-grid,.blog-grid{grid-template-columns:1fr;}
+  .process-steps{grid-template-columns:1fr;}
+  .hero-stats{flex-direction:column;position:relative;bottom:auto;margin-top:40px;}
+  section{padding:70px 5%;}
+  .footer-top{grid-template-columns:1fr;}
+  .blog-header{flex-direction:column;gap:16px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav id="main-nav">
+  <a href="#hero" class="nav-logo"><img src="https://sourabhsuneja.github.io/redirect/swadarpan-logo.png" alt="Swadarpan Logo"/></a>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#services">Services</a></li>
+    <li><a href="#sessions">Sessions</a></li>
+    <li><a href="#blog">Blog</a></li>
+    <li><a href="#contact">Contact</a></li>
+    <li><a href="#contact" class="nav-cta">Book a Session</a></li>
+  </ul>
+  <button class="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- MOBILE MENU -->
+<div class="mobile-menu" id="mobile-menu">
+  <button class="mobile-close" onclick="toggleMenu()"><i class="fas fa-times"></i></button>
+  <a href="#about" onclick="toggleMenu()">About</a>
+  <a href="#services" onclick="toggleMenu()">Services</a>
+  <a href="#sessions" onclick="toggleMenu()">Sessions</a>
+  <a href="#blog" onclick="toggleMenu()">Blog</a>
+  <a href="#contact" onclick="toggleMenu()">Contact</a>
+  <a href="#contact" onclick="toggleMenu()" style="color:var(--gold-light)">Book a Session</a>
+</div>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-bg-art">
+    <svg class="mandala-bg" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <circle cx="250" cy="250" r="240" stroke="white" stroke-width="1"/>
+      <circle cx="250" cy="250" r="200" stroke="white" stroke-width="1"/>
+      <circle cx="250" cy="250" r="160" stroke="white" stroke-width="1"/>
+      <circle cx="250" cy="250" r="120" stroke="white" stroke-width="1"/>
+      <circle cx="250" cy="250" r="80" stroke="white" stroke-width="1"/>
+      <circle cx="250" cy="250" r="40" stroke="white" stroke-width="1"/>
+      <line x1="250" y1="10" x2="250" y2="490" stroke="white" stroke-width="0.5"/>
+      <line x1="10" y1="250" x2="490" y2="250" stroke="white" stroke-width="0.5"/>
+      <line x1="80" y1="80" x2="420" y2="420" stroke="white" stroke-width="0.5"/>
+      <line x1="420" y1="80" x2="80" y2="420" stroke="white" stroke-width="0.5"/>
+      <polygon points="250,40 280,210 450,210 310,310 360,480 250,380 140,480 190,310 50,210 220,210" stroke="white" fill="none" stroke-width="0.7"/>
+    </svg>
+    <div class="particles" id="particles"></div>
+  </div>
+  <div class="hero-content">
+    <div class="hero-text">
+      <div class="hero-tag"><i class="fas fa-seedling"></i> Holistic Wellness Since 2020</div>
+      <h1 class="hero-h1">Where the Roads to<br/><em>Outer Success</em><br/>& <em>Inner Joy</em> Meet</h1>
+      <p class="hero-subtitle">Yoga · Reiki · DMIT-Based Counseling</p>
+      <p class="hero-desc">Swadarpan gives you the right tools to know and transform yourself. Heal your mind, body and energies to a more balanced, purposeful and joyful life.</p>
+      <div class="hero-btns">
+        <a href="#sessions" class="btn-primary"><i class="fas fa-calendar-check"></i> Book a Session</a>
+        <a href="#about" class="btn-outline"><i class="fas fa-play-circle"></i> Our Story</a>
+      </div>
+    </div>
+    <div class="hero-image-wrap">
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="ring"></div>
+      <div class="hero-logo-glow">
+        <img src="https://sourabhsuneja.github.io/redirect/swadarpan-logo.png" alt="Swadarpan"/>
+      </div>
+    </div>
+  </div>
+  <div class="hero-stats">
+    <div class="stat-card"><div class="stat-num">500+</div><div class="stat-label">Lives Transformed</div></div>
+    <div class="stat-card"><div class="stat-num">4+</div><div class="stat-label">Years of Healing</div></div>
+    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Holistic Paths</div></div>
+    <div class="stat-card"><div class="stat-num">100%</div><div class="stat-label">Heart-Centred Care</div></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-section">
+  <div class="marquee-track" id="marquee">
+    <span class="marquee-item"><i class="fas fa-om"></i> Yoga</span>
+    <span class="marquee-item"><i class="fas fa-hands"></i> Reiki Healing</span>
+    <span class="marquee-item"><i class="fas fa-fingerprint"></i> DMIT Counseling</span>
+    <span class="marquee-item"><i class="fas fa-heart"></i> Inner Wellness</span>
+    <span class="marquee-item"><i class="fas fa-star"></i> Career Guidance</span>
+    <span class="marquee-item"><i class="fas fa-brain"></i> Mind-Body Balance</span>
+    <span class="marquee-item"><i class="fas fa-sun"></i> Meditation</span>
+    <span class="marquee-item"><i class="fas fa-leaf"></i> Self Discovery</span>
+    <span class="marquee-item"><i class="fas fa-om"></i> Yoga</span>
+    <span class="marquee-item"><i class="fas fa-hands"></i> Reiki Healing</span>
+    <span class="marquee-item"><i class="fas fa-fingerprint"></i> DMIT Counseling</span>
+    <span class="marquee-item"><i class="fas fa-heart"></i> Inner Wellness</span>
+    <span class="marquee-item"><i class="fas fa-star"></i> Career Guidance</span>
+    <span class="marquee-item"><i class="fas fa-brain"></i> Mind-Body Balance</span>
+    <span class="marquee-item"><i class="fas fa-sun"></i> Meditation</span>
+    <span class="marquee-item"><i class="fas fa-leaf"></i> Self Discovery</span>
+  </div>
+</div>
+
+<!-- ABOUT -->
+<section id="about">
+  <div class="section-inner">
+    <div class="about-grid">
+      <div class="about-image-wrap reveal-left">
+        <div class="about-img-frame">
+          <img src="https://images.unsplash.com/photo-1506126613408-eca07ce68773?w=700&q=80" alt="Yoga & Meditation"/>
+        </div>
+        <div class="about-badge">
+          <div class="year">2020</div>
+          <div class="year-label">Founded</div>
+        </div>
+      </div>
+      <div class="about-text reveal-right">
+        <span class="section-tag">Our Story</span>
+        <h2 class="section-title">Born from a Moment of <em>Divine Inspiration</em></h2>
+        <p class="section-subtitle">In 2020, Hemant Swaroop sat quietly on his yoga mat — and in that stillness, a vision took shape. A dream to light up the path for millions across the globe.</p>
+        <p class="section-subtitle" style="margin-top:14px;">He sipped a mug of coffee and embarked on his mission to show people the path to both <strong style="color:var(--accent)">outer success</strong> — in career and life — and <strong style="color:var(--accent)">inner joy</strong> through self-knowledge and healing.</p>
+        <div class="about-pillars">
+          <span class="pillar"><i class="fas fa-om"></i> Yoga</span>
+          <span class="pillar"><i class="fas fa-hands"></i> Reiki</span>
+          <span class="pillar"><i class="fas fa-fingerprint"></i> DMIT</span>
+          <span class="pillar"><i class="fas fa-compass"></i> Career Guidance</span>
+        </div>
+        <div class="about-quote">
+          <p>"Swadarpan is where the roads to outer success and inner joy meet!"</p>
+          <cite>— Hemant Swaroop, Founder</cite>
+        </div>
+        <div class="founder-meta">
+          <div class="founder-avatar"><i class="fas fa-user"></i></div>
+          <div class="founder-info">
+            <strong>Hemant Swaroop</strong>
+            <span>Yoga Instructor · Reiki Master · DMIT Counselor</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SERVICES -->
+<section id="services">
+  <div class="section-inner">
+    <div class="services-header reveal">
+      <span class="section-tag">What We Offer</span>
+      <h2 class="section-title">A Triad of <em>Transformation</em></h2>
+      <p class="section-subtitle">Through Yoga, Reiki and DMIT-based counseling, we guide you on a complete journey — body, energy, and purpose.</p>
+    </div>
+    <div class="services-grid">
+      <div class="service-card reveal">
+        <div class="service-card-img">
+          <img src="https://images.unsplash.com/photo-1599901860904-17e6ed7083a0?w=600&q=80" alt="Yoga"/>
+          <div class="service-icon-bubble"><i class="fas fa-om"></i></div>
+        </div>
+        <div class="service-body">
+          <h3>Yoga Sessions</h3>
+          <p>Whether you're a beginner or seasoned practitioner, our yoga sessions blend asana, pranayama and mindfulness to restore flexibility, clarity and inner calm.</p>
+          <div class="service-tags">
+            <span class="service-tag">Beginners</span>
+            <span class="service-tag">Advanced</span>
+            <span class="service-tag">Online & In-Person</span>
+          </div>
+          <a href="#sessions" class="service-learn">Explore Sessions <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-card-img">
+          <img src="https://images.unsplash.com/photo-1528715471579-d1bcf0ba5e83?w=600&q=80" alt="Reiki"/>
+          <div class="service-icon-bubble"><i class="fas fa-hands"></i></div>
+        </div>
+        <div class="service-body">
+          <h3>Reiki & Meditation</h3>
+          <p>Experience the ancient healing art of Reiki — channeling universal life energy to dissolve blockages, reduce stress and awaken your body's natural healing intelligence.</p>
+          <div class="service-tags">
+            <span class="service-tag">Energy Healing</span>
+            <span class="service-tag">Stress Relief</span>
+            <span class="service-tag">Meditation</span>
+          </div>
+          <a href="#sessions" class="service-learn">Explore Sessions <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="service-card reveal">
+        <div class="service-card-img">
+          <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=600&q=80" alt="DMIT"/>
+          <div class="service-icon-bubble"><i class="fas fa-fingerprint"></i></div>
+        </div>
+        <div class="service-body">
+          <h3>DMIT Counseling</h3>
+          <p>Dermatoglyphics Multiple Intelligence Test (DMIT) reveals your brain's innate strengths, learning style and potential — empowering you to choose the right career path with confidence.</p>
+          <div class="service-tags">
+            <span class="service-tag">Career Guidance</span>
+            <span class="service-tag">Students</span>
+            <span class="service-tag">Professionals</span>
+          </div>
+          <a href="#sessions" class="service-learn">Explore Sessions <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- WHO WE SERVE -->
+<div class="parallax-mid">
+  <div class="parallax-mid-content reveal">
+    <span class="section-tag" style="justify-content:center;color:var(--gold-light);">Who We Serve</span>
+    <h2>Healing is for <em>Everyone</em> Who's Ready</h2>
+    <p>Parents, teachers, teenagers, couples, working professionals — and just about anyone who has ever considered working on their body and mind. If you're willing to explore your true potential, Swadarpan is for you.</p>
+    <a href="#contact" class="btn-primary">Begin Your Journey <i class="fas fa-arrow-right"></i></a>
+  </div>
+</div>
+
+<!-- HOW IT WORKS -->
+<section id="process">
+  <div class="section-inner">
+    <div class="process-header reveal">
+      <span class="section-tag">The Process</span>
+      <h2 class="section-title">Your Path to <em>Wholeness</em></h2>
+      <p class="section-subtitle">A simple, guided four-step journey designed to meet you exactly where you are.</p>
+    </div>
+    <div class="process-steps">
+      <div class="step-card reveal">
+        <div class="step-num">
+          <i class="fas fa-seedling"></i>
+          <span class="num-badge">1</span>
+        </div>
+        <h4>Connect & Share</h4>
+        <p>Reach out for a free discovery call. Share your goals, challenges and what you're hoping to transform.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">
+          <i class="fas fa-map-marked-alt"></i>
+          <span class="num-badge">2</span>
+        </div>
+        <h4>Personalized Plan</h4>
+        <p>We co-create a holistic plan tailored to your unique needs — combining Yoga, Reiki and DMIT as needed.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">
+          <i class="fas fa-sun"></i>
+          <span class="num-badge">3</span>
+        </div>
+        <h4>Practice & Heal</h4>
+        <p>Engage in guided sessions in a safe, nurturing environment — online or in person, at your own pace.</p>
+      </div>
+      <div class="step-card reveal">
+        <div class="step-num">
+          <i class="fas fa-star"></i>
+          <span class="num-badge">4</span>
+        </div>
+        <h4>Thrive & Grow</h4>
+        <p>Experience lasting transformation — clarity of purpose, peace of mind and the tools to keep growing.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SESSIONS / PRICING -->
+<section id="sessions">
+  <div class="section-inner">
+    <div class="sessions-header reveal">
+      <span class="section-tag">Sessions & Pricing</span>
+      <h2 class="section-title">Choose Your <em>Healing Path</em></h2>
+      <p class="section-subtitle" style="margin:0 auto;">Flexible plans for every journey. Pricing to be updated — contact us for current offers and packages.</p>
+    </div>
+    <div class="pricing-grid">
+      <div class="pricing-card reveal">
+        <div class="pricing-icon"><i class="fas fa-om"></i></div>
+        <h3>Yoga Sessions</h3>
+        <p class="pricing-desc">Beginner to advanced asana, pranayama & mindfulness — individual or group.</p>
+        <div class="pricing-placeholder">💰 Pricing coming soon — contact us!</div>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check-circle"></i> 60-minute guided session</li>
+          <li><i class="fas fa-check-circle"></i> Personalised asana sequence</li>
+          <li><i class="fas fa-check-circle"></i> Pranayama & breathing techniques</li>
+          <li><i class="fas fa-check-circle"></i> Online or in-person</li>
+          <li><i class="fas fa-check-circle"></i> Suitable for all levels</li>
+        </ul>
+        <a href="#contact" class="btn-book">Enquire Now</a>
+      </div>
+      <div class="pricing-card featured reveal">
+        <div class="featured-label">Most Popular</div>
+        <div class="pricing-icon"><i class="fas fa-hands"></i></div>
+        <h3>Reiki Healing</h3>
+        <p class="pricing-desc">Deep energy work to release blockages and restore natural vitality and balance.</p>
+        <div class="pricing-placeholder">💰 Pricing coming soon — contact us!</div>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check-circle"></i> 75-minute energy session</li>
+          <li><i class="fas fa-check-circle"></i> Chakra assessment & balancing</li>
+          <li><i class="fas fa-check-circle"></i> Guided meditation</li>
+          <li><i class="fas fa-check-circle"></i> Post-session guidance</li>
+          <li><i class="fas fa-check-circle"></i> Distance healing available</li>
+        </ul>
+        <a href="#contact" class="btn-book gold">Enquire Now</a>
+      </div>
+      <div class="pricing-card reveal">
+        <div class="pricing-icon"><i class="fas fa-fingerprint"></i></div>
+        <h3>DMIT Counseling</h3>
+        <p class="pricing-desc">Fingerprint-based intelligence profiling for career, education & life direction.</p>
+        <div class="pricing-placeholder">💰 Pricing coming soon — contact us!</div>
+        <ul class="pricing-features">
+          <li><i class="fas fa-check-circle"></i> Full fingerprint analysis</li>
+          <li><i class="fas fa-check-circle"></i> Detailed intelligence report</li>
+          <li><i class="fas fa-check-circle"></i> 90-minute career counseling</li>
+          <li><i class="fas fa-check-circle"></i> Learning style mapping</li>
+          <li><i class="fas fa-check-circle"></i> Follow-up session included</li>
+        </ul>
+        <a href="#contact" class="btn-book">Enquire Now</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section id="testimonials">
+  <div class="section-inner">
+    <div class="testimonials-header reveal">
+      <span class="section-tag">Happy Clients</span>
+      <h2 class="section-title">Words from Those We've <em>Touched</em></h2>
+      <p class="section-subtitle" style="margin:0 auto;">Real transformations, real stories — from parents, professionals, teens and seekers.</p>
+    </div>
+    <div class="testimonials-grid">
+      <div class="testimonial-card featured reveal">
+        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+        <p class="testimonial-text">"Swadarpan changed my son's life. He was directionless after Class 12, anxious and lost. The DMIT counseling helped us understand his natural strengths and the right career path. Today he's pursuing engineering with genuine passion and purpose. I'm a grateful mother."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar">S</div>
+          <div>
+            <span class="author-name">Sunita Agarwal</span>
+            <span class="author-role">Parent of a 17-year-old · Jaipur</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+        <p class="testimonial-text">"Hemant ji's Reiki sessions are transformative. After 3 sessions, my chronic anxiety reduced significantly. I sleep better, think more clearly and feel genuinely at peace."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,#911B79,#D35FA7);">R</div>
+          <div>
+            <span class="author-name">Ravi Sharma</span>
+            <span class="author-role">IT Professional · Bengaluru</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
+        <p class="testimonial-text">"The yoga classes are incredible. Hemant sir doesn't just teach poses — he teaches you to breathe through life. My back pain is gone and my mind is calmer than ever."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,#D4A843,#C5962E);">P</div>
+          <div>
+            <span class="author-name">Priya Meena</span>
+            <span class="author-role">School Teacher · Jaipur</span>
+          </div>
+        </div>
+      </div>
+      <div class="testimonial-card reveal">
+        <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star-half-alt"></i></div>
+        <p class="testimonial-text">"As a confused teenager, I had no idea what to do with my life. DMIT counseling was a revelation. I finally understand how I think and what suits me. Best gift my parents ever gave me."</p>
+        <div class="testimonial-author">
+          <div class="author-avatar" style="background:linear-gradient(135deg,#5A0A4E,#911B79);">A</div>
+          <div>
+            <span class="author-name">Arjun Verma</span>
+            <span class="author-role">Student, Age 16 · Delhi</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- BLOG PREVIEW -->
+<section id="blog">
+  <div class="section-inner">
+    <div class="blog-header reveal">
+      <div>
+        <span class="section-tag">Wisdom & Insights</span>
+        <h2 class="section-title">From the <em>Swadarpan</em> Journal</h2>
+      </div>
+      <a href="#articles" class="btn-outline" style="color:var(--accent);border-color:var(--accent);white-space:nowrap;">View All Articles</a>
+    </div>
+    <div class="blog-grid">
+      <div class="blog-card featured reveal">
+        <div class="blog-img">
+          <img src="https://images.unsplash.com/photo-1544367567-0f2fcb009e0b?w=700&q=80" alt="Mental Wellness"/>
+          <span class="blog-cat">Mental Wellness</span>
+        </div>
+        <div class="blog-body">
+          <h3>Why Mental Health is the Foundation of Every Goal You'll Ever Achieve</h3>
+          <p>We chase success, wealth, and recognition — but rarely stop to tend to the very engine that drives all of it: our mind. This article explores why mental wellness isn't a luxury, it's your greatest life investment.</p>
+          <div class="blog-meta">
+            <span><i class="far fa-calendar"></i> March 2025</span>
+            <span><i class="far fa-clock"></i> 6 min read</span>
+          </div>
+          <a href="#article-mental" class="blog-read">Read Article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="blog-card reveal">
+        <div class="blog-img">
+          <img src="https://images.unsplash.com/photo-1575052814086-f385e2e2ad1b?w=600&q=80" alt="Yoga Poses"/>
+          <span class="blog-cat">Yoga</span>
+        </div>
+        <div class="blog-body">
+          <h3>5 Simple Yoga Poses to Start Your Day with Clarity & Energy</h3>
+          <div class="blog-meta">
+            <span><i class="far fa-calendar"></i> Feb 2025</span>
+            <span><i class="far fa-clock"></i> 5 min read</span>
+          </div>
+          <a href="#article-yoga" class="blog-read">Read Article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+      <div class="blog-card reveal">
+        <div class="blog-img">
+          <img src="https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=600&q=80" alt="DMIT"/>
+          <span class="blog-cat">DMIT</span>
+        </div>
+        <div class="blog-body">
+          <h3>What is DMIT? A Simple Guide to Understanding Your Child's Potential</h3>
+          <div class="blog-meta">
+            <span><i class="far fa-calendar"></i> Jan 2025</span>
+            <span><i class="far fa-clock"></i> 7 min read</span>
+          </div>
+          <a href="#article-dmit" class="blog-read">Read Article <i class="fas fa-arrow-right"></i></a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FULL BLOG ARTICLES -->
+<div class="articles-section" id="articles">
+  <div class="articles-inner">
+
+    <!-- ARTICLE 1: MENTAL WELLNESS -->
+    <div class="article reveal" id="article-mental">
+      <div class="article-header">
+        <span class="article-cat-tag">Mental Wellness</span>
+        <h2>Why Mental Health is the Foundation of Every Goal You'll Ever Achieve</h2>
+        <div class="article-byline">
+          <span><i class="fas fa-user" style="color:var(--accent)"></i> Hemant Swaroop</span>
+          <span><i class="far fa-calendar" style="color:var(--accent)"></i> March 2025</span>
+          <span><i class="far fa-clock" style="color:var(--accent)"></i> 6 min read</span>
+        </div>
+      </div>
+      <div class="article-body">
+        <p>We live in an era that glorifies hustle, productivity hacks and the relentless pursuit of success. We build workout routines for our bodies, learning systems for our intellect — but how often do we consciously tend to our mental health?</p>
+        <p>The truth is, <strong>your mind is the command centre</strong> of your entire life. Every decision you make, every relationship you nurture, every goal you pursue — all of it passes through the filter of your mental and emotional state. A cluttered, anxious or depleted mind doesn't just make life harder; it silently caps your potential.</p>
+
+        <h3>The Hidden Cost of Ignoring Mental Wellness</h3>
+        <p>Most people notice the physical symptoms of stress first — headaches, poor sleep, low energy — but the psychological toll runs deeper. Chronic stress shrinks the part of your brain responsible for creativity, decision-making and empathy. Over time, this shows up as poor choices, damaged relationships and a nagging feeling that life is somehow passing you by.</p>
+
+        <div class="article-tip">
+          <p>"You cannot pour from an empty cup. Mental wellness isn't selfish — it's the very act of refilling yours."</p>
+        </div>
+
+        <h3>Physical Health is Inseparable from Mental Health</h3>
+        <p>Modern science confirms what ancient wisdom always knew: the mind-body connection is real, bidirectional and powerful. Physical practices like yoga and mindful breathing directly modulate the nervous system — reducing cortisol, improving gut health, and literally rewiring the brain toward greater calm and focus.</p>
+        <p>At Swadarpan, we address both pillars simultaneously. A Yoga session isn't just stretching; it's a mental reset. A Reiki session doesn't just balance energy; it clears the emotional residue of accumulated stress.</p>
+
+        <h3>Small Shifts, Profound Changes</h3>
+        <p>You don't need to overhaul your life. Start with three things:</p>
+        <ul>
+          <li><strong>10 minutes of conscious breathing daily</strong> — it activates your parasympathetic nervous system and shifts you from reaction to response.</li>
+          <li><strong>A digital detox window each evening</strong> — your brain needs unstructured time to process, integrate and restore itself.</li>
+          <li><strong>One mindful movement practice weekly</strong> — yoga, a slow walk, stretching — any movement done with full presence counts.</li>
+        </ul>
+        <p>These aren't magic bullets. But they are <em>consistent kindnesses</em> to your mind — and those compound beautifully over time.</p>
+
+        <h3>You Are Worth the Investment</h3>
+        <p>At Swadarpan, we believe the most important relationship you will ever have is the one with yourself. Everything else — your career, your relationships, your creativity — flows from that fountain. Let us help you tend to it.</p>
+      </div>
+    </div>
+
+    <!-- ARTICLE 2: YOGA POSES -->
+    <div class="article reveal" id="article-yoga">
+      <div class="article-header">
+        <span class="article-cat-tag">Yoga</span>
+        <h2>5 Simple Yoga Poses to Start Your Day with Clarity & Energy</h2>
+        <div class="article-byline">
+          <span><i class="fas fa-user" style="color:var(--accent)"></i> Hemant Swaroop</span>
+          <span><i class="far fa-calendar" style="color:var(--accent)"></i> February 2025</span>
+          <span><i class="far fa-clock" style="color:var(--accent)"></i> 5 min read</span>
+        </div>
+      </div>
+      <div class="article-body">
+        <p>You don't need an hour-long yoga class to feel the benefits. Just 15–20 minutes of mindful movement in the morning can set a completely different tone for your entire day. Here are five beginner-friendly poses that are powerful, accessible and beautifully effective.</p>
+        <div class="pose-grid">
+          <div class="pose-card">
+            <div class="pose-icon"><i class="fas fa-child"></i></div>
+            <div>
+              <h4>Tadasana (Mountain Pose)</h4>
+              <p>The foundation of all standing poses. Stand tall, feet together, arms by your side. Breathe deeply and feel grounded. Strengthens posture and focus.</p>
+            </div>
+          </div>
+          <div class="pose-card">
+            <div class="pose-icon"><i class="fas fa-sun"></i></div>
+            <div>
+              <h4>Surya Namaskar (Sun Salutation)</h4>
+              <p>A flowing sequence of 12 poses that energizes the entire body, activates the digestive system and calms the mind. Perfect as a morning warm-up.</p>
+            </div>
+          </div>
+          <div class="pose-card">
+            <div class="pose-icon"><i class="fas fa-leaf"></i></div>
+            <div>
+              <h4>Balasana (Child's Pose)</h4>
+              <p>A gentle resting pose that calms the nervous system, releases lower back tension and quiets mental chatter. Hold for 1–3 minutes with slow, deep breaths.</p>
+            </div>
+          </div>
+          <div class="pose-card">
+            <div class="pose-icon"><i class="fas fa-arrows-alt-v"></i></div>
+            <div>
+              <h4>Viparita Karani (Legs-Up-The-Wall)</h4>
+              <p>Lie on your back and rest your legs vertically against a wall. This restorative pose reduces stress, improves circulation and eases fatigue almost instantly.</p>
+            </div>
+          </div>
+          <div class="pose-card">
+            <div class="pose-icon"><i class="fas fa-snowflake"></i></div>
+            <div>
+              <h4>Shavasana (Corpse Pose)</h4>
+              <p>Always end with Shavasana. Lie completely still for 5 minutes. This is where the real integration happens — the body absorbs all the benefits of your practice.</p>
+            </div>
+          </div>
+          <div class="pose-card">
+            <div class="pose-icon"><i class="fas fa-wind"></i></div>
+            <div>
+              <h4>Anulom Vilom (Alternate Nostril Breathing)</h4>
+              <p>Not a pose, but a pranayama practice. Alternate nostril breathing balances the left and right brain hemispheres, reduces anxiety and sharpens focus.</p>
+            </div>
+          </div>
+        </div>
+        <div class="article-tip">
+          <p>"Begin where you are. Use what you have. Do what you can. Even 10 minutes of yoga done consistently is infinitely more powerful than the 'perfect' hour-long class you never get to."</p>
+        </div>
+        <h3>Tips for Building a Morning Practice</h3>
+        <ul>
+          <li>Keep your yoga mat unrolled near your bed as a visual invitation.</li>
+          <li>Practice before checking your phone — protect those first 20 minutes of your day.</li>
+          <li>Don't worry about perfect form when you're starting out; consistency beats perfection every time.</li>
+          <li>Pair your practice with 3 deep breaths of gratitude to amplify the mental benefits.</li>
+        </ul>
+        <p>Ready to build a real practice with guidance? Our Yoga sessions at Swadarpan are designed to meet you exactly where you are and take you exactly where you want to go.</p>
+      </div>
+    </div>
+
+    <!-- ARTICLE 3: DMIT -->
+    <div class="article reveal" id="article-dmit">
+      <div class="article-header">
+        <span class="article-cat-tag">DMIT & Career</span>
+        <h2>What is DMIT? A Simple Guide to Understanding Your Child's Potential</h2>
+        <div class="article-byline">
+          <span><i class="fas fa-user" style="color:var(--accent)"></i> Hemant Swaroop</span>
+          <span><i class="far fa-calendar" style="color:var(--accent)"></i> January 2025</span>
+          <span><i class="far fa-clock" style="color:var(--accent)"></i> 7 min read</span>
+        </div>
+      </div>
+      <div class="article-body">
+        <p>Every parent wants the best for their child. Yet so many children end up in careers that don't suit them — not because they aren't talented, but because no one knew how to read their unique potential. This is exactly where DMIT changes everything.</p>
+
+        <h3>What Does DMIT Stand For?</h3>
+        <p><strong>D</strong>ermatoglyphics <strong>M</strong>ultiple <strong>I</strong>ntelligence <strong>T</strong>est. It sounds complex, but the idea is elegantly simple: the patterns on your fingertips — your fingerprints — are formed in the womb at the same time as your brain, and they are directly linked to specific areas of your brain's development.</p>
+
+        <div class="dmit-highlight">
+          <h3>How Does It Work?</h3>
+          <p>DMIT uses a scientifically validated analysis of your fingerprint patterns to map your innate intelligences — based on Dr. Howard Gardner's Multiple Intelligence Theory. Everyone is intelligent; DMIT tells you <em>how</em> you are intelligent.</p>
+          <div class="dmit-steps">
+            <div class="dmit-step"><i class="fas fa-fingerprint"></i><p>Fingerprints are scanned safely and non-invasively</p></div>
+            <div class="dmit-step"><i class="fas fa-brain"></i><p>Patterns are analyzed against a proprietary intelligence database</p></div>
+            <div class="dmit-step"><i class="fas fa-chart-bar"></i><p>A detailed report maps your innate strengths & learning style</p></div>
+          </div>
+        </div>
+
+        <h3>The 8 Multiple Intelligences</h3>
+        <p>Based on Gardner's framework, DMIT measures how dominant each of these intelligences is in you:</p>
+        <ul>
+          <li><strong>Linguistic</strong> — the ability with words and language</li>
+          <li><strong>Logical-Mathematical</strong> — reasoning, patterns, numbers</li>
+          <li><strong>Spatial</strong> — thinking in three dimensions; visual creativity</li>
+          <li><strong>Musical</strong> — sensitivity to rhythm, melody and sound</li>
+          <li><strong>Bodily-Kinaesthetic</strong> — physical coordination, craftsmanship</li>
+          <li><strong>Interpersonal</strong> — understanding and relating to others</li>
+          <li><strong>Intrapersonal</strong> — self-awareness and inner wisdom</li>
+          <li><strong>Naturalist</strong> — sensitivity to nature and the environment</li>
+        </ul>
+
+        <h3>Who Should Take DMIT?</h3>
+        <p>DMIT is for virtually anyone at a crossroads — but it's especially valuable for:</p>
+        <ul>
+          <li>Children (ages 3 and above) to help parents support their natural learning style</li>
+          <li>Teenagers choosing their career stream (Science, Commerce, Arts)</li>
+          <li>College students unsure about specialisation or career direction</li>
+          <li>Working professionals considering a career pivot</li>
+          <li>Couples experiencing communication difficulties (understanding each other's intelligence profiles can be transformative)</li>
+        </ul>
+
+        <div class="article-tip">
+          <p>"Your fingerprints don't lie. They are a map of who you were born to be — DMIT simply helps you read that map."</p>
+        </div>
+
+        <h3>Is DMIT Accurate?</h3>
+        <p>DMIT is based on the established science of dermatoglyphics — the study of skin ridge patterns — which has been researched for over 200 years. While it is a guidance tool and not a deterministic prediction, thousands of families have found it to be remarkably accurate and deeply affirming. At Swadarpan, our DMIT sessions are always paired with in-depth counseling to help you interpret and act on your results meaningfully.</p>
+        <p>Curious about your own intelligence profile — or your child's? Reach out to us and we'll guide you through it.</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- CONTACT -->
+<section id="contact">
+  <div class="section-inner">
+    <div class="contact-grid">
+      <div class="contact-info reveal-left">
+        <span class="section-tag">Get in Touch</span>
+        <h2 class="section-title">Let's Begin Your <em>Journey</em> Together</h2>
+        <p class="section-subtitle">Ready to take the first step? Reach out for a free discovery conversation. No commitments — just a warm, honest chat about where you are and where you'd like to go.</p>
+        <div class="contact-ways">
+          <a href="tel:+9114135881713" class="contact-way">
+            <div class="contact-way-icon"><i class="fas fa-phone"></i></div>
+            <div class="contact-way-text">
+              <strong>Call Us</strong>
+              <span>+91-1413581713</span>
+            </div>
+          </a>
+          <a href="mailto:smilewithyoga2907@gmail.com" class="contact-way">
+            <div class="contact-way-icon"><i class="fas fa-envelope"></i></div>
+            <div class="contact-way-text">
+              <strong>Email Us</strong>
+              <span>smilewithyoga2907@gmail.com</span>
+            </div>
+          </a>
+          <a href="https://wa.me/9114135881713" class="contact-way">
+            <div class="contact-way-icon"><i class="fab fa-whatsapp"></i></div>
+            <div class="contact-way-text">
+              <strong>WhatsApp</strong>
+              <span>Chat with us directly</span>
+            </div>
+          </a>
+          <div class="contact-way">
+            <div class="contact-way-icon"><i class="fas fa-map-marker-alt"></i></div>
+            <div class="contact-way-text">
+              <strong>Location</strong>
+              <span>Jaipur, Rajasthan, India</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="reveal-right">
+        <div class="contact-form">
+          <h3 class="form-title">Book a Free Discovery Call</h3>
+          <p class="form-subtitle">Tell us a little about yourself and what you're looking for. We'll get back to you within 24 hours.</p>
+          <div class="form-row">
+            <div class="form-group"><label>First Name</label><input type="text" placeholder="Priya"/></div>
+            <div class="form-group"><label>Last Name</label><input type="text" placeholder="Sharma"/></div>
+          </div>
+          <div class="form-group"><label>Email Address</label><input type="email" placeholder="priya@email.com"/></div>
+          <div class="form-group"><label>Phone Number</label><input type="tel" placeholder="+91 98765 43210"/></div>
+          <div class="form-group">
+            <label>I'm Interested In</label>
+            <select>
+              <option value="">— Select a Service —</option>
+              <option>Yoga Sessions</option>
+              <option>Reiki Healing</option>
+              <option>DMIT Counseling</option>
+              <option>Multiple Services</option>
+              <option>Just exploring — tell me more!</option>
+            </select>
+          </div>
+          <div class="form-group"><label>Your Message</label><textarea placeholder="A little about where you are and what you hope for..."></textarea></div>
+          <button class="btn-submit"><i class="fas fa-paper-plane"></i> Send Message</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div class="footer-brand">
+        <img src="https://sourabhsuneja.github.io/redirect/swadarpan-logo.png" alt="Swadarpan"/>
+        <p>Swadarpan is where the roads to outer success and inner joy meet. Transforming lives through Yoga, Reiki and DMIT Counseling since 2020.</p>
+        <div class="footer-social">
+          <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-youtube"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-whatsapp"></i></a>
+          <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
+        </div>
+      </div>
+      <div class="footer-col">
+        <h4>Services</h4>
+        <ul>
+          <li><a href="#services">Yoga Sessions</a></li>
+          <li><a href="#services">Reiki Healing</a></li>
+          <li><a href="#services">DMIT Counseling</a></li>
+          <li><a href="#sessions">Pricing & Packages</a></li>
+          <li><a href="#contact">Free Discovery Call</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Learn</h4>
+        <ul>
+          <li><a href="#article-mental">Mental Wellness</a></li>
+          <li><a href="#article-yoga">Yoga Poses</a></li>
+          <li><a href="#article-dmit">About DMIT</a></li>
+          <li><a href="#about">Our Story</a></li>
+          <li><a href="#testimonials">Testimonials</a></li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <h4>Contact</h4>
+        <ul>
+          <li><a href="tel:+9114135881713">+91-1413581713</a></li>
+          <li><a href="mailto:smilewithyoga2907@gmail.com">smilewithyoga2907@gmail.com</a></li>
+          <li><a href="#">Jaipur, Rajasthan</a></li>
+          <li><a href="#contact">Book a Session</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>© 2025 Swadarpan. All rights reserved. Made with <i class="fas fa-heart" style="color:var(--accent)"></i> for seekers everywhere.</p>
+      <p><a href="#">Privacy Policy</a> &nbsp;·&nbsp; <a href="#">Terms of Service</a></p>
+    </div>
+  </div>
+</footer>
+
+<script>
+// NAV SCROLL
+const nav = document.getElementById('main-nav');
+window.addEventListener('scroll', () => {
+  nav.classList.toggle('scrolled', window.scrollY > 50);
+});
+
+// MOBILE MENU
+function toggleMenu() {
+  document.getElementById('mobile-menu').classList.toggle('open');
+}
+
+// PARTICLES
+(function() {
+  const container = document.getElementById('particles');
+  for (let i = 0; i < 20; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 6 + 2;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      animation-duration:${Math.random()*15+10}s;
+      animation-delay:${Math.random()*10}s;
+      opacity:${Math.random()*0.5+0.1};
+    `;
+    container.appendChild(p);
+  }
+})();
+
+// INTERSECTION OBSERVER REVEAL
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach((e, i) => {
+    if (e.isIntersecting) {
+      setTimeout(() => e.target.classList.add('visible'), i * 80);
+    }
+  });
+}, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+
+document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
+
+// CONTACT FORM SUBMIT
+document.querySelector('.btn-submit').addEventListener('click', function(e) {
+  e.preventDefault();
+  this.innerHTML = '<i class="fas fa-check-circle"></i> Message Sent! We\'ll be in touch soon.';
+  this.style.background = 'linear-gradient(135deg,#2ecc71,#27ae60)';
+  setTimeout(() => {
+    this.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
+    this.style.background = '';
+  }, 4000);
+});
+
+// STAT COUNTER ANIMATION
+function animateCounter(el, target) {
+  let start = 0;
+  const duration = 1500;
+  const step = (timestamp) => {
+    if (!start) start = timestamp;
+    const progress = Math.min((timestamp - start) / duration, 1);
+    const val = Math.floor(progress * target);
+    el.textContent = val + (el.dataset.suffix || '');
+    if (progress < 1) requestAnimationFrame(step);
+    else el.textContent = target + (el.dataset.suffix || '');
+  };
+  requestAnimationFrame(step);
+}
+
+const statsObserver = new IntersectionObserver((entries) => {
+  entries.forEach(e => {
+    if (e.isIntersecting) {
+      const nums = [
+        {el: document.querySelectorAll('.stat-num')[0], val: 500, suffix: '+'},
+        {el: document.querySelectorAll('.stat-num')[1], val: 4, suffix: '+'},
+        {el: document.querySelectorAll('.stat-num')[2], val: 3, suffix: ''},
+        {el: document.querySelectorAll('.stat-num')[3], val: 100, suffix: '%'},
+      ];
+      nums.forEach(n => { if(n.el) { n.el.dataset.suffix = n.suffix; animateCounter(n.el, n.val); }});
+      statsObserver.disconnect();
+    }
+  });
+}, {threshold: 0.5});
+const heroStats = document.querySelector('.hero-stats');
+if(heroStats) statsObserver.observe(heroStats);
+
+// SMOOTH ANCHOR
+document.querySelectorAll('a[href^="#"]').forEach(a => {
+  a.addEventListener('click', e => {
+    const target = document.querySelector(a.getAttribute('href'));
+    if (target) {
+      e.preventDefault();
+      target.scrollIntoView({behavior:'smooth', block:'start'});
+    }
+  });
+});
+</script>
+</body>
+</html>
