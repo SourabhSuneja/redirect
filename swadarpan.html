@@ -4,7 +4,7 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Swadarpan – Know Yourself. Transform Yourself.</title>
-<meta name="description" content="Swadarpan offers a holistic blend of Yoga, Reiki and DMIT-based Counseling for a more focused and well-directed life."/>
+<meta name="description" content="Swadarpan offers a holistic blend of Yoga, Reiki, and DMIT-based counseling to help you achieve a more focused, balanced, and well-directed life. Discover your true potential, enhance mental clarity, and transform your mind, body, and energy through personalized guidance and healing practices."/>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400&family=Jost:wght@300;400;500;600&family=Yeseva+One&display=swap" rel="stylesheet"/>
@@ -40,7 +40,7 @@ body{font-family:'Jost',sans-serif;color:var(--dark-text);background:var(--cream
 /* ── NAV ── */
 nav{position:fixed;top:0;left:0;right:0;z-index:1000;padding:16px 5%;display:flex;align-items:center;justify-content:space-between;transition:all 0.4s ease;}
 nav.scrolled{background:rgba(255,255,255,0.96);backdrop-filter:blur(20px);box-shadow:0 2px 30px rgba(145,27,121,0.12);padding:10px 5%;}
-.nav-logo img{height:52px;transition:height 0.3s;}
+.nav-logo img{height:52px;transition:height 0.3s; border-radius: 50%;}
 nav.scrolled .nav-logo img{height:42px;}
 .nav-links{display:flex;align-items:center;gap:36px;list-style:none;}
 .nav-links a{text-decoration:none;color:var(--white);font-weight:500;font-size:0.88rem;letter-spacing:0.06em;text-transform:uppercase;transition:color 0.3s;position:relative;}
@@ -54,15 +54,46 @@ nav.scrolled .nav-links a{color:var(--body-text);}
 .hamburger span{width:25px;height:2px;background:var(--white);transition:all 0.3s;border-radius:2px;display:block;}
 nav.scrolled .hamburger span{background:var(--deep);}
 
-/* ── HERO ── */
-#hero{min-height:100vh;position:relative;display:flex;align-items:center;overflow:hidden;background:linear-gradient(135deg, #3D0635 0%, #5A0A4E 25%, #7A0F66 50%, #911B79 75%, #B3178E 100%);}
+/* ── HERO ──
+   FIX 1: Stat cards removed from position:absolute and flow naturally below the hero grid.
+   FIX 2: On mobile, everything collapses to a single centred column.
+── */
+#hero{
+  min-height:100vh;
+  position:relative;
+  display:flex;
+  align-items:center;
+  overflow:hidden;
+  background:linear-gradient(135deg, #3D0635 0%, #5A0A4E 25%, #7A0F66 50%, #911B79 75%, #B3178E 100%);
+}
 .hero-bg-art{position:absolute;inset:0;overflow:hidden;}
 .mandala-bg{position:absolute;right:-10%;top:50%;transform:translateY(-50%);width:70vmin;height:70vmin;opacity:0.08;animation:spin-slow 40s linear infinite;}
 @keyframes spin-slow{to{transform:translateY(-50%) rotate(360deg);}}
 .particles{position:absolute;inset:0;}
 .particle{position:absolute;border-radius:50%;background:rgba(255,255,255,0.15);animation:float-particle linear infinite;}
 @keyframes float-particle{0%{transform:translateY(100vh) scale(0);}100%{transform:translateY(-10vh) scale(1);opacity:0;}}
-.hero-content{position:relative;z-index:2;padding:0 5%;max-width:1200px;margin:0 auto;width:100%;display:grid;grid-template-columns:1fr 1fr;align-items:center;gap:60px;}
+
+/* Hero content is now a flex-column so stats flow beneath the text+image row */
+.hero-content{
+  position:relative;
+  z-index:2;
+  padding:120px 5% 70px;
+  max-width:1200px;
+  margin:0 auto;
+  width:100%;
+  display:flex;
+  flex-direction:column;
+  gap:50px;
+}
+
+/* The two-column text + logo row */
+.hero-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  align-items:center;
+  gap:60px;
+}
+
 .hero-text{animation:fade-up 1s ease forwards;}
 .hero-tag{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,0.15);border:1px solid rgba(255,255,255,0.25);padding:8px 18px;border-radius:50px;color:var(--gold-light);font-size:0.78rem;letter-spacing:0.12em;text-transform:uppercase;font-weight:500;margin-bottom:24px;backdrop-filter:blur(10px);}
 .hero-tag i{font-size:0.7rem;}
@@ -84,7 +115,9 @@ nav.scrolled .hamburger span{background:var(--deep);}
 .ring:nth-child(2){width:430px;height:430px;animation-delay:0.8s;}
 .ring:nth-child(3){width:510px;height:510px;animation-delay:1.6s;}
 @keyframes expand-ring{0%,100%{opacity:0.5;transform:scale(1);}50%{opacity:0.15;transform:scale(1.03);}}
-.hero-stats{position:absolute;bottom:40px;left:5%;right:5%;display:flex;gap:40px;}
+
+/* Stat cards — now in normal document flow, no more absolute positioning */
+.hero-stats{display:flex;gap:24px;}
 .stat-card{background:rgba(255,255,255,0.1);backdrop-filter:blur(15px);border:1px solid rgba(255,255,255,0.2);border-radius:20px;padding:18px 28px;text-align:center;flex:1;animation:fade-up 1s ease forwards;}
 .stat-num{font-family:'Cormorant Garamond',serif;font-size:2rem;font-weight:700;color:var(--gold-light);}
 .stat-label{font-size:0.78rem;color:rgba(255,255,255,0.7);letter-spacing:0.08em;text-transform:uppercase;margin-top:2px;}
@@ -127,6 +160,59 @@ section{padding:100px 5%;}
 .founder-avatar{width:56px;height:56px;border-radius:50%;border:3px solid var(--pale);overflow:hidden;background:linear-gradient(135deg,var(--light),var(--primary));display:flex;align-items:center;justify-content:center;color:white;font-size:1.4rem;}
 .founder-info strong{font-size:0.95rem;color:var(--deep);display:block;}
 .founder-info span{font-size:0.82rem;color:var(--body-text);opacity:0.7;}
+
+/* ── MEET YOUR MENTOR ── */
+#mentor{background:var(--white);position:relative;overflow:hidden;}
+#mentor::before{content:'';position:absolute;bottom:-120px;left:-120px;width:500px;height:500px;background:radial-gradient(circle,rgba(179,23,142,0.05) 0%,transparent 70%);border-radius:50%;}
+.mentor-inner{max-width:1200px;margin:0 auto;}
+.mentor-grid{display:grid;grid-template-columns:380px 1fr;gap:80px;align-items:center;}
+.mentor-photo-col{display:flex;flex-direction:column;align-items:center;gap:28px;}
+.mentor-photo-ring{position:relative;width:300px;height:300px;}
+.mentor-photo-ring::before{
+  content:'';position:absolute;inset:-12px;border-radius:50%;
+  background:conic-gradient(var(--accent),var(--gold),var(--light),var(--accent));
+  animation:spin-slow 10s linear infinite;
+  z-index:0;
+}
+.mentor-photo-ring::after{
+  content:'';position:absolute;inset:-6px;border-radius:50%;
+  background:var(--white);
+  z-index:1;
+}
+.mentor-photo-circle{
+  position:relative;z-index:2;
+  width:300px;height:300px;border-radius:50%;
+  overflow:hidden;
+  box-shadow:var(--shadow-heavy);
+}
+.mentor-photo-circle img{width:100%;height:100%;object-fit:cover;object-position:top center;}
+.mentor-badges{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;}
+.mentor-badge-pill{
+  display:inline-flex;align-items:center;gap:7px;
+  background:var(--blush);border:1px solid var(--pale);
+  padding:8px 16px;border-radius:50px;
+  font-size:0.78rem;font-weight:600;color:var(--deep);
+  letter-spacing:0.04em;
+}
+.mentor-badge-pill i{color:var(--accent);font-size:0.8rem;}
+.mentor-text .section-subtitle{max-width:100%;}
+.mentor-name{font-family:'Cormorant Garamond',serif;font-size:clamp(2rem,3.5vw,3rem);font-weight:700;color:var(--deep);line-height:1.15;margin-bottom:6px;}
+.mentor-name em{font-style:italic;color:var(--accent);}
+.mentor-title{font-size:0.88rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--accent);font-weight:600;margin-bottom:24px;opacity:0.85;}
+.mentor-credentials{display:flex;flex-direction:column;gap:14px;margin:28px 0;}
+.cred-item{display:flex;align-items:flex-start;gap:16px;}
+.cred-icon{
+  width:44px;height:44px;border-radius:14px;flex-shrink:0;
+  background:linear-gradient(135deg,var(--light),var(--accent));
+  display:flex;align-items:center;justify-content:center;
+  color:var(--white);font-size:1.1rem;
+}
+.cred-text strong{font-size:0.92rem;color:var(--deep);display:block;margin-bottom:2px;}
+.cred-text span{font-size:0.83rem;color:var(--body-text);opacity:0.75;line-height:1.5;}
+.mentor-quote{margin-top:28px;background:linear-gradient(135deg,var(--deep),var(--primary));border-radius:20px;padding:24px 28px;position:relative;overflow:hidden;}
+.mentor-quote::before{content:'\201C';position:absolute;top:-10px;left:16px;font-family:'Cormorant Garamond',serif;font-size:6rem;color:rgba(255,255,255,0.1);line-height:1;}
+.mentor-quote p{font-family:'Cormorant Garamond',serif;font-size:1.15rem;font-style:italic;color:rgba(255,255,255,0.9);line-height:1.65;position:relative;z-index:1;}
+.mentor-quote cite{font-size:0.78rem;color:var(--gold-light);font-style:normal;letter-spacing:0.08em;text-transform:uppercase;font-weight:600;margin-top:10px;display:block;}
 
 /* ── SERVICES ── */
 #services{background:var(--blush);position:relative;}
@@ -285,14 +371,14 @@ section{padding:100px 5%;}
 .form-group input,.form-group textarea,.form-group select{width:100%;padding:13px 18px;border:1.5px solid rgba(145,27,121,0.15);border-radius:12px;font-family:'Jost',sans-serif;font-size:0.92rem;color:var(--dark-text);background:var(--cream);transition:border-color 0.3s,box-shadow 0.3s;outline:none;}
 .form-group input:focus,.form-group textarea:focus,.form-group select:focus{border-color:var(--accent);box-shadow:0 0 0 4px rgba(179,23,142,0.1);}
 .form-group textarea{height:110px;resize:none;}
-.btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,var(--primary),var(--accent));color:var(--white);border:none;border-radius:50px;font-family:'Jost',sans-serif;font-weight:600;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;}
-.btn-submit:hover{background:linear-gradient(135deg,var(--accent),var(--deep));transform:translateY(-2px);box-shadow:0 12px 35px rgba(145,27,121,0.35);}
+.btn-submit{width:100%;padding:16px;background:linear-gradient(135deg,#25d366,#128c7e);color:var(--white);border:none;border-radius:50px;font-family:'Jost',sans-serif;font-weight:600;font-size:0.95rem;cursor:pointer;letter-spacing:0.04em;transition:all 0.3s;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:8px;}
+.btn-submit:hover{background:linear-gradient(135deg,#128c7e,#075e54);transform:translateY(-2px);box-shadow:0 12px 35px rgba(37,211,102,0.35);}
 
 /* ── FOOTER ── */
 footer{background:#1A0815;padding:60px 5% 30px;}
 .footer-inner{max-width:1200px;margin:0 auto;}
 .footer-top{display:grid;grid-template-columns:2fr 1fr 1fr 1fr;gap:60px;margin-bottom:50px;}
-.footer-brand img{height:56px;margin-bottom:18px;}
+.footer-brand img{height:56px;margin-bottom:18px; border-radius: 50%;}
 .footer-brand p{color:rgba(255,255,255,0.5);font-size:0.87rem;line-height:1.8;max-width:280px;}
 .footer-social{display:flex;gap:12px;margin-top:24px;}
 .social-btn{width:40px;height:40px;border-radius:50%;background:rgba(255,255,255,0.07);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;color:rgba(255,255,255,0.5);font-size:0.85rem;text-decoration:none;transition:all 0.3s;}
@@ -336,9 +422,12 @@ footer{background:#1A0815;padding:60px 5% 30px;}
   .footer-top{grid-template-columns:1fr 1fr;}
   .blog-grid{grid-template-columns:1fr 1fr;}
   .blog-card.featured{grid-row:span 1;}
+  .mentor-grid{grid-template-columns:1fr;gap:40px;}
+  .mentor-photo-col{flex-direction:row;flex-wrap:wrap;justify-content:center;gap:20px;}
 }
 @media(max-width:900px){
-  .hero-content{grid-template-columns:1fr;text-align:center;}
+  /* FIX 2: Hero collapses to single column on tablet/mobile */
+  .hero-grid{grid-template-columns:1fr;text-align:center;}
   .hero-text{order:2;}
   .hero-image-wrap{order:1;}
   .hero-logo-glow{width:200px;height:200px;}
@@ -347,7 +436,9 @@ footer{background:#1A0815;padding:60px 5% 30px;}
   .ring:nth-child(2){width:280px;height:280px;}
   .ring:nth-child(3){width:330px;height:330px;}
   .hero-btns{justify-content:center;}
-  .hero-stats{gap:16px;}
+  .hero-desc{margin-left:auto;margin-right:auto;}
+  .hero-stats{flex-wrap:wrap;gap:14px;}
+  .stat-card{flex:1 1 calc(50% - 14px);min-width:140px;}
   .services-grid,.pricing-grid,.testimonials-grid{grid-template-columns:1fr 1fr;}
   .featured-testimonial{grid-column:span 1;}
   .process-steps{grid-template-columns:1fr 1fr;}
@@ -362,10 +453,14 @@ footer{background:#1A0815;padding:60px 5% 30px;}
   .hamburger{display:flex;}
   .services-grid,.pricing-grid,.testimonials-grid,.blog-grid{grid-template-columns:1fr;}
   .process-steps{grid-template-columns:1fr;}
-  .hero-stats{flex-direction:column;position:relative;bottom:auto;margin-top:40px;}
+  /* FIX 2: Stats in a 2×2 grid on small screens */
+  .hero-stats{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+  .stat-card{flex:none;}
+  .hero-content{padding:90px 5% 50px;gap:36px;}
   section{padding:70px 5%;}
   .footer-top{grid-template-columns:1fr;}
   .blog-header{flex-direction:column;gap:16px;}
+  .mentor-photo-ring,.mentor-photo-circle{width:220px;height:220px;}
 }
 </style>
 </head>
@@ -399,6 +494,8 @@ footer{background:#1A0815;padding:60px 5% 30px;}
 </div>
 
 <!-- HERO -->
+<!-- FIX 1 & 2: hero-content is now flex-column; hero-grid holds text+image;
+     hero-stats flows naturally below — no more position:absolute overlap. -->
 <section id="hero">
   <div class="hero-bg-art">
     <svg class="mandala-bg" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -416,31 +513,37 @@ footer{background:#1A0815;padding:60px 5% 30px;}
     </svg>
     <div class="particles" id="particles"></div>
   </div>
+
   <div class="hero-content">
-    <div class="hero-text">
-      <div class="hero-tag"><i class="fas fa-seedling"></i> Holistic Wellness Since 2020</div>
-      <h1 class="hero-h1">Where the Roads to<br/><em>Outer Success</em><br/>& <em>Inner Joy</em> Meet</h1>
-      <p class="hero-subtitle">Yoga · Reiki · DMIT-Based Counseling</p>
-      <p class="hero-desc">Swadarpan gives you the right tools to know and transform yourself. Heal your mind, body and energies to a more balanced, purposeful and joyful life.</p>
-      <div class="hero-btns">
-        <a href="#sessions" class="btn-primary"><i class="fas fa-calendar-check"></i> Book a Session</a>
-        <a href="#about" class="btn-outline"><i class="fas fa-play-circle"></i> Our Story</a>
+    <!-- Row 1: text on left, logo on right -->
+    <div class="hero-grid">
+      <div class="hero-text">
+        <div class="hero-tag"><i class="fas fa-seedling"></i> Holistic Wellness Since 2020</div>
+        <h1 class="hero-h1">Where the Roads to<br/><em>Outer Success</em><br/>&amp; <em>Inner Joy</em> Meet</h1>
+        <p class="hero-subtitle">Yoga · Reiki · DMIT-Based Counseling</p>
+        <p class="hero-desc">Swadarpan gives you the right tools to know and transform yourself. Heal your mind, body and energies to a more balanced, purposeful and joyful life.</p>
+        <div class="hero-btns">
+          <a href="#sessions" class="btn-primary"><i class="fas fa-calendar-check"></i> Book a Session</a>
+          <a href="#about" class="btn-outline"><i class="fas fa-play-circle"></i> Our Story</a>
+        </div>
+      </div>
+      <div class="hero-image-wrap">
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="ring"></div>
+        <div class="hero-logo-glow">
+          <img src="https://sourabhsuneja.github.io/redirect/swadarpan-logo.png" alt="Swadarpan"/>
+        </div>
       </div>
     </div>
-    <div class="hero-image-wrap">
-      <div class="ring"></div>
-      <div class="ring"></div>
-      <div class="ring"></div>
-      <div class="hero-logo-glow">
-        <img src="https://sourabhsuneja.github.io/redirect/swadarpan-logo.png" alt="Swadarpan"/>
-      </div>
+
+    <!-- Row 2: stat cards flow naturally below — no overlap -->
+    <div class="hero-stats">
+      <div class="stat-card"><div class="stat-num">500+</div><div class="stat-label">Lives Transformed</div></div>
+      <div class="stat-card"><div class="stat-num">4+</div><div class="stat-label">Years of Healing</div></div>
+      <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Holistic Paths</div></div>
+      <div class="stat-card"><div class="stat-num">100%</div><div class="stat-label">Heart-Centred Care</div></div>
     </div>
-  </div>
-  <div class="hero-stats">
-    <div class="stat-card"><div class="stat-num">500+</div><div class="stat-label">Lives Transformed</div></div>
-    <div class="stat-card"><div class="stat-num">4+</div><div class="stat-label">Years of Healing</div></div>
-    <div class="stat-card"><div class="stat-num">3</div><div class="stat-label">Holistic Paths</div></div>
-    <div class="stat-card"><div class="stat-num">100%</div><div class="stat-label">Heart-Centred Care</div></div>
   </div>
 </section>
 
@@ -506,6 +609,73 @@ footer{background:#1A0815;padding:60px 5% 30px;}
   </div>
 </section>
 
+<!-- ══════════════════════════════════════════════
+     MEET YOUR MENTOR  (new section — FIX 3)
+══════════════════════════════════════════════ -->
+<section id="mentor">
+  <div class="mentor-inner section-inner">
+    <div class="mentor-grid">
+
+      <!-- Circular photo + credential pills -->
+      <div class="mentor-photo-col reveal-left">
+        <div class="mentor-photo-ring">
+          <div class="mentor-photo-circle">
+            <!-- Placeholder portrait — replace with actual founder photo -->
+            <img
+              src="https://images.unsplash.com/photo-1560250097-0b93528c311a?w=600&q=80"
+              alt="Hemant Swaroop — Founder, Swadarpan"
+            />
+          </div>
+        </div>
+        <div class="mentor-badges">
+          <span class="mentor-badge-pill"><i class="fas fa-certificate"></i> Certified Yoga Instructor</span>
+          <span class="mentor-badge-pill"><i class="fas fa-hands"></i> Reiki Grand Master</span>
+          <span class="mentor-badge-pill"><i class="fas fa-brain"></i> Psychological Counselor</span>
+          <span class="mentor-badge-pill"><i class="fas fa-fingerprint"></i> DMIT Expert</span>
+        </div>
+      </div>
+
+      <!-- Text content -->
+      <div class="mentor-text reveal-right">
+        <span class="section-tag">Meet Your Mentor</span>
+        <h2 class="mentor-name">Hemant <em>Swaroop</em></h2>
+        <p class="mentor-title">Yoga Instructor · Reiki Grand Master · Psychological Counselor</p>
+        <p class="section-subtitle">Hemant isn't just a wellness teacher — he is a fellow traveller on the path of self-discovery who has walked every step before guiding others. With years of deep practice and hundreds of transformed lives to his credit, he brings a rare blend of ancient wisdom and modern insight to every session.</p>
+
+        <div class="mentor-credentials">
+          <div class="cred-item">
+            <div class="cred-icon"><i class="fas fa-om"></i></div>
+            <div class="cred-text">
+              <strong>Certified Yoga Instructor (RYT-200)</strong>
+              <span>Trained in classical Hatha, Vinyasa, and therapeutic yoga. Expert in asana sequencing, pranayama, and yoga philosophy for all levels — from complete beginners to advanced practitioners.</span>
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-icon"><i class="fas fa-hands"></i></div>
+            <div class="cred-text">
+              <strong>Reiki Grand Master &amp; Energy Healer</strong>
+              <span>Attuned to the highest levels of Usui Reiki, Hemant channels universal life energy to dissolve deep-seated emotional blockages, restore chakra balance, and awaken the body's innate healing intelligence.</span>
+            </div>
+          </div>
+          <div class="cred-item">
+            <div class="cred-icon"><i class="fas fa-brain"></i></div>
+            <div class="cred-text">
+              <strong>Psychological Counselor &amp; DMIT Expert</strong>
+              <span>Trained in psychological counseling and certified in DMIT (Dermatoglyphics Multiple Intelligence Test), Hemant helps individuals decode their innate potential, navigate career choices, and achieve lasting mental clarity.</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="mentor-quote">
+          <p>"My purpose is simple — to help you see yourself clearly, accept yourself fully, and grow into the person you were always meant to be."</p>
+          <cite>— Hemant Swaroop</cite>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <!-- SERVICES -->
 <section id="services">
   <div class="section-inner">
@@ -537,7 +707,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
           <div class="service-icon-bubble"><i class="fas fa-hands"></i></div>
         </div>
         <div class="service-body">
-          <h3>Reiki & Meditation</h3>
+          <h3>Reiki &amp; Meditation</h3>
           <p>Experience the ancient healing art of Reiki — channeling universal life energy to dissolve blockages, reduce stress and awaken your body's natural healing intelligence.</p>
           <div class="service-tags">
             <span class="service-tag">Energy Healing</span>
@@ -591,7 +761,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
           <i class="fas fa-seedling"></i>
           <span class="num-badge">1</span>
         </div>
-        <h4>Connect & Share</h4>
+        <h4>Connect &amp; Share</h4>
         <p>Reach out for a free discovery call. Share your goals, challenges and what you're hoping to transform.</p>
       </div>
       <div class="step-card reveal">
@@ -607,7 +777,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
           <i class="fas fa-sun"></i>
           <span class="num-badge">3</span>
         </div>
-        <h4>Practice & Heal</h4>
+        <h4>Practice &amp; Heal</h4>
         <p>Engage in guided sessions in a safe, nurturing environment — online or in person, at your own pace.</p>
       </div>
       <div class="step-card reveal">
@@ -615,7 +785,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
           <i class="fas fa-star"></i>
           <span class="num-badge">4</span>
         </div>
-        <h4>Thrive & Grow</h4>
+        <h4>Thrive &amp; Grow</h4>
         <p>Experience lasting transformation — clarity of purpose, peace of mind and the tools to keep growing.</p>
       </div>
     </div>
@@ -626,7 +796,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
 <section id="sessions">
   <div class="section-inner">
     <div class="sessions-header reveal">
-      <span class="section-tag">Sessions & Pricing</span>
+      <span class="section-tag">Sessions &amp; Pricing</span>
       <h2 class="section-title">Choose Your <em>Healing Path</em></h2>
       <p class="section-subtitle" style="margin:0 auto;">Flexible plans for every journey. Pricing to be updated — contact us for current offers and packages.</p>
     </div>
@@ -634,12 +804,12 @@ footer{background:#1A0815;padding:60px 5% 30px;}
       <div class="pricing-card reveal">
         <div class="pricing-icon"><i class="fas fa-om"></i></div>
         <h3>Yoga Sessions</h3>
-        <p class="pricing-desc">Beginner to advanced asana, pranayama & mindfulness — individual or group.</p>
+        <p class="pricing-desc">Beginner to advanced asana, pranayama &amp; mindfulness — individual or group.</p>
         <div class="pricing-placeholder">💰 Pricing coming soon — contact us!</div>
         <ul class="pricing-features">
           <li><i class="fas fa-check-circle"></i> 60-minute guided session</li>
           <li><i class="fas fa-check-circle"></i> Personalised asana sequence</li>
-          <li><i class="fas fa-check-circle"></i> Pranayama & breathing techniques</li>
+          <li><i class="fas fa-check-circle"></i> Pranayama &amp; breathing techniques</li>
           <li><i class="fas fa-check-circle"></i> Online or in-person</li>
           <li><i class="fas fa-check-circle"></i> Suitable for all levels</li>
         </ul>
@@ -653,7 +823,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
         <div class="pricing-placeholder">💰 Pricing coming soon — contact us!</div>
         <ul class="pricing-features">
           <li><i class="fas fa-check-circle"></i> 75-minute energy session</li>
-          <li><i class="fas fa-check-circle"></i> Chakra assessment & balancing</li>
+          <li><i class="fas fa-check-circle"></i> Chakra assessment &amp; balancing</li>
           <li><i class="fas fa-check-circle"></i> Guided meditation</li>
           <li><i class="fas fa-check-circle"></i> Post-session guidance</li>
           <li><i class="fas fa-check-circle"></i> Distance healing available</li>
@@ -663,7 +833,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
       <div class="pricing-card reveal">
         <div class="pricing-icon"><i class="fas fa-fingerprint"></i></div>
         <h3>DMIT Counseling</h3>
-        <p class="pricing-desc">Fingerprint-based intelligence profiling for career, education & life direction.</p>
+        <p class="pricing-desc">Fingerprint-based intelligence profiling for career, education &amp; life direction.</p>
         <div class="pricing-placeholder">💰 Pricing coming soon — contact us!</div>
         <ul class="pricing-features">
           <li><i class="fas fa-check-circle"></i> Full fingerprint analysis</li>
@@ -740,7 +910,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
   <div class="section-inner">
     <div class="blog-header reveal">
       <div>
-        <span class="section-tag">Wisdom & Insights</span>
+        <span class="section-tag">Wisdom &amp; Insights</span>
         <h2 class="section-title">From the <em>Swadarpan</em> Journal</h2>
       </div>
       <a href="#articles" class="btn-outline" style="color:var(--accent);border-color:var(--accent);white-space:nowrap;">View All Articles</a>
@@ -767,7 +937,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
           <span class="blog-cat">Yoga</span>
         </div>
         <div class="blog-body">
-          <h3>5 Simple Yoga Poses to Start Your Day with Clarity & Energy</h3>
+          <h3>5 Simple Yoga Poses to Start Your Day with Clarity &amp; Energy</h3>
           <div class="blog-meta">
             <span><i class="far fa-calendar"></i> Feb 2025</span>
             <span><i class="far fa-clock"></i> 5 min read</span>
@@ -841,7 +1011,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
     <div class="article reveal" id="article-yoga">
       <div class="article-header">
         <span class="article-cat-tag">Yoga</span>
-        <h2>5 Simple Yoga Poses to Start Your Day with Clarity & Energy</h2>
+        <h2>5 Simple Yoga Poses to Start Your Day with Clarity &amp; Energy</h2>
         <div class="article-byline">
           <span><i class="fas fa-user" style="color:var(--accent)"></i> Hemant Swaroop</span>
           <span><i class="far fa-calendar" style="color:var(--accent)"></i> February 2025</span>
@@ -911,7 +1081,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
     <!-- ARTICLE 3: DMIT -->
     <div class="article reveal" id="article-dmit">
       <div class="article-header">
-        <span class="article-cat-tag">DMIT & Career</span>
+        <span class="article-cat-tag">DMIT &amp; Career</span>
         <h2>What is DMIT? A Simple Guide to Understanding Your Child's Potential</h2>
         <div class="article-byline">
           <span><i class="fas fa-user" style="color:var(--accent)"></i> Hemant Swaroop</span>
@@ -931,7 +1101,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
           <div class="dmit-steps">
             <div class="dmit-step"><i class="fas fa-fingerprint"></i><p>Fingerprints are scanned safely and non-invasively</p></div>
             <div class="dmit-step"><i class="fas fa-brain"></i><p>Patterns are analyzed against a proprietary intelligence database</p></div>
-            <div class="dmit-step"><i class="fas fa-chart-bar"></i><p>A detailed report maps your innate strengths & learning style</p></div>
+            <div class="dmit-step"><i class="fas fa-chart-bar"></i><p>A detailed report maps your innate strengths &amp; learning style</p></div>
           </div>
         </div>
 
@@ -972,6 +1142,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
 </div>
 
 <!-- CONTACT -->
+<!-- FIX 4: WhatsApp links updated to +91-8005606681 throughout -->
 <section id="contact">
   <div class="section-inner">
     <div class="contact-grid">
@@ -994,11 +1165,12 @@ footer{background:#1A0815;padding:60px 5% 30px;}
               <span>smilewithyoga2907@gmail.com</span>
             </div>
           </a>
-          <a href="https://wa.me/9114135881713" class="contact-way">
+          <!-- Updated WhatsApp number -->
+          <a href="https://wa.me/918005606681" target="_blank" rel="noopener" class="contact-way">
             <div class="contact-way-icon"><i class="fab fa-whatsapp"></i></div>
             <div class="contact-way-text">
               <strong>WhatsApp</strong>
-              <span>Chat with us directly</span>
+              <span>+91-8005606681 · Chat directly</span>
             </div>
           </a>
           <div class="contact-way">
@@ -1013,16 +1185,16 @@ footer{background:#1A0815;padding:60px 5% 30px;}
       <div class="reveal-right">
         <div class="contact-form">
           <h3 class="form-title">Book a Free Discovery Call</h3>
-          <p class="form-subtitle">Tell us a little about yourself and what you're looking for. We'll get back to you within 24 hours.</p>
+          <p class="form-subtitle">Fill in the details below — you'll be taken straight to WhatsApp to connect with Hemant directly.</p>
           <div class="form-row">
-            <div class="form-group"><label>First Name</label><input type="text" placeholder="Priya"/></div>
-            <div class="form-group"><label>Last Name</label><input type="text" placeholder="Sharma"/></div>
+            <div class="form-group"><label>First Name</label><input id="cf-fname" type="text" placeholder="Priya"/></div>
+            <div class="form-group"><label>Last Name</label><input id="cf-lname" type="text" placeholder="Sharma"/></div>
           </div>
-          <div class="form-group"><label>Email Address</label><input type="email" placeholder="priya@email.com"/></div>
-          <div class="form-group"><label>Phone Number</label><input type="tel" placeholder="+91 98765 43210"/></div>
+          <div class="form-group"><label>Email Address</label><input id="cf-email" type="email" placeholder="priya@email.com"/></div>
+          <div class="form-group"><label>Phone Number</label><input id="cf-phone" type="tel" placeholder="+91 98765 43210"/></div>
           <div class="form-group">
             <label>I'm Interested In</label>
-            <select>
+            <select id="cf-service">
               <option value="">— Select a Service —</option>
               <option>Yoga Sessions</option>
               <option>Reiki Healing</option>
@@ -1031,8 +1203,10 @@ footer{background:#1A0815;padding:60px 5% 30px;}
               <option>Just exploring — tell me more!</option>
             </select>
           </div>
-          <div class="form-group"><label>Your Message</label><textarea placeholder="A little about where you are and what you hope for..."></textarea></div>
-          <button class="btn-submit"><i class="fas fa-paper-plane"></i> Send Message</button>
+          <div class="form-group"><label>Your Message</label><textarea id="cf-message" placeholder="A little about where you are and what you hope for..."></textarea></div>
+          <button class="btn-submit" id="wa-submit">
+            <i class="fab fa-whatsapp"></i> Send via WhatsApp
+          </button>
         </div>
       </div>
     </div>
@@ -1050,7 +1224,8 @@ footer{background:#1A0815;padding:60px 5% 30px;}
           <a href="#" class="social-btn"><i class="fab fa-facebook-f"></i></a>
           <a href="#" class="social-btn"><i class="fab fa-instagram"></i></a>
           <a href="#" class="social-btn"><i class="fab fa-youtube"></i></a>
-          <a href="#" class="social-btn"><i class="fab fa-whatsapp"></i></a>
+          <!-- Updated footer WhatsApp link -->
+          <a href="https://wa.me/918005606681" target="_blank" rel="noopener" class="social-btn"><i class="fab fa-whatsapp"></i></a>
           <a href="#" class="social-btn"><i class="fab fa-linkedin-in"></i></a>
         </div>
       </div>
@@ -1060,7 +1235,7 @@ footer{background:#1A0815;padding:60px 5% 30px;}
           <li><a href="#services">Yoga Sessions</a></li>
           <li><a href="#services">Reiki Healing</a></li>
           <li><a href="#services">DMIT Counseling</a></li>
-          <li><a href="#sessions">Pricing & Packages</a></li>
+          <li><a href="#sessions">Pricing &amp; Packages</a></li>
           <li><a href="#contact">Free Discovery Call</a></li>
         </ul>
       </div>
@@ -1079,6 +1254,8 @@ footer{background:#1A0815;padding:60px 5% 30px;}
         <ul>
           <li><a href="tel:+9114135881713">+91-1413581713</a></li>
           <li><a href="mailto:smilewithyoga2907@gmail.com">smilewithyoga2907@gmail.com</a></li>
+          <!-- Updated footer WhatsApp text link -->
+          <li><a href="https://wa.me/918005606681" target="_blank" rel="noopener">WhatsApp: +91-8005606681</a></li>
           <li><a href="#">Jaipur, Rajasthan</a></li>
           <li><a href="#contact">Book a Session</a></li>
         </ul>
@@ -1132,15 +1309,42 @@ const observer = new IntersectionObserver((entries) => {
 
 document.querySelectorAll('.reveal, .reveal-left, .reveal-right').forEach(el => observer.observe(el));
 
-// CONTACT FORM SUBMIT
-document.querySelector('.btn-submit').addEventListener('click', function(e) {
+// ── CONTACT FORM → WHATSAPP  (FIX 4) ──────────────────────────────────────
+// Gathers all form fields, frames a readable template message, and opens
+// the WhatsApp chat screen for +91-8005606681 with the message pre-filled.
+document.getElementById('wa-submit').addEventListener('click', function(e) {
   e.preventDefault();
-  this.innerHTML = '<i class="fas fa-check-circle"></i> Message Sent! We\'ll be in touch soon.';
-  this.style.background = 'linear-gradient(135deg,#2ecc71,#27ae60)';
+
+  const fname   = (document.getElementById('cf-fname').value   || '').trim();
+  const lname   = (document.getElementById('cf-lname').value   || '').trim();
+  const email   = (document.getElementById('cf-email').value   || '').trim();
+  const phone   = (document.getElementById('cf-phone').value   || '').trim();
+  const service = (document.getElementById('cf-service').value || '').trim();
+  const message = (document.getElementById('cf-message').value || '').trim();
+
+  const name = [fname, lname].filter(Boolean).join(' ') || 'a potential client';
+
+  const text =
+    `🙏 *Namaste Hemant ji!*\n\n` +
+    `I came across Swadarpan and would love to book a *Free Discovery Call*.\n\n` +
+    `*Name:* ${name}\n` +
+    (email   ? `*Email:* ${email}\n`   : '') +
+    (phone   ? `*Phone:* ${phone}\n`   : '') +
+    (service ? `*Interested in:* ${service}\n` : '') +
+    (message ? `\n*Message:*\n${message}\n` : '') +
+    `\nLooking forward to connecting! 🌿`;
+
+  const waUrl = `https://wa.me/918005606681?text=${encodeURIComponent(text)}`;
+  window.open(waUrl, '_blank');
+
+  // Visual feedback
+  const btn = this;
+  btn.innerHTML = '<i class="fab fa-whatsapp"></i> Opening WhatsApp…';
+  btn.style.opacity = '0.85';
   setTimeout(() => {
-    this.innerHTML = '<i class="fas fa-paper-plane"></i> Send Message';
-    this.style.background = '';
-  }, 4000);
+    btn.innerHTML = '<i class="fab fa-whatsapp"></i> Send via WhatsApp';
+    btn.style.opacity = '';
+  }, 3500);
 });
 
 // STAT COUNTER ANIMATION
@@ -1163,8 +1367,8 @@ const statsObserver = new IntersectionObserver((entries) => {
     if (e.isIntersecting) {
       const nums = [
         {el: document.querySelectorAll('.stat-num')[0], val: 500, suffix: '+'},
-        {el: document.querySelectorAll('.stat-num')[1], val: 4, suffix: '+'},
-        {el: document.querySelectorAll('.stat-num')[2], val: 3, suffix: ''},
+        {el: document.querySelectorAll('.stat-num')[1], val: 4,   suffix: '+'},
+        {el: document.querySelectorAll('.stat-num')[2], val: 3,   suffix: ''},
         {el: document.querySelectorAll('.stat-num')[3], val: 100, suffix: '%'},
       ];
       nums.forEach(n => { if(n.el) { n.el.dataset.suffix = n.suffix; animateCounter(n.el, n.val); }});
