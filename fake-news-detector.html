@@ -1,0 +1,672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SatyaCheck | AI Fake News Detector</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <style>
+        /* --- CSS Variables & Theming --- */
+        :root {
+            /* Light Theme */
+            --bg-color: #f0f2f5;
+            --text-color: #1c1e21;
+            --card-bg: #ffffff;
+            --border-color: #e4e6eb;
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --fake-color: #ef4444;
+            --real-color: #10b981;
+            --highlight-bg: #fef08a;
+            --highlight-text: #854d0e;
+            --sidebar-bg: #ffffff;
+            --muted-text: #65676b;
+            --ai-bg: #f8fafc;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #18191a;
+            --text-color: #e4e6eb;
+            --card-bg: #242526;
+            --border-color: #3a3b3c;
+            --primary-color: #3b82f6;
+            --primary-hover: #60a5fa;
+            --fake-color: #f87171;
+            --real-color: #34d399;
+            --highlight-bg: #7f1d1d;
+            --highlight-text: #fecaca;
+            --sidebar-bg: #242526;
+            --muted-text: #b0b3b8;
+            --ai-bg: #1e293b;
+        }
+
+        /* --- Global Styles --- */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* --- Header --- */
+        header {
+            background-color: var(--card-bg);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .theme-toggle {
+            background: none;
+            border: none;
+            color: var(--text-color);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.5rem;
+            border-radius: 50%;
+        }
+
+        .theme-toggle:hover {
+            background-color: var(--bg-color);
+        }
+
+        /* --- Layout --- */
+        .container {
+            display: flex;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+            gap: 2rem;
+            height: calc(100vh - 70px);
+        }
+
+        /* --- News Feed (Left Column) --- */
+        .feed-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 1rem;
+        }
+
+        .feed-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        .feed-container::-webkit-scrollbar-thumb {
+            background-color: var(--border-color);
+            border-radius: 10px;
+        }
+
+        .feed-header {
+            margin-bottom: 1.5rem;
+            font-size: 1.2rem;
+            font-weight: 600;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .news-card {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+            border: 1px solid var(--border-color);
+            cursor: pointer;
+            position: relative;
+            transform: translateY(0);
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .news-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px rgba(0,0,0,0.05);
+            border-color: var(--primary-color);
+        }
+
+        .news-source {
+            font-size: 0.8rem;
+            color: var(--muted-text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 0.8rem;
+        }
+
+        .news-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+            line-height: 1.4;
+        }
+
+        .news-snippet {
+            font-size: 0.9rem;
+            color: var(--muted-text);
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .analyze-btn {
+            margin-top: 1rem;
+            width: 100%;
+            padding: 0.6rem;
+            background-color: var(--bg-color);
+            color: var(--primary-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-weight: 500;
+            cursor: pointer;
+            pointer-events: none; /* Let the card handle the click */
+        }
+
+        .news-card:hover .analyze-btn {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+
+        /* --- AI Analysis Panel (Right Column) --- */
+        .ai-panel {
+            width: 400px;
+            background-color: var(--sidebar-bg);
+            border-radius: 16px;
+            border: 1px solid var(--border-color);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+            position: sticky;
+            top: 2rem;
+            height: calc(100vh - 120px);
+        }
+
+        .ai-header {
+            padding: 1.5rem;
+            background-color: var(--ai-bg);
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            font-weight: 600;
+        }
+
+        .ai-header i {
+            color: var(--primary-color);
+        }
+
+        .ai-content {
+            padding: 1.5rem;
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .empty-state {
+            text-align: center;
+            color: var(--muted-text);
+            margin-top: 40%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            opacity: 0.5;
+        }
+
+        /* Analysis Animation */
+        .scanning-ui {
+            display: none;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 6px;
+            background-color: var(--border-color);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary-color), #8b5cf6);
+            transition: width 0.1s linear;
+        }
+
+        .terminal-text {
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: var(--muted-text);
+        }
+
+        /* Results UI */
+        .results-ui {
+            display: none;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .confidence-meter {
+            text-align: center;
+            padding: 1.5rem;
+            border-radius: 12px;
+            color: white;
+            font-weight: 700;
+            font-size: 1.5rem;
+            animation: popIn 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .meter-fake { background: linear-gradient(135deg, var(--fake-color), #b91c1c); }
+        .meter-real { background: linear-gradient(135deg, var(--real-color), #047857); }
+
+        .justification-box {
+            background-color: var(--bg-color);
+            padding: 1.2rem;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary-color);
+            font-size: 0.95rem;
+        }
+
+        .highlighted-text-box {
+            background-color: var(--ai-bg);
+            padding: 1rem;
+            border-radius: 8px;
+            border: 1px dashed var(--border-color);
+            font-size: 0.9rem;
+            line-height: 1.8;
+        }
+
+        mark {
+            background-color: var(--highlight-bg);
+            color: var(--highlight-text);
+            padding: 0.1rem 0.3rem;
+            border-radius: 4px;
+            font-weight: 600;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .disclaimer {
+            font-size: 0.75rem;
+            color: var(--muted-text);
+            text-align: center;
+            border-top: 1px solid var(--border-color);
+            padding-top: 1rem;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.9); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* --- Responsive Design --- */
+        @media (max-width: 968px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+            }
+            .ai-panel {
+                width: 100%;
+                height: auto;
+                min-height: 400px;
+                position: static;
+            }
+            .feed-container {
+                padding-right: 0;
+                overflow-y: visible;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <i class="fa-solid fa-shield-halved"></i>
+            SatyaCheck
+        </div>
+        <button class="theme-toggle" id="themeToggle" aria-label="Toggle Dark Mode">
+            <i class="fa-solid fa-moon"></i>
+        </button>
+    </header>
+
+    <div class="container">
+        <main class="feed-container">
+            <div class="feed-header">
+                <i class="fa-solid fa-rss" style="color: var(--primary-color); margin-right: 8px;"></i>
+                Live Social Aggregator <span style="font-size: 0.8rem; color: var(--muted-text); font-weight: 400;">(Showing 80 items)</span>
+            </div>
+            <div class="news-grid" id="newsGrid">
+                </div>
+        </main>
+
+        <aside class="ai-panel">
+            <div class="ai-header">
+                <i class="fa-solid fa-microchip"></i>
+                AI Analysis Engine
+            </div>
+            <div class="ai-content">
+                
+                <div class="empty-state" id="aiEmptyState">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                    <p>Select a news item from the feed to run it through the fake news detector algorithm.</p>
+                </div>
+
+                <div class="scanning-ui" id="aiScanningState">
+                    <div style="font-weight: 600;"><i class="fa-solid fa-circle-notch fa-spin"></i> Analyzing Content...</div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar"></div>
+                    </div>
+                    <div class="terminal-text" id="terminalLog">
+                        > Initializing NLP model...<br>
+                    </div>
+                </div>
+
+                <div class="results-ui" id="aiResultsState">
+                    <div class="confidence-meter" id="confidenceMeter">
+                        </div>
+                    
+                    <div style="font-weight: 600; font-size: 0.9rem; color: var(--muted-text);">AI JUSTIFICATION</div>
+                    <div class="justification-box" id="justificationBox">
+                        </div>
+
+                    <div style="font-weight: 600; font-size: 0.9rem; color: var(--muted-text);">TEXT ANALYSIS</div>
+                    <div class="highlighted-text-box" id="highlightedTextBox">
+                        </div>
+
+                    <div class="disclaimer">
+                        Disclaimer: This prediction is based on NLP pattern recognition and known misinformation tropes. Always verify with official fact-checking authorities.
+                    </div>
+                </div>
+
+            </div>
+        </aside>
+    </div>
+
+    <script>
+        // --- Theme Toggle Logic ---
+        const themeToggle = document.getElementById('themeToggle');
+        const icon = themeToggle.querySelector('i');
+        
+        // Check local storage or system preference
+        const savedTheme = localStorage.getItem('theme');
+        if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.setAttribute('data-theme', 'dark');
+            icon.classList.replace('fa-moon', 'fa-sun');
+        }
+
+        themeToggle.addEventListener('click', () => {
+            if (document.documentElement.getAttribute('data-theme') === 'dark') {
+                document.documentElement.removeAttribute('data-theme');
+                icon.classList.replace('fa-sun', 'fa-moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                document.documentElement.setAttribute('data-theme', 'dark');
+                icon.classList.replace('fa-moon', 'fa-sun');
+                localStorage.setItem('theme', 'dark');
+            }
+        });
+
+        // --- News Data (Indian Context Seed) ---
+        // A mix of highly realistic real news and notorious/classic fake news forwards in India.
+        const seedNews = [
+            {
+                source: "WhatsApp Forward",
+                icon: "fa-brands fa-whatsapp",
+                headline: "UNESCO declares Indian National Anthem as the Best in the World",
+                content: "Great news for all Indians! UNESCO has officially evaluated national anthems from 195 countries and has proudly declared Jana Gana Mana as the best national anthem in the world. Please forward this to 10 people to show your patriotism. Jai Hind!",
+                isFake: true,
+                flags: ["UNESCO", "officially evaluated", "best national anthem", "forward this to 10 people", "proudly declared"]
+            },
+            {
+                source: "Tech News Daily",
+                icon: "fa-solid fa-globe",
+                headline: "ISRO successfully places new communication satellite into orbit",
+                content: "The Indian Space Research Organisation (ISRO) successfully launched its latest heavy-lift communication satellite, GSAT-24, using the Ariane 5 rocket from Kourou, French Guiana. The satellite is now in its intended orbit.",
+                isFake: false,
+                flags: []
+            },
+            {
+                source: "Social Media Post",
+                icon: "fa-brands fa-facebook",
+                headline: "New ₹2000 notes contain Nano GPS Tracking Chips",
+                content: "The RBI's new 2000 rupee notes are embedded with state-of-the-art Nano GPS Chips (NGC). These chips act as signal reflectors, allowing satellites to track exact locations of black money hoards, even if buried 120 meters underground.",
+                isFake: true,
+                flags: ["Nano GPS", "signal reflectors", "track exact locations", "buried 120 meters underground"]
+            },
+            {
+                source: "Health Alert India",
+                icon: "fa-solid fa-heart-pulse",
+                headline: "Drinking hot water with lemon and baking soda cures COVID-19 instantly",
+                content: "A student from Pondicherry University has found the absolute cure for Covid-19. According to WHO approvals, taking a mixture of hot water, lemon, and baking soda alkalizes the immune system and kills the virus in 24 hours. Stop buying medicines!",
+                isFake: true,
+                flags: ["absolute cure", "WHO approvals", "alkalizes the immune system", "kills the virus in 24 hours", "Stop buying medicines"]
+            },
+            {
+                source: "Financial Times",
+                icon: "fa-solid fa-newspaper",
+                headline: "RBI announces repo rate will remain unchanged at 6.5%",
+                content: "The Reserve Bank of India's Monetary Policy Committee (MPC) unanimously decided to keep the benchmark repo rate unchanged at 6.5% for the sixth consecutive time, citing inflation concerns.",
+                isFake: false,
+                flags: []
+            },
+            {
+                source: "Viral Tweet",
+                icon: "fa-brands fa-twitter",
+                headline: "Govt offering free laptops to all students under Vidyarthi Scheme 2024",
+                content: "The Central Government has launched a new scheme distributing free HP laptops to all students from 8th to 12th standard. Click on this link to register your Aadhaar and claim your free laptop today. Offer valid only till midnight!",
+                isFake: true,
+                flags: ["free HP laptops", "Click on this link", "register your Aadhaar", "Offer valid only till midnight"]
+            },
+            {
+                source: "Sports Desk",
+                icon: "fa-solid fa-baseball-bat-ball",
+                headline: "BCCI announces 15-member squad for the upcoming World Cup",
+                content: "The Board of Control for Cricket in India has released the final 15-member squad for the upcoming ICC Men's World Cup. Rohit Sharma will lead the team, with Hardik Pandya named as his deputy.",
+                isFake: false,
+                flags: []
+            },
+            {
+                source: "Telegram Broadcast",
+                icon: "fa-brands fa-telegram",
+                headline: "Nostradamus predicted India will rule the world in 2024",
+                content: "A newly translated manuscript of Nostradamus reveals a prophecy where a leader from the East, born in an ancient civilization, will rise in 2024. The text specifically translates to 'The golden bird will fly again', confirming India's absolute global dominance.",
+                isFake: true,
+                flags: ["newly translated manuscript", "Nostradamus reveals", "golden bird will fly again", "absolute global dominance"]
+            },
+            {
+                source: "Local News Net",
+                icon: "fa-solid fa-tv",
+                headline: "Heavy rainfall alert issued for Mumbai and coastal Maharashtra",
+                content: "The IMD has issued an 'orange alert' for Mumbai, Thane, and Palghar for the next 48 hours. Citizens are advised to avoid waterlogged areas and check train schedules before commuting.",
+                isFake: false,
+                flags: []
+            },
+            {
+                source: "WhatsApp Chain",
+                icon: "fa-brands fa-whatsapp",
+                headline: "Applying onion juice overnight cures male pattern baldness 100%",
+                content: "Dermatologists hate this secret! Applying concentrated red onion juice mixed with ginger paste to your scalp overnight will regrow 100% of your lost hair in just two weeks. It activates dead follicles permanently.",
+                isFake: true,
+                flags: ["Dermatologists hate this secret", "regrow 100%", "in just two weeks", "activates dead follicles permanently"]
+            }
+        ];
+
+        // --- Generate 80 Items ---
+        const newsDatabase = [];
+        // We will loop through the seed array until we hit 80 items.
+        // We add slight time variations to make them look like a real feed.
+        for (let i = 0; i < 80; i++) {
+            let seedItem = seedNews[i % seedNews.length];
+            // Deep copy to avoid reference issues
+            let newItem = JSON.parse(JSON.stringify(seedItem));
+            newItem.id = i + 1;
+            
+            // Randomize times like "2 mins ago", "1 hour ago"
+            let timeVal = Math.floor(Math.random() * 59) + 1;
+            let timeUnit = Math.random() > 0.5 ? "mins ago" : "hours ago";
+            if (i === 0) { timeVal = "Just now"; timeUnit = ""; }
+            newItem.timeString = `${timeVal} ${timeUnit}`;
+
+            newsDatabase.push(newItem);
+        }
+
+        // Shuffle the array slightly so it doesn't look like an obvious repeating pattern
+        for (let i = newsDatabase.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [newsDatabase[i], newsDatabase[j]] = [newsDatabase[j], newsDatabase[i]];
+        }
+
+        // --- Render Feed ---
+        const newsGrid = document.getElementById('newsGrid');
+
+        function renderFeed() {
+            newsDatabase.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'news-card';
+                card.onclick = () => runAIAnalysis(item);
+                
+                card.innerHTML = `
+                    <div class="news-source">
+                        <i class="${item.icon}"></i> ${item.source} • ${item.timeString}
+                    </div>
+                    <div class="news-title">${item.headline}</div>
+                    <div class="news-snippet">${item.content}</div>
+                    <button class="analyze-btn">
+                        <i class="fa-solid fa-magnifying-glass-chart"></i> Analyze Truth
+                    </button>
+                `;
+                newsGrid.appendChild(card);
+            });
+        }
+
+        renderFeed();
+
+        // --- AI Analysis Simulation Logic ---
+        const aiEmptyState = document.getElementById('aiEmptyState');
+        const aiScanningState = document.getElementById('aiScanningState');
+        const aiResultsState = document.getElementById('aiResultsState');
+        const progressBar = document.getElementById('progressBar');
+        const terminalLog = document.getElementById('terminalLog');
+
+        function runAIAnalysis(newsItem) {
+            // Scroll to top of sidebar for mobile view
+            document.querySelector('.ai-panel').scrollIntoView({ behavior: 'smooth' });
+
+            // UI State Transition
+            aiEmptyState.style.display = 'none';
+            aiResultsState.style.display = 'none';
+            aiScanningState.style.display = 'flex';
+            progressBar.style.width = '0%';
+            
+            // Terminal Animation Steps
+            const logs = [
+                "> Extracting text payload...",
+                "> Cross-referencing fact-check DBs...",
+                "> Analyzing linguistic patterns...",
+                "> Calculating sensationalism score...",
+                "> Generating final prediction..."
+            ];
+            
+            terminalLog.innerHTML = "";
+            let progress = 0;
+            let logIndex = 0;
+
+            const scanInterval = setInterval(() => {
+                progress += Math.floor(Math.random() * 15) + 5;
+                if (progress > 100) progress = 100;
+                progressBar.style.width = `${progress}%`;
+
+                if (progress % 20 === 0 && logIndex < logs.length) {
+                    terminalLog.innerHTML += logs[logIndex] + "<br>";
+                    logIndex++;
+                }
+
+                if (progress === 100) {
+                    clearInterval(scanInterval);
+                    setTimeout(() => showResults(newsItem), 500); // Small pause at 100%
+                }
+            }, 150); // Speed of the fake loader
+        }
+
+        function showResults(newsItem) {
+            aiScanningState.style.display = 'none';
+            aiResultsState.style.display = 'flex';
+
+            // 1. Confidence Meter
+            const meter = document.getElementById('confidenceMeter');
+            let confidence = Math.floor(Math.random() * 15) + 85; // Random between 85-99%
+
+            if (newsItem.isFake) {
+                meter.className = 'confidence-meter meter-fake';
+                meter.innerHTML = `<i class="fa-solid fa-triangle-exclamation"></i> ${confidence}% FAKE NEWS`;
+            } else {
+                meter.className = 'confidence-meter meter-real';
+                meter.innerHTML = `<i class="fa-solid fa-circle-check"></i> ${confidence}% REAL NEWS`;
+            }
+
+            // 2. AI Justification
+            const justification = document.getElementById('justificationBox');
+            if (newsItem.isFake) {
+                justification.innerHTML = `<strong>Alert:</strong> High probability of misinformation detected. The text utilizes emotionally manipulative language, appeals to fake authority, and requests immediate viral distribution—classic traits of hoax messages and clickbait.`;
+                justification.style.borderLeftColor = 'var(--fake-color)';
+            } else {
+                justification.innerHTML = `<strong>Clear:</strong> The structural linguistics align with standard journalistic reporting. No anomalous sensationalism or known fake-news copy-paste patterns detected. Sources match verified real-world events.`;
+                justification.style.borderLeftColor = 'var(--real-color)';
+            }
+
+            // 3. Highlighted Text Analysis
+            const textBox = document.getElementById('highlightedTextBox');
+            let highlightedText = newsItem.content;
+
+            // Apply highlighting if it's fake and has flags
+            if (newsItem.isFake && newsItem.flags.length > 0) {
+                newsItem.flags.forEach(flag => {
+                    // Create a case-insensitive regex to replace the flags with <mark> tags
+                    const regex = new RegExp(`(${flag})`, "gi");
+                    highlightedText = highlightedText.replace(regex, `<mark>$1</mark>`);
+                });
+            }
+            
+            textBox.innerHTML = highlightedText;
+        }
+    </script>
+</body>
+</html>
